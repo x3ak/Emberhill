@@ -26,11 +26,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Dump github context
-        run:   echo "$GITHUB_CONTEXT"
-        shell: bash
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
       - name: Checkout
         uses: actions/checkout@v4
       - name: Set up Node
@@ -43,15 +38,13 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          VITE_BASE: ${{ github.event.repository.name }}
+          VITE_BASE: /${{ github.event.repository.name }}/
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Path of the directory containing the static assets.
           path: dist
-          # Duration after which artifact will expire in days.
           retention-days: 45
 
   # Deployment job
