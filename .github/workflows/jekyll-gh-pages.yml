@@ -28,15 +28,21 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v3
       - name: Setup Pages
         uses: actions/configure-pages@v5
-      - name: Build with Jekyll
-        uses: actions/jekyll-build-pages@v1
-        with:
-          source: ./dist
-          destination: ./_site
+      - name: Build the app
+        run: |
+          npm install
+          npm run build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
+        with:
+          # Path of the directory containing the static assets.
+          path: dist
+          # Duration after which artifact will expire in days.
+          retention-days: 45
 
   # Deployment job
   deploy:
