@@ -9,5 +9,6 @@ services:
     environment:
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true
+      - VITE_BASE=Emberhill
       # - VITE_HMR_HOSTNAME=localhost
     command: npm run dev -- --host
