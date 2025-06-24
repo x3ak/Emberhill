@@ -1,19 +1,23 @@
+export type BuildingProduction = { resource: string, amount: number };
+
 export type BuildingState = {
     id: string;
     level: number;
     wispAssigned: boolean;
+    production: BuildingProduction;
 }
+
 
 export interface BuildingInterface {
     id: string;
     level: number;
     wispAssigned: boolean;
 
-    assignWisp(shouldAssign: boolean): void;
+    assignWisp(shouldAssign: boolean): boolean;
 
-    calculateProduction(deltaTime: number): { resource: string, amount: number };
+    calculateProduction(deltaTime: number): BuildingProduction | null;
 
-     getState(): BuildingState;
+    getState(): BuildingState;
 }
 
 export abstract class BuildingBase implements BuildingInterface {
@@ -21,12 +25,19 @@ export abstract class BuildingBase implements BuildingInterface {
     public level: number = 1;
     public wispAssigned: boolean = false;
 
+    private secondsSpentProducing: number = 0;
+
     constructor(id: string) {
         this.id = id;
     }
 
-    assignWisp(shouldAssign: boolean): void {
+    assignWisp(shouldAssign: boolean): boolean {
+        if (this.wispAssigned == shouldAssign) {
+            return false;
+        }
+
         this.wispAssigned = shouldAssign;
+        return true;
     }
 
     upgrade(): void {
@@ -35,13 +46,40 @@ export abstract class BuildingBase implements BuildingInterface {
     }
 
     // This method must be implemented by concrete classes
-    abstract calculateProduction(deltaTime: number): { resource: string, amount: number };
+    calculateProduction(deltaTime: number): BuildingProduction | null {
+        if (!this.wispAssigned) return null;
 
-     getState(): BuildingState {
+        this.secondsSpentProducing += deltaTime;
+
+        const productionVolume = this.productionRatePerSecond();
+
+        const secondsPerItem = 1 / productionVolume.amount;
+
+        let itemsProduced = Math.floor(this.secondsSpentProducing / secondsPerItem);
+
+        if (itemsProduced === 0) return null;
+
+        const timeSpent = itemsProduced * secondsPerItem;
+
+        this.secondsSpentProducing -= timeSpent;
+
+        return {
+            resource: productionVolume.resource,
+            amount: itemsProduced
+        };
+    }
+
+    // how much of product should be produced per secondtimeSpentProducing
+    abstract productionRatePerSecond(): BuildingProduction;
+
+    getState(): BuildingState {
         return {
             id: this.id,
             level: this.level,
             wispAssigned: this.wispAssigned,
+            production: this.productionRatePerSecond()
+
+
             // You can add more derived state here if needed
         };
     }
@@ -53,12 +91,11 @@ export class Woodcutter extends BuildingBase {
         super('woodcutter');
     }
 
-    calculateProduction(deltaTime: number): { resource: 'lumber', amount: number } {
-        // if (!this.wispAssigned) return { resource: 'lumber', amount: 0 };
-
-        const production = Math.pow(this.level, 2) * deltaTime;
-        
-        return { resource: 'lumber', amount: production };
+    productionRatePerSecond(): BuildingProduction {
+        return {
+            resource: 'lumber',
+            amount: 1,
+        }
     }
 }
 
@@ -67,9 +104,10 @@ export class Quarry extends BuildingBase {
         super('quarry');
     }
 
-    calculateProduction(deltaTime: number): { resource: 'stone', amount: number } {
-        if (!this.wispAssigned) return { resource: 'stone', amount: 0 };
-        const production = Math.pow(this.level, 1.8) * deltaTime;
-        return { resource: 'stone', amount: production };
+    productionRatePerSecond(): BuildingProduction {
+        return {
+            resource: 'stone',
+            amount: 5,
+        }
     }
 }

@@ -1,16 +1,15 @@
-import { Quarry, Woodcutter, type BuildingInterface } from "./buildings";
+import {Quarry, Woodcutter, type BuildingInterface, type BuildingState} from "./buildings";
 
-export type GameAction = 
- | {type: "TICK"; payload: {deltaTime: number}}
- | {type: "ASSIGN_WISP"; payload: {buildingId: string}}
- | {type: "UNASSIGN_WISP";  payload: {buildingId: string } }
- | { type: 'UPGRADE_BUILDING'; payload: { buildingId: string } }
+export type GameAction =
+    | { type: "TICK"; payload: { deltaTime: number } }
+    | { type: "ASSIGN_WISP"; payload: { buildingId: string } }
+    | { type: "UNASSIGN_WISP"; payload: { buildingId: string } }
+    | { type: 'UPGRADE_BUILDING'; payload: { buildingId: string } }
 
 
 export type GameState = {
     resources: GameResources;
-    buildings: { [key: string]: any }
-
+    buildings: { [key: string]: BuildingState }
 };
 
 export type GameResources = {
@@ -28,11 +27,9 @@ export class GameEngine {
     private listeners = new Set<() => void>();
     public readonly dispatch: (action: GameAction) => void;
 
-    private resources: GameResources = { gold: 0, lumber: 0, stone: 0, tools: 0};
+    private resources: GameResources = {gold: 0, lumber: 0, stone: 0, tools: 0};
 
     private buildings: Map<string, BuildingInterface> = new Map();
-
-    private actionLog: GameAction[] = [];
 
     constructor() {
 
@@ -46,25 +43,8 @@ export class GameEngine {
     private _dispatch(action: GameAction) {
         this.reduce(action);
 
-        
-        const lastAction = this.actionLog[this.actionLog.length - 1];
-        if (action.type === 'TICK' && lastAction?.type === 'TICK') {
-             const newAggregatedTick: GameAction = {
-                type: 'TICK',
-                payload: {
-                    deltaTime: lastAction.payload.deltaTime + action.payload.deltaTime
-                }
-            };
-            // Replace the last action with the new, aggregated one.
-            this.actionLog[this.actionLog.length - 1] = newAggregatedTick;
-        } else {
-            this.actionLog.push(action)
-        }
-
         // Only update and notify if the state has actually changed
         if (this.isDirty) {
-            console.log(this.actionLog);
-
             this.notify();
         }
     }
@@ -72,20 +52,35 @@ export class GameEngine {
     private reduce(action: GameAction) {
         switch (action.type) {
             case 'TICK': {
-                const { deltaTime } = action.payload;
+                const {deltaTime} = action.payload;
 
                 this.buildings.forEach(building => {
                     const production = building.calculateProduction(deltaTime);
-                    
-                    if (production.resource === 'lumber') this.resources.lumber += production.amount;
-                    if (production.resource === 'stone') this.resources.stone += production.amount;
 
-                    if (production.amount > 0) {
-                        this.isDirty = true;
+                    if (production) {
+                        if (production.resource === 'lumber') this.resources.lumber += production.amount;
+                        if (production.resource === 'stone') this.resources.stone += production.amount;
+
+                        if (production.amount > 0) {
+                            this.isDirty = true;
+                        }
                     }
+
+
                 })
 
                 break;
+            }
+
+            case 'ASSIGN_WISP':
+            case 'UNASSIGN_WISP': {
+                const {buildingId} = action.payload;
+
+                let wasChanged = this.buildings.get(buildingId)?.assignWisp(action.type == 'ASSIGN_WISP')
+
+                if (wasChanged) {
+                    this.isDirty = true;
+                }
             }
         }
     }
@@ -95,14 +90,14 @@ export class GameEngine {
             return this.cachedState;
         }
 
-        const buildingsState: { [key: string]: any } = {};
+        const buildingsState: { [key: string]: BuildingState } = {};
 
         this.buildings.forEach(building => {
             buildingsState[building.id] = building.getState();
         });
 
         this.cachedState = {
-            resources: { ...this.resources }, // Return copies
+            resources: {...this.resources}, // Return copies
             buildings: buildingsState,
         };
 
