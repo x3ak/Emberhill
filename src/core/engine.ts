@@ -32,9 +32,11 @@ export class GameEngine {
 
     private buildings: Map<string, BuildingInterface> = new Map();
 
+    private actionLog: GameAction[] = [];
+
     constructor() {
 
-        // find a better way to handle buildings
+        // find a better way to handle
         this.buildings.set('woodcutter', new Woodcutter());
         this.buildings.set('quarry', new Quarry());
 
@@ -44,8 +46,25 @@ export class GameEngine {
     private _dispatch(action: GameAction) {
         this.reduce(action);
 
+        
+        const lastAction = this.actionLog[this.actionLog.length - 1];
+        if (action.type === 'TICK' && lastAction?.type === 'TICK') {
+             const newAggregatedTick: GameAction = {
+                type: 'TICK',
+                payload: {
+                    deltaTime: lastAction.payload.deltaTime + action.payload.deltaTime
+                }
+            };
+            // Replace the last action with the new, aggregated one.
+            this.actionLog[this.actionLog.length - 1] = newAggregatedTick;
+        } else {
+            this.actionLog.push(action)
+        }
+
         // Only update and notify if the state has actually changed
         if (this.isDirty) {
+            console.log(this.actionLog);
+
             this.notify();
         }
     }

@@ -1,5 +1,3 @@
-import { useEffect } from 'react'
-import { useGame } from '../hooks/useGame';
 import { game } from '../core/engine';
 import ResourceBar from './ResourceBar';
 import Building from './Building';
@@ -20,7 +18,6 @@ function browserLoop() {
 browserLoop();
 
 export default function App() {
-  const state = useGame();
 
   return (  
     <div className="bg-zinc-900 text-gray-200 font-sans min-h-screen flex flex-col">
