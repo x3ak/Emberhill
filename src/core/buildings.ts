@@ -1,5 +1,7 @@
 import type {Wisp} from "./wisps.ts";
 import type {BuildingData} from "./data/buildings-data.ts";
+import type {ProcessData} from "./data/processes-data.ts";
+import {game} from "./engine.ts";
 
 export type BuildingProduction = { resource: string, amount: number };
 
@@ -9,20 +11,31 @@ export type BuildingState = {
     level: number;
     wispAssigned: boolean;
     data: BuildingData;
+    currentProcess: {
+        id: string | undefined;
+        name: string | undefined;
+    };
 }
 
 export class BuildingBase {
     public id: string;
     public level: number = 1;
-    public wisp: Wisp | null = null
+    public wisp: Wisp | null = null;
 
     public buildingData: BuildingData;
 
     private secondsSpentProducing: number = 0;
 
+    private currentProcess: ProcessData | undefined;
+
     constructor(id: string, buildingData: BuildingData) {
         this.id = id;
         this.buildingData = buildingData;
+    }
+
+    startProcess(process:ProcessData, wisp: Wisp): void {
+        this.currentProcess = process;
+        this.wisp = wisp;
     }
 
     assignWisp(wisp: Wisp): void {
@@ -36,28 +49,66 @@ export class BuildingBase {
         return wisp;
     }
 
-    // This method must be implemented by concrete classes
-    calculateProduction(deltaTime: number): BuildingProduction | null {
-        if (!this.wisp) return null;
+
+    update(deltaTime: number): void {
+        if (!this.wisp) return;
+        if (!this.currentProcess) return;
 
         this.secondsSpentProducing += deltaTime;
 
-        const productionVolume = this.buildingData.baseProduction;
+        if (this.secondsSpentProducing <= this.currentProcess.duration) {
+            return;
+        }
 
-        const secondsPerItem = 1 / productionVolume.amount;
-
-        let itemsProduced = Math.floor(this.secondsSpentProducing / secondsPerItem);
-
-        if (itemsProduced === 0) return null;
-
-        const timeSpent = itemsProduced * secondsPerItem;
-
+        // process completed at least once
+        const timesCompleted = Math.floor(this.secondsSpentProducing / this.currentProcess.duration);
+        const timeSpent = timesCompleted * this.currentProcess.duration;
         this.secondsSpentProducing -= timeSpent;
 
-        return {
-            resource: productionVolume.resource,
-            amount: itemsProduced
-        };
+        // one by one complete process, it may happen we do not have enough resources
+        for(let i = 0; i < timesCompleted; i++) {
+            // process inputs
+            if (this.currentProcess.inputs.length > 0) {
+                // check if we have enough resources for all inputs
+                let hasEnough = true;
+
+                this.currentProcess.inputs.forEach(processInput => {
+                    switch (processInput.type) {
+                        case 'resource':
+                            if (!game.hasResource(processInput.id, processInput.amount)) {
+                                hasEnough = false;
+                            }
+                            break;
+                    }
+                })
+
+                if (!hasEnough) {
+                    return;
+                }
+
+                // sub resources from game
+                this.currentProcess.inputs.forEach(processInput => {
+                    switch (processInput.type) {
+                        case 'resource':
+                            game.subResource(processInput.id, processInput.amount);
+                            break;
+                    }
+                })
+            }
+
+            // calculate outputs
+            this.currentProcess.outputs.forEach(processOutput => {
+                switch (processOutput.type) {
+                    case 'resource':
+                        game.addResource(processOutput.id, processOutput.amount);
+                        break;
+                }
+            })
+        }
+
+
+
+
     }
 
     getState(): BuildingState {
@@ -67,6 +118,10 @@ export class BuildingBase {
             name: this.buildingData.name,
             wispAssigned: !!this.wisp,
             data: this.buildingData,
+            currentProcess: {
+                id: this.currentProcess?.id,
+                name: this.currentProcess?.name
+            },
 
 
             // You can add more derived state here if needed

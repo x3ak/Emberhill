@@ -2,12 +2,14 @@ import {type BuildingState, BuildingBase} from "./buildings";
 import {Wisp} from "./wisps.ts";
 import {buildingsData} from "./data/buildings-data.ts";
 import {Warmstone, type WarmstoneState} from "./warmstone.ts";
+import {type ProcessData, processesDatabase} from "./data/processes-data.ts";
 
 export type GameAction =
     | { type: "TICK"; payload: { deltaTime: number } }
     | { type: "ASSIGN_WISP"; payload: { buildingId: string } }
     | { type: "UNASSIGN_WISP"; payload: { buildingId: string } }
     | { type: 'UPGRADE_BUILDING'; payload: { buildingId: string } }
+    | { type: 'START_PROCESS'; payload: { buildingId: string; processId: string } }
 
 
 export type GameState = {
@@ -18,9 +20,7 @@ export type GameState = {
 
 export type GameResources = {
     gold: number;
-    lumber: number;
-    stone: number;
-    tools: number;
+    log_oak: number;
 }
 
 export class GameEngine {
@@ -30,7 +30,7 @@ export class GameEngine {
     private listeners = new Set<() => void>();
     public readonly dispatch: (action: GameAction) => void;
 
-    private resources: GameResources = {gold: 0, lumber: 0, stone: 0, tools: 0};
+    private resources: GameResources = {gold: 0, log_oak: 0};
 
     private buildings: Map<string, BuildingBase> = new Map();
 
@@ -69,18 +69,24 @@ export class GameEngine {
                     this.isDirty = true;
                 }
 
+                // check for work at buildings
                 this.getAssignedWisps().forEach(wisp => {
-                    const production = wisp.currentAssignment?.calculateProduction(deltaTime);
-                    if (production) {
-                        // this.resources[production.resource] += production.amount;
-                        if (production.resource === 'lumber') this.resources.lumber += production.amount;
-                        if (production.resource === 'stone') this.resources.stone += production.amount;
+                    const production = wisp.currentAssignment?.update(deltaTime);
 
-                        if (production.amount > 0) {
-                            this.isDirty = true;
-                        }
+
+                    if (production) {
+                        this.isDirty = true;
+
+                        // // this.resources[production.resource] += production.amount;
+                        // if (production.resource === 'lumber') this.resources.lumber += production.amount;
+                        // if (production.resource === 'stone') this.resources.stone += production.amount;
+                        //
+                        // if (production.amount > 0) {
+                        //
+                        // }
                     }
                 })
+
 
                 break;
             }
@@ -109,8 +115,63 @@ export class GameEngine {
                 }
 
                 this.isDirty = true;
+                break;
+            }
+
+            case 'START_PROCESS': {
+                const {buildingId, processId} = action.payload;
+                const processData: ProcessData = processesDatabase[processId];
+                const unassignedWisp = this.getUnassignedWisp();
+
+                if (!unassignedWisp) {
+                    break;
+                }
+
+                let building = this.buildings.get(buildingId);
+                if (!building) {
+                    break
+                }
+
+                unassignedWisp.isAssigned = true;
+                unassignedWisp.currentAssignment = building;
+                building.startProcess(processData, unassignedWisp);
+
+                console.log(unassignedWisp)
+                
+                break;
             }
         }
+    }
+
+    addResource(resourceName: string, amount: number) {
+        switch (resourceName) {
+            case 'log_oak':
+                this.resources.log_oak += amount;
+                break;
+        }
+
+        this.isDirty = true;
+    }
+
+    hasResource(resourceName: string, amount: number): boolean {
+        switch (resourceName) {
+            case 'log_oak':
+                return this.resources.log_oak >= amount;
+        }
+
+        return false;
+    }
+
+    // return true if we had enough resources
+    subResource(resourceName: string, amount: number): void {
+        switch (resourceName) {
+            case 'log_oak':
+                if (this.resources.log_oak >= amount) {
+                    this.resources.log_oak -= amount;
+                    this.isDirty = true;
+                }
+        }
+
     }
 
     private getUnassignedWisp() : Wisp | undefined {

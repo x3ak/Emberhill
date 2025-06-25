@@ -5,21 +5,23 @@ export default function Building({buildingId}: { buildingId: string }) {
     const gameDispatch = useGameDispatch();
     const gameState = useGameState();
     let buildingState = gameState.buildings[buildingId];
+    let buildingProcess = buildingState?.currentProcess;
 
     let buildingData = buildingState?.data;
 
-    const assignWisp = () => {
-        gameDispatch({type: 'ASSIGN_WISP', payload: {buildingId: buildingId}});
-    }
     const unassignWisp = () => {
         gameDispatch({type: 'UNASSIGN_WISP', payload: {buildingId: buildingId}});
+    }
+
+    const startProcess = () => {
+        gameDispatch({type: 'START_PROCESS', payload: {buildingId: buildingId, processId: 'cut_tree_oak'}});
     }
 
     return (
         <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4 w-56 text-center shadow-lg">
             <h3 className="text-lg font-bold text-yellow-400">{buildingData?.name} (Lvl {buildingState?.level})</h3>
-            <p className="text-sm text-gray-400 mt-1">Generates: {buildingData?.baseProduction.amount} {buildingData?.baseProduction.resource}/sec</p>
-            <p className="text-green-400 italic h-6 my-2">{buildingState?.wispAssigned ? 'assigned' : 'unassigned'}</p>
+            <p className="text-sm text-gray-400 mt-1">Process: {buildingProcess?.name}</p>
+            <p className="text-green-400 italic h-6 my-2">{buildingState?.wispAssigned ? 'assigned' : 'unassigned'} </p>
 
             {buildingState?.wispAssigned && (
                 <button onClick={unassignWisp}
@@ -28,7 +30,7 @@ export default function Building({buildingId}: { buildingId: string }) {
             )}
 
             {!buildingState?.wispAssigned && (
-                <button onClick={assignWisp}
+                <button onClick={startProcess}
                         className="bg-yellow-500 text-zinc-900 font-bold py-2 px-4 rounded w-full">Assign wisp</button>
             )}
 
