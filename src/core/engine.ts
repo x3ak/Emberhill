@@ -1,7 +1,7 @@
 import {type BuildingState, BuildingBase} from "./buildings";
 import {Wisp} from "./wisps.ts";
 import {buildingsData} from "./data/buildings-data.ts";
-import {Warmstone, type WarmstoneState} from "./warmstone.ts";
+import {warmstone, type WarmstoneState} from "./warmstone.ts";
 import {type ProcessData, processesDatabase} from "./data/processes-data.ts";
 
 export type GameAction =
@@ -34,18 +34,15 @@ export class GameEngine {
 
     private buildings: Map<string, BuildingBase> = new Map();
 
-    private warmstone: Warmstone;
-
     private wisps: Wisp[] = []
 
     constructor() {
 
         // find a better way to handle
         this.buildings.set('woodcutter', new BuildingBase('woodcutter', buildingsData.woodcutter));
-        this.buildings.set('quarry', new BuildingBase('quarry', buildingsData.quarry));
+        this.buildings.set('campfire', new BuildingBase('campfire', buildingsData.campfire));
 
         this.wisps.push(new Wisp());
-        this.warmstone = new Warmstone(100);
 
         this.dispatch = this._dispatch.bind(this);
 
@@ -65,7 +62,7 @@ export class GameEngine {
             case 'TICK': {
                 const {deltaTime} = action.payload;
 
-                if (this.warmstone.update(deltaTime)) {
+                if (warmstone.update(deltaTime)) {
                     this.isDirty = true;
                 }
 
@@ -196,7 +193,7 @@ export class GameEngine {
         this.cachedState = {
             resources: {...this.resources}, // Return copies
             buildings: buildingsState,
-            warmstone: this.warmstone.getState()
+            warmstone: warmstone.getState()
         };
 
         this.isDirty = false;

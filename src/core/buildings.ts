@@ -1,7 +1,8 @@
 import type {Wisp} from "./wisps.ts";
 import type {BuildingData} from "./data/buildings-data.ts";
-import type {ProcessData} from "./data/processes-data.ts";
+import type {ProcessData, ProcessInputOutput} from "./data/processes-data.ts";
 import {game} from "./engine.ts";
+import {warmstone} from "./warmstone.ts";
 
 export type BuildingProduction = { resource: string, amount: number };
 
@@ -24,7 +25,9 @@ export class BuildingBase {
 
     public buildingData: BuildingData;
 
-    private secondsSpentProducing: number = 0;
+    private secondsSpentProcessing: number = 0;
+
+    private isProcessing: boolean = false;
 
     private currentProcess: ProcessData | undefined;
 
@@ -51,64 +54,80 @@ export class BuildingBase {
 
 
     update(deltaTime: number): void {
-        if (!this.wisp) return;
-        if (!this.currentProcess) return;
-
-        this.secondsSpentProducing += deltaTime;
-
-        if (this.secondsSpentProducing <= this.currentProcess.duration) {
+        if (!this.wisp || !this.currentProcess) {
+            this.isProcessing = false;
+            this.secondsSpentProcessing = 0;
             return;
         }
 
-        // process completed at least once
-        const timesCompleted = Math.floor(this.secondsSpentProducing / this.currentProcess.duration);
-        const timeSpent = timesCompleted * this.currentProcess.duration;
-        this.secondsSpentProducing -= timeSpent;
 
-        // one by one complete process, it may happen we do not have enough resources
-        for(let i = 0; i < timesCompleted; i++) {
-            // process inputs
-            if (this.currentProcess.inputs.length > 0) {
-                // check if we have enough resources for all inputs
-                let hasEnough = true;
+        // start the process
+        if (!this.isProcessing && this.hasEnoughResourcesToStartTheProcess(this.currentProcess.inputs)) {
+            this.isProcessing = true;
+            this.secondsSpentProcessing = 0;
+            this.spendResourcesForProcess(this.currentProcess.inputs);
+        }
 
-                this.currentProcess.inputs.forEach(processInput => {
-                    switch (processInput.type) {
-                        case 'resource':
-                            if (!game.hasResource(processInput.id, processInput.amount)) {
-                                hasEnough = false;
-                            }
-                            break;
-                    }
-                })
+        if (this.isProcessing) {
+            this.secondsSpentProcessing += deltaTime;
 
-                if (!hasEnough) {
-                    return;
-                }
-
-                // sub resources from game
-                this.currentProcess.inputs.forEach(processInput => {
-                    switch (processInput.type) {
-                        case 'resource':
-                            game.subResource(processInput.id, processInput.amount);
-                            break;
-                    }
-                })
-            }
-
-            // calculate outputs
-            this.currentProcess.outputs.forEach(processOutput => {
-                switch (processOutput.type) {
-                    case 'resource':
-                        game.addResource(processOutput.id, processOutput.amount);
-                        break;
+            // apply effects
+            this.currentProcess.effects.forEach(effect => {
+                if (effect.warmstone_vitality_restoration > 0) {
+                    warmstone.restoreVitality(effect.warmstone_vitality_restoration * deltaTime)
                 }
             })
+
+            while (this.secondsSpentProcessing >= this.currentProcess.duration) {
+
+                // apply outputs
+                this.currentProcess.outputs.forEach(processOutput => {
+                    switch (processOutput.type) {
+                        case 'resource':
+                            game.addResource(processOutput.id, processOutput.amount);
+                            break;
+                    }
+                })
+
+                if (this.hasEnoughResourcesToStartTheProcess(this.currentProcess.inputs)) {
+                    this.spendResourcesForProcess(this.currentProcess.inputs);
+                } else {
+                    this.isProcessing = false;
+                }
+
+                this.secondsSpentProcessing -= this.currentProcess.duration;
+            }
         }
 
 
 
 
+
+    }
+
+    private hasEnoughResourcesToStartTheProcess(inputs: ProcessInputOutput[]): boolean {
+        let hasEnough = true;
+        inputs.forEach(processInput => {
+            switch (processInput.type) {
+                case 'resource':
+                    if (!game.hasResource(processInput.id, processInput.amount)) {
+                        hasEnough = false;
+                    }
+                    break;
+            }
+        })
+
+        return hasEnough;
+    }
+
+    private spendResourcesForProcess(inputs: ProcessInputOutput[]) {
+        inputs.forEach(processInput => {
+            switch (processInput.type) {
+                case 'resource':
+                    game.subResource(processInput.id, processInput.amount);
+                    break;
+            }
+        })
     }
 
     getState(): BuildingState {

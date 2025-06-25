@@ -1,6 +1,6 @@
 import {useGameDispatch, useGameState} from "../hooks/useGame.ts";
 
-export default function Building({buildingId}: { buildingId: string }) {
+export default function Building({buildingId, processId}: { buildingId: string, processId: string }) {
 
     const gameDispatch = useGameDispatch();
     const gameState = useGameState();
@@ -14,7 +14,7 @@ export default function Building({buildingId}: { buildingId: string }) {
     }
 
     const startProcess = () => {
-        gameDispatch({type: 'START_PROCESS', payload: {buildingId: buildingId, processId: 'cut_tree_oak'}});
+        gameDispatch({type: 'START_PROCESS', payload: {buildingId: buildingId, processId: processId}});
     }
 
     return (

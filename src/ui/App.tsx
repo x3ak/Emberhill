@@ -30,9 +30,8 @@ export default function App() {
             <main className="flex-grow p-5 flex flex-col items-center gap-10">
                 <div className="flex justify-center gap-5">
 
-                    <Building buildingId='woodcutter'/>
-                    <Building buildingId='quarry'/>
-                    <Building buildingId='campfire'/>
+                    <Building buildingId='woodcutter' processId={"cut_tree_oak"}/>
+                    <Building buildingId='campfire' processId={"burn_log_oak"}/>
                     <Warmstone />
 
                 </div>

@@ -7,7 +7,7 @@ export class Warmstone {
     private currentVitality: number;
     private maxVitality: number;
 
-    private vitalityDrainInterval: number = 1 /5; // every N seconds drain 1 vitality
+    private vitalityDrainInterval: number = 2; // every N seconds drain 1 vitality
     private timeSinceLastDrain: number = 0;
 
     constructor(vitality: number) {
@@ -35,6 +35,10 @@ export class Warmstone {
         return didChange;
     }
 
+    restoreVitality(amount: number) {
+        this.currentVitality = Math.min(this.currentVitality + amount, this.maxVitality);
+    }
+
     public getState(): WarmstoneState {
         return {
             maxVitality: this.maxVitality,
@@ -42,3 +46,5 @@ export class Warmstone {
         }
     }
 }
+
+export const warmstone = new Warmstone(200);

@@ -1,10 +1,9 @@
-export type BuildingId = 'woodcutter' | 'quarry';
 
 export type BuildingData = {
     name:  string;
 }
 
-type BuildingsData = Record<BuildingId, BuildingData>;
+type BuildingsData = Record<string, BuildingData>;
 
 export const buildingsData: BuildingsData = {
     woodcutter: {
@@ -12,5 +11,8 @@ export const buildingsData: BuildingsData = {
     },
     quarry: {
         name: "Stone Quarry",
+    },
+    campfire: {
+        name: "Campfire",
     }
 }

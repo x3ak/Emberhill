@@ -30,7 +30,7 @@ export const processesDatabase: Record<string, ProcessData> = {
         id: "cut_tree_oak",
         name: "Cut Oak Tree",
         description: "Use an axe on an oak tree!",
-        duration: 5,
+        duration: 1,
         requirements: [
             {type: "building_level", id: "woodcutter", amount: 1},
         ],
@@ -44,7 +44,7 @@ export const processesDatabase: Record<string, ProcessData> = {
         id: "burn_log_oak",
         name: "Burn Oak Log",
         description: "Burn Oak Log to get some warmth into stone",
-        duration: 15,
+        duration: 5,
         requirements: [
             {type: "building_level", id: "campfire", amount: 1},
         ],
