@@ -1,7 +1,7 @@
 import {game} from '../core/engine';
 import ResourceBar from './ResourceBar';
 import Building from './Building';
-import Hearhstone from './Hearthstone';
+import Hearhstone from './Warmstone.tsx';
 
 function browserLoop() {
     let last = performance.now();

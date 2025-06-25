@@ -1,13 +1,13 @@
-export type HearthstoneState = {
+export type WarmstoneState = {
     currentVitality: number,
     maxVitality: number
 }
 
-export class Hearthstone {
+export class Warmstone {
     private currentVitality: number;
     private maxVitality: number;
 
-    private vitalityDrainInterval: number = 1; // every N seconds drain 1 vitality
+    private vitalityDrainInterval: number = 1 /5; // every N seconds drain 1 vitality
     private timeSinceLastDrain: number = 0;
 
     constructor(vitality: number) {
@@ -22,14 +22,20 @@ export class Hearthstone {
         if (this.timeSinceLastDrain >= this.vitalityDrainInterval) {
             this.currentVitality--;
             this.timeSinceLastDrain -= this.vitalityDrainInterval;
-            didChange = true;
+
+            if (this.currentVitality < 0) {
+                this.currentVitality = 0;
+            } else {
+                didChange = true;
+            }
         }
+
+        // this.currentVitality = Math.max(this.currentVitality, 0);
 
         return didChange;
     }
 
-    public getState(): HearthstoneState{
-        
+    public getState(): WarmstoneState {
         return {
             maxVitality: this.maxVitality,
             currentVitality: this.currentVitality,

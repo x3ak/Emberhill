@@ -1,7 +1,7 @@
 import {type BuildingState, BuildingBase} from "./buildings";
 import {Wisp} from "./wisps.ts";
-import {buildingsData} from "./buildings-data.ts";
-import {Hearthstone, type HearthstoneState} from "./hearthstone.ts";
+import {buildingsData} from "./data/buildings-data.ts";
+import {Warmstone, type WarmstoneState} from "./warmstone.ts";
 
 export type GameAction =
     | { type: "TICK"; payload: { deltaTime: number } }
@@ -13,7 +13,7 @@ export type GameAction =
 export type GameState = {
     resources: GameResources;
     buildings: { [key: string]: BuildingState };
-    hearthstone: HearthstoneState;
+    warmstone: WarmstoneState;
 };
 
 export type GameResources = {
@@ -34,7 +34,7 @@ export class GameEngine {
 
     private buildings: Map<string, BuildingBase> = new Map();
 
-    private hearthstone: Hearthstone;
+    private warmstone: Warmstone;
 
     private wisps: Wisp[] = []
 
@@ -45,7 +45,7 @@ export class GameEngine {
         this.buildings.set('quarry', new BuildingBase('quarry', buildingsData.quarry));
 
         this.wisps.push(new Wisp());
-        this.hearthstone = new Hearthstone(100);
+        this.warmstone = new Warmstone(100);
 
         this.dispatch = this._dispatch.bind(this);
 
@@ -65,7 +65,7 @@ export class GameEngine {
             case 'TICK': {
                 const {deltaTime} = action.payload;
 
-                if (this.hearthstone.update(deltaTime)) {
+                if (this.warmstone.update(deltaTime)) {
                     this.isDirty = true;
                 }
 
@@ -135,7 +135,7 @@ export class GameEngine {
         this.cachedState = {
             resources: {...this.resources}, // Return copies
             buildings: buildingsState,
-            hearthstone: this.hearthstone.getState()
+            warmstone: this.warmstone.getState()
         };
 
         this.isDirty = false;

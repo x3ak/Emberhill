@@ -1,5 +1,5 @@
 import type {Wisp} from "./wisps.ts";
-import type {BuildingData} from "./buildings-data.ts";
+import type {BuildingData} from "./data/buildings-data.ts";
 
 export type BuildingProduction = { resource: string, amount: number };
 

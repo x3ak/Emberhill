@@ -1,4 +1,4 @@
-import type {BuildingProduction} from "./buildings.ts";
+import type {BuildingProduction} from "../buildings.ts";
 
 export type BuildingId = 'woodcutter' | 'quarry';
 
