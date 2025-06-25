@@ -36,15 +36,11 @@ export default function App() {
                     <Warmstone />
 
                 </div>
-
-<<<<<<< HEAD
-=======
                 <div className="bg-zinc-800 border-2 border-purple-500 rounded-lg p-6 w-72 text-center shadow-xl">
                     <h3 className="text-xl font-bold text-purple-400">The Warmstone (Lvl 2)</h3>
                     <p className="text-sm text-gray-400 mt-2">Next Lvl: 400 Wood, 200 Stone</p>
                    
                 </div>
->>>>>>> acfeb61 (changes)
 
             </main>
 
