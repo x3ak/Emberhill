@@ -1,4 +1,7 @@
-import {Quarry, Woodcutter, type BuildingInterface, type BuildingState} from "./buildings";
+import {type BuildingState, BuildingBase} from "./buildings";
+import {Wisp} from "./wisps.ts";
+import {buildingsData} from "./buildings-data.ts";
+import {Hearthstone, type HearthstoneState} from "./hearthstone.ts";
 
 export type GameAction =
     | { type: "TICK"; payload: { deltaTime: number } }
@@ -9,7 +12,8 @@ export type GameAction =
 
 export type GameState = {
     resources: GameResources;
-    buildings: { [key: string]: BuildingState }
+    buildings: { [key: string]: BuildingState };
+    hearthstone: HearthstoneState;
 };
 
 export type GameResources = {
@@ -18,7 +22,6 @@ export type GameResources = {
     stone: number;
     tools: number;
 }
-
 
 export class GameEngine {
     private cachedState: GameState | null = null;
@@ -29,15 +32,23 @@ export class GameEngine {
 
     private resources: GameResources = {gold: 0, lumber: 0, stone: 0, tools: 0};
 
-    private buildings: Map<string, BuildingInterface> = new Map();
+    private buildings: Map<string, BuildingBase> = new Map();
+
+    private hearthstone: Hearthstone;
+
+    private wisps: Wisp[] = []
 
     constructor() {
 
         // find a better way to handle
-        this.buildings.set('woodcutter', new Woodcutter());
-        this.buildings.set('quarry', new Quarry());
+        this.buildings.set('woodcutter', new BuildingBase('woodcutter', buildingsData.woodcutter));
+        this.buildings.set('quarry', new BuildingBase('quarry', buildingsData.quarry));
+
+        this.wisps.push(new Wisp());
+        this.hearthstone = new Hearthstone(100);
 
         this.dispatch = this._dispatch.bind(this);
+
     }
 
     private _dispatch(action: GameAction) {
@@ -54,10 +65,14 @@ export class GameEngine {
             case 'TICK': {
                 const {deltaTime} = action.payload;
 
-                this.buildings.forEach(building => {
-                    const production = building.calculateProduction(deltaTime);
+                if (this.hearthstone.update(deltaTime)) {
+                    this.isDirty = true;
+                }
 
+                this.getAssignedWisps().forEach(wisp => {
+                    const production = wisp.currentAssignment?.calculateProduction(deltaTime);
                     if (production) {
+                        // this.resources[production.resource] += production.amount;
                         if (production.resource === 'lumber') this.resources.lumber += production.amount;
                         if (production.resource === 'stone') this.resources.stone += production.amount;
 
@@ -65,24 +80,45 @@ export class GameEngine {
                             this.isDirty = true;
                         }
                     }
-
-
                 })
 
                 break;
             }
 
-            case 'ASSIGN_WISP':
+            case 'ASSIGN_WISP': {
+                const freeWisp = this.getUnassignedWisp();
+                if (!freeWisp) {
+                    break;
+                }
+
+                const {buildingId} = action.payload;
+                this.buildings.get(buildingId)?.assignWisp(freeWisp);
+                freeWisp.isAssigned = true;
+                freeWisp.currentAssignment = this.buildings.get(buildingId);
+                this.isDirty = true;
+                break;
+            }
             case 'UNASSIGN_WISP': {
                 const {buildingId} = action.payload;
 
-                let wasChanged = this.buildings.get(buildingId)?.assignWisp(action.type == 'ASSIGN_WISP')
+                const unassignedWisp = this.buildings.get(buildingId)?.unassignWisp();
 
-                if (wasChanged) {
-                    this.isDirty = true;
+                if (unassignedWisp) {
+                    unassignedWisp.isAssigned = false;
+                    unassignedWisp.currentAssignment = undefined;
                 }
+
+                this.isDirty = true;
             }
         }
+    }
+
+    private getUnassignedWisp() : Wisp | undefined {
+        return this.wisps.find(wisp => !wisp.isAssigned);
+    }
+
+    private getAssignedWisps() : Wisp[] {
+        return this.wisps.filter(wisp => wisp.isAssigned);
     }
 
     getState() {
@@ -99,6 +135,7 @@ export class GameEngine {
         this.cachedState = {
             resources: {...this.resources}, // Return copies
             buildings: buildingsState,
+            hearthstone: this.hearthstone.getState()
         };
 
         this.isDirty = false;

@@ -1,57 +1,48 @@
+import type {Wisp} from "./wisps.ts";
+import type {BuildingData} from "./buildings-data.ts";
+
 export type BuildingProduction = { resource: string, amount: number };
 
 export type BuildingState = {
     id: string;
+    name: string;
     level: number;
     wispAssigned: boolean;
-    production: BuildingProduction;
+    data: BuildingData;
 }
 
-
-export interface BuildingInterface {
-    id: string;
-    level: number;
-    wispAssigned: boolean;
-
-    assignWisp(shouldAssign: boolean): boolean;
-
-    calculateProduction(deltaTime: number): BuildingProduction | null;
-
-    getState(): BuildingState;
-}
-
-export abstract class BuildingBase implements BuildingInterface {
+export class BuildingBase {
     public id: string;
     public level: number = 1;
-    public wispAssigned: boolean = false;
+    public wisp: Wisp | null = null
+
+    public buildingData: BuildingData;
 
     private secondsSpentProducing: number = 0;
 
-    constructor(id: string) {
+    constructor(id: string, buildingData: BuildingData) {
         this.id = id;
+        this.buildingData = buildingData;
     }
 
-    assignWisp(shouldAssign: boolean): boolean {
-        if (this.wispAssigned == shouldAssign) {
-            return false;
-        }
-
-        this.wispAssigned = shouldAssign;
-        return true;
+    assignWisp(wisp: Wisp): void {
+        this.wisp = wisp;
     }
 
-    upgrade(): void {
-        // Here we MUTATE the instance state. This is fine inside the engine.
-        this.level++;
+    unassignWisp(): Wisp | null {
+        const wisp = this.wisp;
+        this.wisp = null;
+
+        return wisp;
     }
 
     // This method must be implemented by concrete classes
     calculateProduction(deltaTime: number): BuildingProduction | null {
-        if (!this.wispAssigned) return null;
+        if (!this.wisp) return null;
 
         this.secondsSpentProducing += deltaTime;
 
-        const productionVolume = this.productionRatePerSecond();
+        const productionVolume = this.buildingData.baseProduction;
 
         const secondsPerItem = 1 / productionVolume.amount;
 
@@ -69,45 +60,17 @@ export abstract class BuildingBase implements BuildingInterface {
         };
     }
 
-    // how much of product should be produced per secondtimeSpentProducing
-    abstract productionRatePerSecond(): BuildingProduction;
-
     getState(): BuildingState {
         return {
             id: this.id,
             level: this.level,
-            wispAssigned: this.wispAssigned,
-            production: this.productionRatePerSecond()
+            name: this.buildingData.name,
+            wispAssigned: !!this.wisp,
+            data: this.buildingData,
 
 
             // You can add more derived state here if needed
         };
     }
 
-}
-
-export class Woodcutter extends BuildingBase {
-    constructor() {
-        super('woodcutter');
-    }
-
-    productionRatePerSecond(): BuildingProduction {
-        return {
-            resource: 'lumber',
-            amount: 1,
-        }
-    }
-}
-
-export class Quarry extends BuildingBase {
-    constructor() {
-        super('quarry');
-    }
-
-    productionRatePerSecond(): BuildingProduction {
-        return {
-            resource: 'stone',
-            amount: 5,
-        }
-    }
 }
