@@ -1,6 +1,7 @@
 import {game} from '../core/engine';
 import ResourceBar from './ResourceBar';
 import Building from './Building';
+import Hearhstone from './Hearthstone';
 
 function browserLoop() {
     let last = performance.now();
@@ -29,6 +30,7 @@ export default function App() {
                     <Building buildingId='woodcutter'/>
                     <Building buildingId='quarry'/>
                     <Building buildingId='mine'/>
+                    <Hearhstone />
 
                 </div>
 

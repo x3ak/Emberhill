@@ -7,7 +7,7 @@ export class Hearthstone {
     private currentVitality: number;
     private maxVitality: number;
 
-    private vitalityDrainInterval: number = 5; // every N seconds drain 1 vitality
+    private vitalityDrainInterval: number = 1; // every N seconds drain 1 vitality
     private timeSinceLastDrain: number = 0;
 
     constructor(vitality: number) {
@@ -29,9 +29,10 @@ export class Hearthstone {
     }
 
     public getState(): HearthstoneState{
+        
         return {
-            maxVitality: this.currentVitality,
-            currentVitality: this.maxVitality,
+            maxVitality: this.maxVitality,
+            currentVitality: this.currentVitality,
         }
     }
 }
