@@ -53,7 +53,7 @@ export const processesDatabase: Record<string, ProcessData> = {
         ],
         outputs: [],
         effects: [
-            {warmstone_vitality_restoration: 1}
+            {warmstone_vitality_restoration: 10}
         ]
     }
 }

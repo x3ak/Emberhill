@@ -4,22 +4,16 @@ import type {ProcessData, ProcessInputOutput} from "./data/processes-data.ts";
 import {game} from "./engine.ts";
 import {warmstone} from "./warmstone.ts";
 
-export type BuildingProduction = { resource: string, amount: number };
-
 export type BuildingState = {
     id: string;
     name: string;
     level: number;
     wispAssigned: boolean;
-    data: BuildingData;
-    currentProcess: {
-        id: string | undefined;
-        name: string | undefined;
-    };
+    availableProcesses: ProcessData[];
+    currentProcess: ProcessData | undefined;
 }
 
 export class BuildingBase {
-    public id: string;
     public level: number = 1;
     public wisp: Wisp | null = null;
 
@@ -31,8 +25,7 @@ export class BuildingBase {
 
     private currentProcess: ProcessData | undefined;
 
-    constructor(id: string, buildingData: BuildingData) {
-        this.id = id;
+    constructor(buildingData: BuildingData) {
         this.buildingData = buildingData;
     }
 
@@ -59,7 +52,6 @@ export class BuildingBase {
             this.secondsSpentProcessing = 0;
             return;
         }
-
 
         // start the process
         if (!this.isProcessing && this.hasEnoughResourcesToStartTheProcess(this.currentProcess.inputs)) {
@@ -99,10 +91,6 @@ export class BuildingBase {
             }
         }
 
-
-
-
-
     }
 
     private hasEnoughResourcesToStartTheProcess(inputs: ProcessInputOutput[]): boolean {
@@ -132,18 +120,12 @@ export class BuildingBase {
 
     getState(): BuildingState {
         return {
-            id: this.id,
+            id: this.buildingData.id,
             level: this.level,
             name: this.buildingData.name,
             wispAssigned: !!this.wisp,
-            data: this.buildingData,
-            currentProcess: {
-                id: this.currentProcess?.id,
-                name: this.currentProcess?.name
-            },
-
-
-            // You can add more derived state here if needed
+            availableProcesses: this.buildingData.processes,
+            currentProcess: this.currentProcess,
         };
     }
 

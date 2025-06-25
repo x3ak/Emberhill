@@ -39,8 +39,8 @@ export class GameEngine {
     constructor() {
 
         // find a better way to handle
-        this.buildings.set('woodcutter', new BuildingBase('woodcutter', buildingsData.woodcutter));
-        this.buildings.set('campfire', new BuildingBase('campfire', buildingsData.campfire));
+        this.buildings.set('woodcutter', new BuildingBase(buildingsData.woodcutter));
+        this.buildings.set('campfire', new BuildingBase( buildingsData.campfire));
 
         this.wisps.push(new Wisp());
 
@@ -70,17 +70,8 @@ export class GameEngine {
                 this.getAssignedWisps().forEach(wisp => {
                     const production = wisp.currentAssignment?.update(deltaTime);
 
-
                     if (production) {
                         this.isDirty = true;
-
-                        // // this.resources[production.resource] += production.amount;
-                        // if (production.resource === 'lumber') this.resources.lumber += production.amount;
-                        // if (production.resource === 'stone') this.resources.stone += production.amount;
-                        //
-                        // if (production.amount > 0) {
-                        //
-                        // }
                     }
                 })
 
@@ -88,19 +79,6 @@ export class GameEngine {
                 break;
             }
 
-            case 'ASSIGN_WISP': {
-                const freeWisp = this.getUnassignedWisp();
-                if (!freeWisp) {
-                    break;
-                }
-
-                const {buildingId} = action.payload;
-                this.buildings.get(buildingId)?.assignWisp(freeWisp);
-                freeWisp.isAssigned = true;
-                freeWisp.currentAssignment = this.buildings.get(buildingId);
-                this.isDirty = true;
-                break;
-            }
             case 'UNASSIGN_WISP': {
                 const {buildingId} = action.payload;
 
@@ -133,8 +111,7 @@ export class GameEngine {
                 unassignedWisp.currentAssignment = building;
                 building.startProcess(processData, unassignedWisp);
 
-                console.log(unassignedWisp)
-                
+                this.isDirty = true;
                 break;
             }
         }
@@ -187,7 +164,7 @@ export class GameEngine {
         const buildingsState: { [key: string]: BuildingState } = {};
 
         this.buildings.forEach(building => {
-            buildingsState[building.id] = building.getState();
+            buildingsState[building.buildingData.id] = building.getState();
         });
 
         this.cachedState = {

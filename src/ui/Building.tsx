@@ -7,8 +7,6 @@ export default function Building({buildingId, processId}: { buildingId: string, 
     let buildingState = gameState.buildings[buildingId];
     let buildingProcess = buildingState?.currentProcess;
 
-    let buildingData = buildingState?.data;
-
     const unassignWisp = () => {
         gameDispatch({type: 'UNASSIGN_WISP', payload: {buildingId: buildingId}});
     }
@@ -19,7 +17,7 @@ export default function Building({buildingId, processId}: { buildingId: string, 
 
     return (
         <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4 w-56 text-center shadow-lg">
-            <h3 className="text-lg font-bold text-yellow-400">{buildingData?.name} (Lvl {buildingState?.level})</h3>
+            <h3 className="text-lg font-bold text-yellow-400">{buildingState?.name} (Lvl {buildingState?.level})</h3>
             <p className="text-sm text-gray-400 mt-1">Process: {buildingProcess?.name}</p>
             <p className="text-green-400 italic h-6 my-2">{buildingState?.wispAssigned ? 'assigned' : 'unassigned'} </p>
 
