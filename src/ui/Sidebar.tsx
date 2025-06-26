@@ -22,13 +22,6 @@ export default function Sidebar({ onSelect }: SidebarProps) {
     })
   return (
     <nav className="flex flex-col gap-4">
-   
-      <button
-        onClick={() => onSelect('warmstone')}
-        className="px-4 py-2 rounded bg-zinc-700 hover:bg-zinc-600 transition"
-      >
-        Warmstone
-      </button>
       {buildings}
     </nav>
   );

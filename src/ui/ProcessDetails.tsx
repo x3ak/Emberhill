@@ -1,23 +1,23 @@
-type Process = {
+// type Process = {
 
-    name: string;
-    description: string;
-    duration: number;
+import type { ProcessData } from "../core/data/processes-data";
 
-    // Add other fields if needed
-};
+//     name: string;
+//     description: string;
+//     duration: number;
+
+//     // Add other fields if needed
+// };
 
 type ProcessDetailsProps = {
-    process: Process;
-    output: {
-        type: string;
-        id: string;
-        amount: number
-    };
+    process: ProcessData;
+    
     onClose: () => void;
 };
 
-export default function ProcessDetails({ process, onClose, output }: ProcessDetailsProps) {
+export default function ProcessDetails({ process, onClose }: ProcessDetailsProps) {
+    const output = process.outputs[0];
+    
     return (
         <div className="mt-0 p-4 bg-zinc-700 rounded-lg shadow-lg w-64 h-fit text-sm text-gray-200 relative z-99">
             <button

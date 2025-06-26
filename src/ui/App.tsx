@@ -42,7 +42,10 @@ const [activeSection, setActiveSection] = useState<Section>('home');
           {activeSection === 'home' && (
             <div className="text-center text-lg">Welcome! Select something from the sidebar.</div>
           )}
-          {activeSection === 'warmstone' && <Warmstone />}
+          <div className='fixed bottom-4 right-4 z-50 '>
+          <Warmstone />
+
+          </div>
           {activeSection === 'woodcutter' && <Building  buildingId='woodcutter' processId='cut_tree_oak'/>}
           {activeSection === 'campfire' && <Building  buildingId='campfire' processId='burn_log_oak'/>}
         </main>

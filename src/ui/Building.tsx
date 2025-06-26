@@ -1,7 +1,7 @@
 import { useGameDispatch, useGameState } from "../hooks/useGame.ts";
 import { Fragment, useState } from "react";
 import ProcessDetails from "./ProcessDetails.tsx";
-import type { ProcessData as Process} from "../core/data/processes-data.ts";
+import type { ProcessData} from "../core/data/processes-data.ts";
 
 export default function Building({ buildingId, processId }: { buildingId: string, processId: string }) {
    
@@ -20,7 +20,7 @@ export default function Building({ buildingId, processId }: { buildingId: string
         gameDispatch({ type: 'START_PROCESS', payload: { buildingId: buildingId, processId: processId } });
     }
 
-    const [selectedProcess, setSelectedProcess] = useState<Process | null>(null);
+    const [selectedProcess, setSelectedProcess] = useState<ProcessData | null>(null);
 
     return (<Fragment>
   
@@ -58,7 +58,7 @@ export default function Building({ buildingId, processId }: { buildingId: string
              {selectedProcess &&
                 <ProcessDetails
                     process={selectedProcess}
-                    output={selectedProcess.outputs[0]}
+                    
                     onClose={() => setSelectedProcess(null)}
                 />}
             
