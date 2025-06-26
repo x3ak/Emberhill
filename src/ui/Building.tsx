@@ -2,8 +2,9 @@ import { useGameDispatch, useGameState } from "../hooks/useGame.ts";
 import { Fragment, useState } from "react";
 import ProcessDetails from "./ProcessDetails.tsx";
 import type { ProcessData } from "../core/data/processes-data.ts";
+import type { BuildingId } from "../core/data/buildings-data.ts";
 
-export default function Building({ buildingId, processId }: { buildingId: string, processId: string }) {
+export default function Building({ buildingId, processId }: { buildingId: BuildingId, processId: string }) {
 
 
     const gameDispatch = useGameDispatch();
@@ -16,8 +17,12 @@ export default function Building({ buildingId, processId }: { buildingId: string
         gameDispatch({ type: 'UNASSIGN_WISP', payload: { buildingId: buildingId } });
     }
 
-    const startProcess = () => {
-        gameDispatch({ type: 'START_PROCESS', payload: { buildingId: buildingId, processId: processId } });
+    const assignWisp = () => {
+        gameDispatch({ type: 'ASSIGN_WISP', payload: { buildingId: buildingId } });
+    }
+
+    const setProcess = () => {
+        gameDispatch({ type: 'SET_PROCESS', payload: { buildingId: buildingId, processId: processId } });
     }
 
     const [selectedProcess, setSelectedProcess] = useState<ProcessData | null>(null);
@@ -40,7 +45,7 @@ export default function Building({ buildingId, processId }: { buildingId: string
                     </button>
                 ) : (
                     <button
-                        onClick={startProcess}
+                        onClick={assignWisp}
                         className="bg-yellow-500 text-zinc-900 font-bold py-2 px-4 rounded w-35"
                     >
                         Assign wisp
