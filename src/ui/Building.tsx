@@ -1,10 +1,10 @@
 import { useGameDispatch, useGameState } from "../hooks/useGame.ts";
 import { Fragment, useState } from "react";
 import ProcessDetails from "./ProcessDetails.tsx";
-import type { ProcessData} from "../core/data/processes-data.ts";
+import type { ProcessData } from "../core/data/processes-data.ts";
 
 export default function Building({ buildingId, processId }: { buildingId: string, processId: string }) {
-   
+
 
     const gameDispatch = useGameDispatch();
     const gameState = useGameState();
@@ -23,47 +23,57 @@ export default function Building({ buildingId, processId }: { buildingId: string
     const [selectedProcess, setSelectedProcess] = useState<ProcessData | null>(null);
 
     return (<Fragment>
-  
-       
-        <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4 w-56 text-center shadow-lg">
-            <h3 className="text-lg font-bold text-yellow-400">{buildingState?.name} (Lvl {buildingState?.level})</h3>
-            {/* <p className="text-sm text-gray-400 mt-1">Process: {buildingProcess?.name}</p> */}
-            {/* {processes} */}
+
+        <div className="text-center text-lg bg-zinc-800 border grid grid-cols-7 items-center gap-4 p-4">
+            <div className="col-span-5 text-left">
+                <h3 className="text-lg font-bold text-yellow-400">{buildingState?.name} (Lvl {buildingState?.level})</h3>
+                <p className="text-green-400 italic mt-1">{buildingState?.wispAssigned ? 'assigned' : 'unassigned'}</p>
+            </div>
+
+            <div className="col-span-2 text-right" >
+                {buildingState?.wispAssigned ? (
+                    <button
+                        onClick={unassignWisp}
+                        className="bg-yellow-500 text-zinc-900 font-bold py-2 px-4 rounded w-35"
+                    >
+                        Unassign wisp
+                    </button>
+                ) : (
+                    <button
+                        onClick={startProcess}
+                        className="bg-yellow-500 text-zinc-900 font-bold py-2 px-4 rounded w-35"
+                    >
+                        Assign wisp
+                    </button>
+                )}
+            </div>
+        </div>
+
+        <div className="flex flex-wrap justify-center items-center mt-6 gap-4">
             {processId && (
-                <div className=" text-zinc-900 font-bold py-2 px-4 rounded w-full">
+                <div className="flex flex-wrap justify-center gap-4">
                     {buildingState.availableProcesses.map((process) => (
                         <button
+                            className="text-sm text-purple-400 hover:border-purple-300 hover:border-4 p-4 focus:outline-none w-40 h-40 bg-zinc-800 border border-purple-500 text-center"
                             key={process.id}
                             onClick={() => setSelectedProcess(process)}
-                            className="text-sm text-purple-400 hover:underline focus:outline-none"
                         >
                             {process.name}
                         </button>
                     ))}
                 </div>
             )}
-            <p className="text-green-400 italic h-6 my-2">{buildingState?.wispAssigned ? 'assigned' : 'unassigned'} </p>
 
-            {buildingState?.wispAssigned && (
-                <button onClick={unassignWisp}
-                    className="bg-yellow-500 text-zinc-900 font-bold py-2 px-4 rounded w-full">Unassign
-                    wisp</button>
-            )}
-
-            {!buildingState?.wispAssigned && (
-                <button onClick={startProcess}
-                    className="bg-yellow-500 text-zinc-900 font-bold py-2 px-4 rounded w-full">Assign wisp</button>
-            )}
             {/* Side panel for process details */}
-             {selectedProcess &&
+            {selectedProcess &&
                 <ProcessDetails
                     process={selectedProcess}
-                    
+
                     onClose={() => setSelectedProcess(null)}
                 />}
-            
+
         </div>
-              
+
     </Fragment>
     );
 

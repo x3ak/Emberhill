@@ -2,29 +2,22 @@
 
 import type { ProcessData } from "../core/data/processes-data";
 
-//     name: string;
-//     description: string;
-//     duration: number;
-
-//     // Add other fields if needed
-// };
 
 type ProcessDetailsProps = {
     process: ProcessData;
-    
     onClose: () => void;
 };
 
 export default function ProcessDetails({ process, onClose }: ProcessDetailsProps) {
     const output = process.outputs[0];
-    
+
     return (
         <div className="mt-0 p-4 bg-zinc-700 rounded-lg shadow-lg w-64 h-fit text-sm text-gray-200 relative z-99">
             <button
                 onClick={onClose}
                 className="absolute top-2 right-2 text-gray-400 hover:text-white"
             >
-                
+              X  
             </button>
             <h4 className="text-yellow-300 font-semibold mb-2">{process.name}</h4>
             
