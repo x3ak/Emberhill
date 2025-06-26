@@ -1,6 +1,7 @@
-import {game} from '../core/engine';
+import { game } from '../core/engine';
 import ResourceBar from './ResourceBar';
 import Building from './Building';
+import { useState } from 'react';
 
 import Warmstone from './Warmstone.tsx';
 import Sidebar from './Sidebar.tsx';
@@ -13,42 +14,41 @@ function browserLoop() {
         const deltaTime = (now - last) / 1000;
         last = now;
 
-        game.dispatch({type: 'TICK', payload: {deltaTime}})
+        game.dispatch({ type: 'TICK', payload: { deltaTime } })
 
     }, 200);
 }
 
 browserLoop();
 
+type Section = string;
+
 export default function App() {
+const [activeSection, setActiveSection] = useState<Section>('home');
 
-    return (
-        <div className="bg-zinc-900 text-gray-200 font-sans min-h-screen flex flex-col">
-            <ResourceBar/>
-        <Sidebar />
-            <main className="flex-grow p-5 flex flex-col items-center gap-10">
-                <div className="flex justify-center gap-5">
+  return (
+    <div className="min-h-screen flex flex-col bg-zinc-900 text-gray-100 font-sans">
+      <ResourceBar />
 
-                    <Building buildingId='woodcutter' processId={"cut_tree_oak"}/>
-                    <Building buildingId='campfire' processId={"burn_log_oak"}/>
-                    <Warmstone />
+      <div className="flex flex-6">
+         <div className="flex flex-1"></div>
+        {/* Sidebar */}
+        <aside className="w-64 bg-zinc-800 p-4 border-r border-zinc-700 flex-1">
+          <Sidebar onSelect={setActiveSection} />
+        </aside>
 
-                </div>
-
-
-
-                <div className="bg-zinc-800 border-2 border-purple-500 rounded-lg p-6 w-72 text-center shadow-xl">
-                    <h3 className="text-xl font-bold text-purple-400">The Warmstone (Lvl 2)</h3>
-                    <p className="text-sm text-gray-400 mt-2">Next Lvl: 400 Wood, 200 Stone</p>
-                    <button
-                        className="bg-purple-600 text-white font-bold py-2 px-6 rounded mt-4 w-full disabled:bg-zinc-600 disabled:cursor-not-allowed">
-                        Level Up
-                    </button>
-                </div>
-
-            </main>
-
-        </div>
-    )
-
+        {/* Main Section */}
+        <main className=" p-6 overflow-auto flex-3">
+          {activeSection === 'home' && (
+            <div className="text-center text-lg">Welcome! Select something from the sidebar.</div>
+          )}
+          {activeSection === 'warmstone' && <Warmstone />}
+          {activeSection === 'woodcutter' && <Building  buildingId='woodcutter' processId='cut_tree_oak'/>}
+          {activeSection === 'campfire' && <Building  buildingId='campfire' processId='burn_log_oak'/>}
+        </main>
+         <div className="flex flex-1"></div>
+      </div>
+    </div>
+  );
+ 
 }

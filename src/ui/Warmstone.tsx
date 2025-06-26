@@ -2,6 +2,7 @@ import { useGameState } from "../hooks/useGame"
 
 export default function Warmstone() {
     const gameState = useGameState();
+    
     const vitality = Math.floor((gameState.warmstone.currentVitality / gameState.warmstone.maxVitality) * 100);
     let progressbarText;
     if(vitality > 50){
