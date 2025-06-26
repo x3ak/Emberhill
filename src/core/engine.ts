@@ -1,27 +1,30 @@
 import {type BuildingState, BuildingBase} from "./buildings";
 import {Wisp} from "./wisps.ts";
-import {buildingsData} from "./data/buildings-data.ts";
+import {type BuildingId, BUILDINGS} from "./data/buildings-data.ts";
 import {warmstone, type WarmstoneState} from "./warmstone.ts";
-import {type ProcessData, processesDatabase} from "./data/processes-data.ts";
+import {type ProcessData, PROCESSES, type ProcessId} from "./data/processes-data.ts";
+import type {ResourceId} from "./data/resources-data.ts";
+import {GameResources} from "./resources.ts";
 
 export type GameAction =
     | { type: "TICK"; payload: { deltaTime: number } }
-    | { type: "ASSIGN_WISP"; payload: { buildingId: string } }
-    | { type: "UNASSIGN_WISP"; payload: { buildingId: string } }
-    | { type: 'UPGRADE_BUILDING'; payload: { buildingId: string } }
-    | { type: 'START_PROCESS'; payload: { buildingId: string; processId: string } }
+    | { type: "ASSIGN_WISP"; payload: { buildingId: BuildingId } }
+    | { type: "UNASSIGN_WISP"; payload: { buildingId: BuildingId } }
+    | { type: 'UPGRADE_BUILDING'; payload: { buildingId: BuildingId } }
+    | { type: 'SET_PROCESS'; payload: { buildingId: BuildingId; processId: ProcessId } }
+    | { type: 'UNSET_PROCESS'; payload: { buildingId: BuildingId; } }
 
 
 export type GameState = {
-    resources: GameResources;
+    resources: Record<ResourceId, number>;
     buildings: { [key: string]: BuildingState };
     warmstone: WarmstoneState;
+    wisps: {
+        freeWisps: number,
+        busyWisps: number,
+    }
 };
 
-export type GameResources = {
-    gold: number;
-    log_oak: number;
-}
 
 export class GameEngine {
     private cachedState: GameState | null = null;
@@ -30,17 +33,17 @@ export class GameEngine {
     private listeners = new Set<() => void>();
     public readonly dispatch: (action: GameAction) => void;
 
-    private resources: GameResources = {gold: 0, log_oak: 0};
+    private resources: GameResources = new GameResources();
 
-    private buildings: Map<string, BuildingBase> = new Map();
+    private buildings: Map<BuildingId, BuildingBase> = new Map();
 
     private wisps: Wisp[] = []
 
     constructor() {
 
         // find a better way to handle
-        this.buildings.set('woodcutter', new BuildingBase(buildingsData.woodcutter));
-        this.buildings.set('campfire', new BuildingBase( buildingsData.campfire));
+        this.buildings.set('woodcutter', new BuildingBase(BUILDINGS.woodcutter));
+        this.buildings.set('campfire', new BuildingBase( BUILDINGS.campfire));
 
         this.wisps.push(new Wisp());
 
@@ -79,27 +82,32 @@ export class GameEngine {
                 break;
             }
 
-            case 'UNASSIGN_WISP': {
-                const {buildingId} = action.payload;
-
-                const unassignedWisp = this.buildings.get(buildingId)?.unassignWisp();
-
-                if (unassignedWisp) {
-                    unassignedWisp.isAssigned = false;
-                    unassignedWisp.currentAssignment = undefined;
+            case 'ASSIGN_WISP': {
+                const freeWisp = this.getUnassignedWisp();
+                if (!freeWisp) {
+                    break;
                 }
+
+                const {buildingId} = action.payload;
+                this.buildings.get(buildingId)?.assignWisp(freeWisp);
 
                 this.isDirty = true;
                 break;
             }
 
-            case 'START_PROCESS': {
-                const {buildingId, processId} = action.payload;
-                const processData: ProcessData = processesDatabase[processId];
-                const unassignedWisp = this.getUnassignedWisp();
+            case 'UNASSIGN_WISP': {
+                const {buildingId} = action.payload;
+                this.buildings.get(buildingId)?.unassignWisp();
 
-                if (!unassignedWisp) {
-                    break;
+                this.isDirty = true;
+                break;
+            }
+
+            case 'SET_PROCESS': {
+                const {buildingId, processId} = action.payload;
+                const processData: ProcessData = PROCESSES[processId];
+                if (!processData) {
+                    break
                 }
 
                 let building = this.buildings.get(buildingId);
@@ -107,9 +115,20 @@ export class GameEngine {
                     break
                 }
 
-                unassignedWisp.isAssigned = true;
-                unassignedWisp.currentAssignment = building;
-                building.startProcess(processData, unassignedWisp);
+                building.setProcess(processData);
+
+                this.isDirty = true;
+                break;
+            }
+
+            case 'UNSET_PROCESS': {
+                const {buildingId} = action.payload;
+                let building = this.buildings.get(buildingId);
+                if (!building) {
+                    break
+                }
+
+                building.unsetProcess();
 
                 this.isDirty = true;
                 break;
@@ -117,35 +136,21 @@ export class GameEngine {
         }
     }
 
-    addResource(resourceName: string, amount: number) {
-        switch (resourceName) {
-            case 'log_oak':
-                this.resources.log_oak += amount;
-                break;
-        }
+    addResource(resourceName: ResourceId, amount: number) {
+        this.resources.addResource(resourceName, amount);
 
         this.isDirty = true;
     }
 
-    hasResource(resourceName: string, amount: number): boolean {
-        switch (resourceName) {
-            case 'log_oak':
-                return this.resources.log_oak >= amount;
-        }
-
-        return false;
+    hasResource(resourceName: ResourceId, amount: number): boolean {
+        return this.resources.hasResource(resourceName, amount);
     }
 
     // return true if we had enough resources
-    subResource(resourceName: string, amount: number): void {
-        switch (resourceName) {
-            case 'log_oak':
-                if (this.resources.log_oak >= amount) {
-                    this.resources.log_oak -= amount;
-                    this.isDirty = true;
-                }
-        }
+    subResource(resourceName: ResourceId, amount: number): void {
+        this.resources.subResource(resourceName, amount);
 
+        this.isDirty = true;
     }
 
     private getUnassignedWisp() : Wisp | undefined {
@@ -168,9 +173,13 @@ export class GameEngine {
         });
 
         this.cachedState = {
-            resources: {...this.resources}, // Return copies
+            resources: {...this.resources.getResources()}, // Return copies
             buildings: buildingsState,
-            warmstone: warmstone.getState()
+            warmstone: warmstone.getState(),
+            wisps: {
+                freeWisps: this.wisps.filter(wisp => !wisp.isAssigned).length,
+                busyWisps: this.wisps.filter(wisp => wisp.isAssigned).length,
+            }
         };
 
         this.isDirty = false;

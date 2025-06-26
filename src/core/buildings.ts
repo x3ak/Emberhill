@@ -29,20 +29,28 @@ export class BuildingBase {
         this.buildingData = buildingData;
     }
 
-    startProcess(process:ProcessData, wisp: Wisp): void {
+    setProcess(process:ProcessData): void {
         this.currentProcess = process;
-        this.wisp = wisp;
+    }
+
+    unsetProcess(): void {
+        this.currentProcess = undefined;
     }
 
     assignWisp(wisp: Wisp): void {
         this.wisp = wisp;
+        wisp.isAssigned = true;
+        wisp.currentAssignment = this;
     }
 
-    unassignWisp(): Wisp | null {
-        const wisp = this.wisp;
-        this.wisp = null;
+    unassignWisp(): void {
+        if (!this.wisp) {
+            return;
+        }
 
-        return wisp;
+        this.wisp.isAssigned = false;
+        this.wisp.currentAssignment = undefined;
+        this.wisp = null;
     }
 
 

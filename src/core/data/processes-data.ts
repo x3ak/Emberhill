@@ -1,14 +1,11 @@
-export type ProcessInputOutput = {
-    type: string;
-    id: string;
-    amount: number;
-};
+import {type ResourceId} from "./resources-data.ts";
+import {type BuildingId} from "./buildings-data.ts";
 
-export type ProcessRequirement = {
-    type: string;
-    id: string;
-    amount: number;
-}
+export type ProcessInputOutput =
+    | { type: "resource"; id: ResourceId; amount: number }
+
+export type ProcessRequirement =
+    | { type: "min_building_level"; id: BuildingId; amount: number; }
 
 export type ProcessEffect = {
     warmstone_vitality_restoration: number; // amount of vitality restored per second
@@ -26,7 +23,7 @@ export type ProcessData = {
     effects: ProcessEffect[];  // effects are applied while the process is active
 }
 
-export const processesDatabase: Record<string, ProcessData> = {
+export const PROCESSES: Record<string, ProcessData> = {
     cut_tree_oak: {
         id: "cut_tree_oak",
         name: "Cut Oak Tree",
@@ -34,26 +31,26 @@ export const processesDatabase: Record<string, ProcessData> = {
         duration: 1,
         text: "The forest offers",
         requirements: [
-            {type: "building_level", id: "woodcutter", amount: 1},
+            {type: "min_building_level", id: "woodcutter", amount: 1},
         ],
         inputs: [],
         outputs: [
-            {type: "resource", id: "log_oak", amount: 1},
+            {type: "resource", id: "LOG_OAK", amount: 1},
         ],
         effects: []
     },
-        cut_tree_birch: {
+    cut_tree_birch: {
         id: "cut_tree_birch",
         name: "Cut Birch Tree",
         description: "Take up your axe and venture into the woods. Find a birch tree. A few well-aimed swings will bring down one of the forest's sturdy children, ready to be turned to plank and purpose.",
         duration: 1.5,
         text: "The forest offers:",
         requirements: [
-            {type: "building_level", id: "woodcutter", amount: 1},
+            {type: "min_building_level", id: "woodcutter", amount: 1},
         ],
         inputs: [],
         outputs: [
-            {type: "resource", id: "log_birch", amount: 1},
+            {type: "resource", id: "LOG_BIRCH", amount: 1},
         ],
         effects: []
     },
@@ -64,10 +61,10 @@ export const processesDatabase: Record<string, ProcessData> = {
         duration: 5,
         text: "Your spirit feels:",
         requirements: [
-            {type: "building_level", id: "campfire", amount: 1},
+            {type: "min_building_level", id: "campfire", amount: 1},
         ],
         inputs: [
-            {type: "resource", id: "log_oak", amount: 1}
+            {type: "resource", id: "LOG_OAK", amount: 1}
         ],
         outputs: [],
         effects: [
@@ -75,3 +72,5 @@ export const processesDatabase: Record<string, ProcessData> = {
         ]
     }
 }
+
+export type ProcessId = keyof typeof PROCESSES;
