@@ -74,7 +74,6 @@ export default function Building({ buildingId, processId }: { buildingId: Buildi
             {selectedProcess &&
                 <ProcessDetails
                     processId={selectedProcess}
-
                     onClose={() => setSelectedProcess(null)}
                 />}
 

@@ -8,7 +8,13 @@ type ProcessDetailsProps = {
 
 export default function ProcessDetails({ processId, onClose }: ProcessDetailsProps) {
     const processData = coreAPI.getProcessData(processId);
-    const output = processData.outputs[0];
+
+    const outputs = processData.outputs.map(output => {
+        return (
+            <p><span className="font-bold"></span> <span className="text-amber-200 font-bold"> {output.id} :  {output.amount}
+                </span></p>
+        )
+    })
 
     return (
         <div className="mt-0 p-4 bg-zinc-700 rounded-lg shadow-lg w-64 h-fit text-sm text-gray-200 relative z-99">
@@ -23,11 +29,7 @@ export default function ProcessDetails({ processId, onClose }: ProcessDetailsPro
             <p>{processData.description}</p>
             <p className="text-yellow-300 font-normal mb-2 pt-3"><span ></span> The forest offers: </p>
 
-            {output &&
-                <p><span className="font-bold"></span> <span className="text-amber-200 font-bold"> {output.id} :  {output.amount}
-                </span></p>
-
-            }
+            {outputs}
 
             {/* Add more fields here */}
         </div>
