@@ -1,29 +1,6 @@
-import {type ResourceId} from "./resources-data.ts";
-import {type BuildingId} from "./buildings-data.ts";
+import type {ProcessData, ProcessId} from "@/shared/types/process.type.ts";
 
-export type ProcessInputOutput =
-    | { type: "resource"; id: ResourceId; amount: number }
-
-export type ProcessRequirement =
-    | { type: "min_building_level"; id: BuildingId; amount: number; }
-
-export type ProcessEffect = {
-    warmstone_vitality_restoration: number; // amount of vitality restored per second
-}
-
-export type ProcessData = {
-    id: string;
-    name: string;
-    description: string;
-    duration: number; // how much time it takes to perform the process/action
-    text: string,
-    requirements: ProcessRequirement[];
-    inputs: ProcessInputOutput[];
-    outputs: ProcessInputOutput[];
-    effects: ProcessEffect[];  // effects are applied while the process is active
-}
-
-export const PROCESSES: Record<string, ProcessData> = {
+export const PROCESSES: Record<ProcessId, ProcessData> = {
     cut_tree_oak: {
         id: "cut_tree_oak",
         name: "Cut Oak Tree",
@@ -72,5 +49,3 @@ export const PROCESSES: Record<string, ProcessData> = {
         ]
     }
 }
-
-export type ProcessId = keyof typeof PROCESSES;

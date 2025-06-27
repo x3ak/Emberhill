@@ -1,7 +1,8 @@
 // type Process = {
 
-import type { ProcessData } from "../core/data/processes-data";
 
+
+import type {ProcessData} from "@/shared/types/process.type.ts";
 
 type ProcessDetailsProps = {
     process: ProcessData;

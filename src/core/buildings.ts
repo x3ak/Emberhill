@@ -1,8 +1,8 @@
 import type {Wisp} from "./wisps.ts";
-import type {BuildingData} from "./data/buildings-data.ts";
-import type {ProcessData, ProcessInputOutput} from "./data/processes-data.ts";
 import {game} from "./engine.ts";
 import {warmstone} from "./warmstone.ts";
+import type {ProcessData} from "@/shared/types/process.type.ts";
+import type {BuildingData} from "@/shared/types/building.types.ts";
 
 export type BuildingState = {
     id: string;
@@ -62,10 +62,11 @@ export class BuildingBase {
         }
 
         // start the process
-        if (!this.isProcessing && this.hasEnoughResourcesToStartTheProcess(this.currentProcess.inputs)) {
+        if (!this.isProcessing && game.resources.hasEnoughResourcesToStartTheProcess(this.currentProcess.inputs)) {
             this.isProcessing = true;
             this.secondsSpentProcessing = 0;
-            this.spendResourcesForProcess(this.currentProcess.inputs);
+            game.resources.spendResourcesForProcess(this.currentProcess.inputs);
+
         }
 
         if (this.isProcessing) {
@@ -81,16 +82,10 @@ export class BuildingBase {
             while (this.secondsSpentProcessing >= this.currentProcess.duration) {
 
                 // apply outputs
-                this.currentProcess.outputs.forEach(processOutput => {
-                    switch (processOutput.type) {
-                        case 'resource':
-                            game.addResource(processOutput.id, processOutput.amount);
-                            break;
-                    }
-                })
+                game.resources.addResourcesFromProcess(this.currentProcess.outputs);
 
-                if (this.hasEnoughResourcesToStartTheProcess(this.currentProcess.inputs)) {
-                    this.spendResourcesForProcess(this.currentProcess.inputs);
+                if (game.resources.hasEnoughResourcesToStartTheProcess(this.currentProcess.inputs)) {
+                    game.resources.spendResourcesForProcess(this.currentProcess.inputs);
                 } else {
                     this.isProcessing = false;
                 }
@@ -99,31 +94,6 @@ export class BuildingBase {
             }
         }
 
-    }
-
-    private hasEnoughResourcesToStartTheProcess(inputs: ProcessInputOutput[]): boolean {
-        let hasEnough = true;
-        inputs.forEach(processInput => {
-            switch (processInput.type) {
-                case 'resource':
-                    if (!game.hasResource(processInput.id, processInput.amount)) {
-                        hasEnough = false;
-                    }
-                    break;
-            }
-        })
-
-        return hasEnough;
-    }
-
-    private spendResourcesForProcess(inputs: ProcessInputOutput[]) {
-        inputs.forEach(processInput => {
-            switch (processInput.type) {
-                case 'resource':
-                    game.subResource(processInput.id, processInput.amount);
-                    break;
-            }
-        })
     }
 
     getState(): BuildingState {

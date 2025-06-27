@@ -1,4 +1,6 @@
-export const RESOURCES = {
+import type {ResourceId, ResourceData} from "@/shared/types/resource.types.ts";
+
+export const RESOURCES : Record<ResourceId, ResourceData> = {
     LOG_BIRCH: {
         id: 10000,
         name: 'Birch Log',
@@ -9,5 +11,4 @@ export const RESOURCES = {
     }
 } as const;
 
-export type ResourceId = keyof typeof RESOURCES;
 

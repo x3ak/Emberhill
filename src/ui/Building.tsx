@@ -1,11 +1,12 @@
 import { useGameDispatch, useGameState } from "../hooks/useGame.ts";
 import { Fragment, useState } from "react";
 import ProcessDetails from "./ProcessDetails.tsx";
-import type { ProcessData } from "../core/data/processes-data.ts";
-import type { BuildingId } from "../core/data/buildings-data.ts";
+import type {ProcessData, ProcessId} from "@/shared/types/process.type.ts";
+import type {BuildingId} from "@/shared/types/building.types.ts";
 
-export default function Building({ buildingId, processId }: { buildingId: BuildingId, processId: string }) {
 
+export default function Building({ buildingId, processId }: { buildingId: BuildingId, processId: ProcessId }) {
+   
 
     const gameDispatch = useGameDispatch();
     const gameState = useGameState();
@@ -21,9 +22,9 @@ export default function Building({ buildingId, processId }: { buildingId: Buildi
         gameDispatch({ type: 'ASSIGN_WISP', payload: { buildingId: buildingId } });
     }
 
-    const setProcess = () => {
-        gameDispatch({ type: 'SET_PROCESS', payload: { buildingId: buildingId, processId: processId } });
-    }
+    // const setProcess = () => {
+    //     gameDispatch({ type: 'SET_PROCESS', payload: { buildingId: buildingId, processId: processId } });
+    // }
 
     const [selectedProcess, setSelectedProcess] = useState<ProcessData | null>(null);
 

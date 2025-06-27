@@ -1,12 +1,7 @@
-import {type ProcessData, PROCESSES} from "./processes-data.ts";
+import {PROCESSES} from "./processes-data.ts";
+import type {BuildingData, BuildingId} from "@/shared/types/building.types.ts";
 
-export type BuildingData = {
-    id: string;
-    name:  string;
-    processes: ProcessData[],
-}
-
-export const BUILDINGS = {
+export const BUILDINGS : Record<BuildingId, BuildingData>= {
     woodcutter: {
         id: "woodcutter",
         name: "Woodcutter's Lodge",
@@ -24,4 +19,3 @@ export const BUILDINGS = {
     }
 }
 
-export type BuildingId = keyof typeof BUILDINGS;

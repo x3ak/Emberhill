@@ -1,10 +1,12 @@
 import {type BuildingState, BuildingBase} from "./buildings";
 import {Wisp} from "./wisps.ts";
-import {type BuildingId, BUILDINGS} from "./data/buildings-data.ts";
+import {BUILDINGS} from "./data/buildings-data.ts";
 import {warmstone, type WarmstoneState} from "./warmstone.ts";
-import {type ProcessData, PROCESSES, type ProcessId} from "./data/processes-data.ts";
-import type {ResourceId} from "./data/resources-data.ts";
+import {PROCESSES} from "./data/processes-data.ts";
 import {GameResources} from "./resources.ts";
+import type {BuildingId} from "@/shared/types/building.types.ts";
+import type {ProcessData, ProcessId} from "@/shared/types/process.type.ts";
+import type { ResourceId } from "@/shared/types/resource.types.ts";
 
 export type GameAction =
     | { type: "TICK"; payload: { deltaTime: number } }
@@ -33,7 +35,7 @@ export class GameEngine {
     private listeners = new Set<() => void>();
     public readonly dispatch: (action: GameAction) => void;
 
-    private resources: GameResources = new GameResources();
+    public readonly resources: GameResources = new GameResources();
 
     private buildings: Map<BuildingId, BuildingBase> = new Map();
 
@@ -136,20 +138,7 @@ export class GameEngine {
         }
     }
 
-    addResource(resourceName: ResourceId, amount: number) {
-        this.resources.addResource(resourceName, amount);
-
-        this.isDirty = true;
-    }
-
-    hasResource(resourceName: ResourceId, amount: number): boolean {
-        return this.resources.hasResource(resourceName, amount);
-    }
-
-    // return true if we had enough resources
-    subResource(resourceName: ResourceId, amount: number): void {
-        this.resources.subResource(resourceName, amount);
-
+    public markStateDirty(): void {
         this.isDirty = true;
     }
 
@@ -183,7 +172,6 @@ export class GameEngine {
         };
 
         this.isDirty = false;
-
         return this.cachedState;
     }
 
