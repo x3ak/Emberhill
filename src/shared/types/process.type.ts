@@ -1,9 +1,12 @@
 import type {ResourceId} from "@/shared/types/resource.types.ts";
 import type {BuildingId} from "@/shared/types/building.types.ts";
 
-export type ProcessId =
-    | 'cut_tree_oak' | 'cut_tree_birch'
-    | 'burn_log_oak'
+export const AllProcessIds = [
+    'cut_tree_oak', 'cut_tree_birch',
+    'burn_log_oak',
+] as const;
+
+export type ProcessId = typeof AllProcessIds[number];
 
 export type ProcessInputOutput =
     | { type: "resource"; id: ResourceId; amount: number }
@@ -16,7 +19,7 @@ export type ProcessEffect = {
 }
 
 export type ProcessData = {
-    id: string;
+    id: ProcessId;
     name: string;
     description: string;
     duration: number; // how much time it takes to perform the process/action

@@ -1,7 +1,7 @@
 import { useGameDispatch, useGameState } from "../hooks/useGame.ts";
 import { Fragment, useState } from "react";
 import ProcessDetails from "./ProcessDetails.tsx";
-import type {ProcessData, ProcessId} from "@/shared/types/process.type.ts";
+import type {ProcessId} from "@/shared/types/process.type.ts";
 import type {BuildingId} from "@/shared/types/building.types.ts";
 
 
@@ -26,7 +26,7 @@ export default function Building({ buildingId, processId }: { buildingId: Buildi
     //     gameDispatch({ type: 'SET_PROCESS', payload: { buildingId: buildingId, processId: processId } });
     // }
 
-    const [selectedProcess, setSelectedProcess] = useState<ProcessData | null>(null);
+    const [selectedProcess, setSelectedProcess] = useState<ProcessId | null>(null);
 
     return (<Fragment>
 
@@ -62,7 +62,7 @@ export default function Building({ buildingId, processId }: { buildingId: Buildi
                         <button
                             className="text-sm text-purple-400 hover:border-purple-300 hover:border-4 p-4 focus:outline-none w-40 h-40 bg-zinc-800 border border-purple-500 text-center"
                             key={process.id}
-                            onClick={() => setSelectedProcess(process)}
+                            onClick={() => setSelectedProcess(process.id)}
                         >
                             {process.name}
                         </button>
@@ -73,7 +73,7 @@ export default function Building({ buildingId, processId }: { buildingId: Buildi
             {/* Side panel for process details */}
             {selectedProcess &&
                 <ProcessDetails
-                    process={selectedProcess}
+                    processId={selectedProcess}
 
                     onClose={() => setSelectedProcess(null)}
                 />}

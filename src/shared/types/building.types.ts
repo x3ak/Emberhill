@@ -1,11 +1,14 @@
 import type {ProcessData} from "@/shared/types/process.type.ts";
 
-export type BuildingId =
-    | 'woodcutter'
-    | 'campfire';
+export const AllBuildingIds = [
+    'woodcutter',
+    'campfire',
+] as const;
+
+export type BuildingId = typeof AllBuildingIds[number];
 
 export type BuildingData = {
-    id: string;
+    id: BuildingId;
     name: string;
     processes: ProcessData[],
 }

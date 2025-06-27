@@ -1,16 +1,14 @@
-// type Process = {
-
-
-
-import type {ProcessData} from "@/shared/types/process.type.ts";
+import type {ProcessId} from "@/shared/types/process.type.ts";
+import {coreAPI} from "../core/core.api.ts";
 
 type ProcessDetailsProps = {
-    process: ProcessData;
+    processId: ProcessId;
     onClose: () => void;
 };
 
-export default function ProcessDetails({ process, onClose }: ProcessDetailsProps) {
-    const output = process.outputs[0];
+export default function ProcessDetails({ processId, onClose }: ProcessDetailsProps) {
+    const processData = coreAPI.getProcessData(processId);
+    const output = processData.outputs[0];
 
     return (
         <div className="mt-0 p-4 bg-zinc-700 rounded-lg shadow-lg w-64 h-fit text-sm text-gray-200 relative z-99">
@@ -20,9 +18,9 @@ export default function ProcessDetails({ process, onClose }: ProcessDetailsProps
             >
               X  
             </button>
-            <h4 className="text-yellow-300 font-semibold mb-2">{process.name}</h4>
+            <h4 className="text-yellow-300 font-semibold mb-2">{processData.name}</h4>
             
-            <p>{process.description}</p>
+            <p>{processData.description}</p>
             <p className="text-yellow-300 font-normal mb-2 pt-3"><span ></span> The forest offers: </p>
 
             {output &&

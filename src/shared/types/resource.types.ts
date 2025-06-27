@@ -5,6 +5,6 @@ export const AllResourceIds = [
 export type ResourceId = typeof AllResourceIds[number];
 
 export type ResourceData = {
-    id: number;
+    id: ResourceId;
     name: string;
 }
