@@ -38,6 +38,11 @@ export class Warmstone {
         this.currentVitality = Math.min(this.currentVitality + amount, this.maxVitality);
     }
 
+    public setState(state: WarmstoneState) {
+        this.currentVitality = state.currentVitality;
+        this.maxVitality = state.maxVitality;
+    }
+
     public getState(): WarmstoneState {
         return {
             maxVitality: this.maxVitality,

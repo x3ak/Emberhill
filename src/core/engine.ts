@@ -4,9 +4,9 @@ import {BUILDINGS} from "./data/buildings-data.ts";
 import {warmstone, type WarmstoneState} from "./warmstone.ts";
 import {PROCESSES} from "./data/processes-data.ts";
 import {GameResources} from "./resources.ts";
-import type {BuildingId} from "@/shared/types/building.types.ts";
+import {type BuildingId} from "@/shared/types/building.types.ts";
 import type {ProcessData, ProcessId} from "@/shared/types/process.type.ts";
-import type { ResourceId } from "@/shared/types/resource.types.ts";
+import {AllResourceIds, type ResourceId} from "@/shared/types/resource.types.ts";
 
 export type GameAction =
     | { type: "TICK"; payload: { deltaTime: number } }
@@ -19,7 +19,7 @@ export type GameAction =
 
 export type GameState = {
     resources: Record<ResourceId, number>;
-    buildings: { [key: string]: BuildingState };
+    buildings: Map<BuildingId, BuildingState>;
     warmstone: WarmstoneState;
     wisps: {
         freeWisps: number,
@@ -151,16 +151,48 @@ export class GameEngine {
         return this.wisps.filter(wisp => wisp.isAssigned);
     }
 
+    setState(gameState: GameState): void {
+        // set resources
+        AllResourceIds.forEach((resourceId) => {
+            this.resources.setResource(resourceId, gameState.resources[resourceId] ?? 0);
+        });
+
+        warmstone.setState(gameState.warmstone);
+
+        // set building states
+        this.buildings.forEach((building: BuildingBase, buildingId: BuildingId) => {
+            let buildingState = gameState.buildings.get(buildingId);
+            if (buildingState) {
+                building.level = buildingState.level || 1;
+
+                if (buildingState.wispAssigned) {
+                    let availableWisp = this.getUnassignedWisp();
+
+                    if (availableWisp) {
+                        building.assignWisp(availableWisp)
+                    }
+                }
+
+                if (buildingState.currentProcess) {
+                    building.setProcess(PROCESSES[buildingState.currentProcess]);
+                }
+            }
+        })
+
+        this.isDirty = true;
+    }
+
     getState() {
         if (!this.isDirty && this.cachedState) {
             return this.cachedState;
         }
 
-        const buildingsState: { [key: string]: BuildingState } = {};
+        const buildingsState: Map<BuildingId, BuildingState> = new Map();
 
         this.buildings.forEach(building => {
-            buildingsState[building.buildingData.id] = building.getState();
+            buildingsState.set(building.buildingData.id, building.getState());
         });
+
 
         this.cachedState = {
             resources: {...this.resources.getResources()}, // Return copies

@@ -8,7 +8,7 @@ export default function ResourceBar() {
 
     let resourcesList = AllResourceIds.map((resourceId) => {
         return (
-            <ResourceDisplay name={coreAPI.getResourceData(resourceId).name} amount={gameState.resources[resourceId]}/>
+            <ResourceDisplay key={resourceId} name={coreAPI.getResourceData(resourceId).name} amount={gameState.resources[resourceId]}/>
         )
     })
 

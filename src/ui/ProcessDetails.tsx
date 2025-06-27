@@ -11,9 +11,9 @@ export default function ProcessDetails({ processId, onClose, onPick }: ProcessDe
 
     const processData = coreAPI.getProcessData(processId);
 
-    const outputs = processData.outputs.map(output => {
+    const outputs = processData.outputs.map((output, idx) => {
         return (
-            <p><span className="font-bold"></span> <span className="text-amber-200 font-bold"> {output.id} :  {output.amount}
+            <p key={idx}><span className="font-bold"></span> <span className="text-amber-200 font-bold"> {output.id} :  {output.amount}
                 </span></p>
         )
     })

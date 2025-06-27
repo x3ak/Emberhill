@@ -1,16 +1,14 @@
 import type {Wisp} from "./wisps.ts";
 import {game} from "./engine.ts";
 import {warmstone} from "./warmstone.ts";
-import type {ProcessData} from "@/shared/types/process.type.ts";
+import type {ProcessData, ProcessId} from "@/shared/types/process.type.ts";
 import type {BuildingData} from "@/shared/types/building.types.ts";
 
 export type BuildingState = {
     id: string;
-    name: string;
     level: number;
     wispAssigned: boolean;
-    availableProcesses: ProcessData[];
-    currentProcess: ProcessData | undefined;
+    currentProcess: ProcessId | undefined;
 }
 
 export class BuildingBase {
@@ -100,11 +98,10 @@ export class BuildingBase {
         return {
             id: this.buildingData.id,
             level: this.level,
-            name: this.buildingData.name,
             wispAssigned: !!this.wisp,
-            availableProcesses: this.buildingData.processes,
-            currentProcess: this.currentProcess,
+            currentProcess: this.currentProcess?.id,
         };
     }
 
 }
+

@@ -22,6 +22,10 @@ export class GameResources {
         game.markStateDirty()
     }
 
+    setResource(id: ResourceId, amount: number): void {
+        this.resources[id] = amount;
+    }
+
     getResources(): Record<ResourceId, number> {
         return this.resources;
     }

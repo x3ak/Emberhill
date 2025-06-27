@@ -26,6 +26,30 @@ type Section = string;
 export default function App() {
     const [activeSection, setActiveSection] = useState<Section>('home');
 
+    function saveState() {
+
+        const gameState = game.getState();
+
+        localStorage.setItem('GAME_STATE', JSON.stringify({
+            'resources': gameState.resources,
+            'warmstone': gameState.warmstone,
+            'buildings': Array.from(gameState.buildings.entries()),
+        }));
+    }
+
+    function loadState() {
+        let retriever = (key: any, value: any) => {
+            if (key == 'buildings') {
+                return new Map(value)
+            }
+
+            return value;
+        }
+
+        let loadedState = JSON.parse(localStorage.getItem('GAME_STATE') || '{}', retriever);
+        game.setState(loadedState);
+    }
+
     return (
         <div className="min-h-screen flex flex-col bg-zinc-900 text-gray-100 font-sans">
             <ResourceBar/>
@@ -46,9 +70,13 @@ export default function App() {
                         <Warmstone/>
 
                     </div>
-                    {activeSection === 'woodcutter' && <Building buildingId='woodcutter' processId='cut_tree_oak'/>}
-                    {activeSection === 'campfire' && <Building buildingId='campfire' processId='burn_log_oak'/>}
+                    {activeSection === 'woodcutter' && <Building buildingId='woodcutter'/>}
+                    {activeSection === 'campfire' && <Building buildingId='campfire'/>}
                 </main>
+                <div>
+                    <button onClick={saveState} className="bg-green-500 m-2 p-2">DUMP STATE</button>
+                    <button onClick={loadState} className="bg-amber-500 m-2 p-2" >LOAD STATE</button>
+                </div>
                 <div className="flex flex-1"></div>
             </div>
         </div>
