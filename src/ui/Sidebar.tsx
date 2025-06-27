@@ -1,5 +1,4 @@
-import {useGameState} from "../hooks/useGame";
-import {AllBuildingIds} from "@/shared/types/building.types.ts";
+import {AllBuildingIds, type BuildingId} from "@/shared/types/building.types.ts";
 import {coreAPI} from "../core/core.api.ts";
 
 type SidebarProps = {
@@ -7,7 +6,6 @@ type SidebarProps = {
 };
 
 export default function Sidebar({onSelect}: SidebarProps) {
-    const gameState = useGameState();
 
     // let buildings;
     const buildings = AllBuildingIds.map((buildingId: BuildingId) => {
