@@ -22,10 +22,12 @@ export default function Building({ buildingId, processId }: { buildingId: Buildi
         gameDispatch({ type: 'ASSIGN_WISP', payload: { buildingId: buildingId } });
     }
 
-    // const setProcess = () => {
-    //     gameDispatch({ type: 'SET_PROCESS', payload: { buildingId: buildingId, processId: processId } });
-    // }
-
+    const setProcess = (processId: ProcessId) => {
+        gameDispatch({ type: 'SET_PROCESS', payload: { buildingId: buildingId, processId: processId } });
+    }
+     const unsetProcess = () => {
+        gameDispatch({ type: 'UNSET_PROCESS', payload: { buildingId: buildingId} });
+    }
     const [selectedProcess, setSelectedProcess] = useState<ProcessId | null>(null);
 
     return (<Fragment>
@@ -74,6 +76,7 @@ export default function Building({ buildingId, processId }: { buildingId: Buildi
             {selectedProcess &&
                 <ProcessDetails
                     processId={selectedProcess}
+                    onPick={() => setProcess(selectedProcess)}
                     onClose={() => setSelectedProcess(null)}
                 />}
 

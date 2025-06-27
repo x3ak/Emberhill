@@ -63,6 +63,7 @@ export class GameEngine {
     }
 
     private reduce(action: GameAction) {
+        console.log(action)
         switch (action.type) {
             case 'TICK': {
                 const {deltaTime} = action.payload;

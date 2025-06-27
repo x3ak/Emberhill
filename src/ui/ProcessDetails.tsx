@@ -4,9 +4,11 @@ import {coreAPI} from "../core/core.api.ts";
 type ProcessDetailsProps = {
     processId: ProcessId;
     onClose: () => void;
+    onPick: () => void;
 };
 
-export default function ProcessDetails({ processId, onClose }: ProcessDetailsProps) {
+export default function ProcessDetails({ processId, onClose, onPick }: ProcessDetailsProps) {
+
     const processData = coreAPI.getProcessData(processId);
 
     const outputs = processData.outputs.map(output => {
@@ -27,10 +29,11 @@ export default function ProcessDetails({ processId, onClose }: ProcessDetailsPro
             <h4 className="text-yellow-300 font-semibold mb-2">{processData.name}</h4>
             
             <p>{processData.description}</p>
-            <p className="text-yellow-300 font-normal mb-2 pt-3"><span ></span> The forest offers: </p>
+            <p className="text-yellow-300 font-normal mb-2 pt-3"><span ></span> {processData.text} </p>
 
             {outputs}
-
+            <button onClick={onPick} className="hover:text-amber-600">Start Process</button>
+            
             {/* Add more fields here */}
         </div>
 
