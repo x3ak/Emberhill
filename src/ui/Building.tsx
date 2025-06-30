@@ -1,89 +1,75 @@
 import { useGameDispatch, useGameState } from "../hooks/useGame.ts";
-import { Fragment, useState } from "react";
+import { useEffect, useState } from "react";
 import ProcessDetails from "./ProcessDetails.tsx";
 import type {ProcessData, ProcessId} from "@/shared/types/process.type.ts";
 import type {BuildingId} from "@/shared/types/building.types.ts";
 import {coreAPI} from "../core/core.api.ts";
+import BuildingDetails from "./BuildingDetails.tsx";
 
 export default function Building({ buildingId }: { buildingId: BuildingId }) {
 
     const gameDispatch = useGameDispatch();
     const gameState = useGameState();
 
-    let buildingState = gameState.buildings.get(buildingId);
-    let buildingData = coreAPI.getBuildingData(buildingId);
+    const buildingState = gameState.buildings.get(buildingId);
+    const buildingData = coreAPI.building.getData(buildingId);
+    const buildingProcesses = coreAPI.building.getProcesses(buildingId);
 
-    const unassignWisp = () => {
-        gameDispatch({ type: 'UNASSIGN_WISP', payload: { buildingId: buildingId } });
-    }
+    const [selectedProcess, setSelectedProcess] = useState<ProcessId | null>(null);
 
-    const assignWisp = () => {
-        gameDispatch({ type: 'ASSIGN_WISP', payload: { buildingId: buildingId } });
-    }
+    useEffect(() => {
+        const activeProcessId = buildingState?.activeProcessId;
+        if (activeProcessId) {
+            setSelectedProcess(activeProcessId);
+        }
+
+    }, [buildingId, buildingState]);
 
     const setProcess = (processId: ProcessId) => {
         gameDispatch({ type: 'SET_PROCESS', payload: { buildingId: buildingId, processId: processId } });
     }
-    // const unsetProcess = () => {
-    //     gameDispatch({ type: 'UNSET_PROCESS', payload: { buildingId: buildingId} });
-    // }
-    const [selectedProcess, setSelectedProcess] = useState<ProcessId | null>(null);
 
-    const buildingProcesses = coreAPI.getBuildingProcesses(buildingId);
+    const unsetProcess = () => {
+        gameDispatch({ type: 'UNSET_PROCESS', payload: { buildingId: buildingId } });
+    }
 
-    return (<Fragment>
+    return (
+        <div className="flex flex-col gap-4">
+            {buildingState && (<BuildingDetails buildingId={buildingId} buildingState={buildingState} buildingData={buildingData} />)}
 
-        <div className="text-center text-lg bg-zinc-800 border grid grid-cols-7 items-center gap-4 p-4">
-            <div className="col-span-5 text-left">
-                <h3 className="text-lg font-bold text-yellow-400">{buildingData.name} (Lvl {buildingState?.level})</h3>
-                <p className="text-green-400 italic mt-1">{buildingState?.wispAssigned ? 'assigned' : 'unassigned'}</p>
-            </div>
+            <div className="grid grid-cols-2 gap-4">
+                <div className="flex flex-col gap-2 bg-zinc-800 p-4 rounded-lg shadow-lg">
+                    <h4 className="text-xl font-bold text-yellow-400 mb-2">Processes</h4>
+                    {buildingProcesses.map((process: ProcessData) => (
+                        <button
+                            key={process.id}
+                            className={`p-3 rounded-lg text-left transition-colors ${
+                                selectedProcess === process.id
+                                    ? 'bg-purple-600 text-white'
+                                    : 'bg-zinc-700 hover:bg-zinc-600 text-purple-300'
+                            }`}
+                            onClick={() => setSelectedProcess(process.id)}
+                        >
+                            {process.name}
+                        </button>
+                    ))}
+                </div>
 
-            <div className="col-span-2 text-right" >
-                {buildingState?.wispAssigned ? (
-                    <button
-                        onClick={unassignWisp}
-                        className="bg-yellow-500 text-zinc-900 font-bold py-2 px-4 rounded w-35"
-                    >
-                        Unassign wisp
-                    </button>
-                ) : (
-                    <button
-                        onClick={assignWisp}
-                        className="bg-yellow-500 text-zinc-900 font-bold py-2 px-4 rounded w-35"
-                    >
-                        Assign wisp
-                    </button>
-                )}
+                <div className="bg-zinc-800 p-4 rounded-lg shadow-lg h-full">
+                    {selectedProcess ? (
+                        <ProcessDetails
+                            processId={selectedProcess}
+                            onPick={() => setProcess(selectedProcess)}
+                            onUnset={unsetProcess}
+                            isActive={buildingState?.activeProcessId === selectedProcess}
+                        />
+                    ) : (
+                        <div className="text-center text-gray-400 flex items-center justify-center h-full">
+                            <p>Select a process to see its details.</p>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
-
-        <div className="flex flex-wrap justify-center items-center mt-6 gap-4">
-
-            <div className="flex flex-wrap justify-center gap-4">
-                {buildingProcesses.map((process: ProcessData) => (
-                    <button
-                        key={process.id}
-                        className="text-sm text-purple-400 hover:border-purple-300 hover:border-4 p-4 focus:outline-none w-40 h-40 bg-zinc-800 border border-purple-500 text-center"
-                        onClick={() => setSelectedProcess(process.id)}
-                    >
-                        {process.name}
-                    </button>
-                ))}
-            </div>
-
-
-            {/* Side panel for process details */}
-            {selectedProcess &&
-                <ProcessDetails
-                    processId={selectedProcess}
-                    onPick={() => setProcess(selectedProcess)}
-                    onClose={() => setSelectedProcess(null)}
-                />}
-
-        </div>
-
-    </Fragment>
     );
-
 }

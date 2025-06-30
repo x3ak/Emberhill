@@ -58,7 +58,7 @@ export default function App() {
                 <div className="flex flex-1"></div>
                 {/* Sidebar */}
                 <aside className="w-64 bg-zinc-800 p-4 border-r border-zinc-700 flex-1">
-                    <Sidebar onSelect={setActiveSection}/>
+                    <Sidebar onSelect={setActiveSection} activeSection={activeSection} />
                 </aside>
 
                 {/* Main Section */}
@@ -66,17 +66,20 @@ export default function App() {
                     {activeSection === 'home' && (
                         <div className="text-center text-lg">Welcome! Select something from the sidebar.</div>
                     )}
-                    <div className='fixed bottom-4 right-4 z-50 '>
+                    <div className='fixed bottom-4 right-4 z-50 flex flex-col gap-2 items-end'>
                         <Warmstone/>
-
+                        <div className="flex gap-2">
+                            <button title="Save" onClick={saveState} className="bg-green-500 hover:bg-green-600 text-white font-bold p-3 rounded shadow-lg transition-transform transform hover:scale-110">
+                                💾
+                            </button>
+                            <button title="Load" onClick={loadState} className="bg-amber-500 hover:bg-amber-600 text-white font-bold p-3 rounded shadow-lg transition-transform transform hover:scale-110">
+                                📂
+                            </button>
+                        </div>
                     </div>
-                    {activeSection === 'woodcutter' && <Building buildingId='woodcutter'/>}
-                    {activeSection === 'campfire' && <Building buildingId='campfire'/>}
+                    {activeSection !== 'home' && <Building buildingId={activeSection as any}/>}
                 </main>
-                <div>
-                    <button onClick={saveState} className="bg-green-500 m-2 p-2">DUMP STATE</button>
-                    <button onClick={loadState} className="bg-amber-500 m-2 p-2" >LOAD STATE</button>
-                </div>
+                
                 <div className="flex flex-1"></div>
             </div>
         </div>

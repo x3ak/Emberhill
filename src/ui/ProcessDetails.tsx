@@ -3,11 +3,12 @@ import {coreAPI} from "../core/core.api.ts";
 
 type ProcessDetailsProps = {
     processId: ProcessId;
-    onClose: () => void;
     onPick: () => void;
+    onUnset: () => void;
+    isActive: boolean;
 };
 
-export default function ProcessDetails({ processId, onClose, onPick }: ProcessDetailsProps) {
+export default function ProcessDetails({ processId, onPick, onUnset, isActive }: ProcessDetailsProps) {
 
     const processData = coreAPI.getProcessData(processId);
 
@@ -19,23 +20,24 @@ export default function ProcessDetails({ processId, onClose, onPick }: ProcessDe
     })
 
     return (
-        <div className="mt-0 p-4 bg-zinc-700 rounded-lg shadow-lg w-64 h-fit text-sm text-gray-200 relative z-99">
-            <button
-                onClick={onClose}
-                className="absolute top-2 right-2 text-gray-400 hover:text-white"
-            >
-              X  
-            </button>
-            <h4 className="text-yellow-300 font-semibold mb-2">{processData.name}</h4>
-            
-            <p>{processData.description}</p>
+        <div className="h-full flex flex-col">
+            <h4 className="text-xl font-bold text-yellow-400 mb-2">{processData.name}</h4>
+            <p className="text-gray-300 mb-4">{processData.description}</p>
             <p className="text-yellow-300 font-normal mb-2 pt-3"><span ></span> {processData.text} </p>
 
-            {outputs}
-            <button onClick={onPick} className="hover:text-amber-600">Start Process</button>
-            
-            {/* Add more fields here */}
-        </div>
+            <div className="flex-grow">
+                {outputs}
+            </div>
 
+            {isActive ? (
+                <button onClick={onUnset} className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105 mt-4">
+                    Stop Process
+                </button>
+            ) : (
+                <button onClick={onPick} className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105 mt-4">
+                    Start Process
+                </button>
+            )}
+        </div>
     )
 }

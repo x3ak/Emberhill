@@ -4,6 +4,9 @@ import {RESOURCES} from "./data/resources-data.ts";
 import {PROCESSES} from "./data/processes-data.ts";
 import {BUILDINGS} from "./data/buildings-data.ts";
 import type {BuildingData, BuildingId} from "@/shared/types/building.types.ts";
+import {useGameDispatch} from "../hooks/useGame.ts";
+
+const gameDispatch = useGameDispatch();
 
 function getResourceData(id: ResourceId): ResourceData {
     return RESOURCES[id];
@@ -27,9 +30,32 @@ function getBuildingProcesses(id: BuildingId): ProcessData[] {
     }
 }
 
+
+const unassignWisp = (buildingId: BuildingId) => {
+    gameDispatch({ type: 'UNASSIGN_WISP', payload: { buildingId: buildingId } });
+}
+
+const assignWisp = (buildingId: BuildingId) => {
+    gameDispatch({ type: 'ASSIGN_WISP', payload: { buildingId: buildingId } });
+}
+
+const setProcess = (buildingId: BuildingId, processId: ProcessId) => {
+    gameDispatch({ type: 'SET_PROCESS', payload: { buildingId: buildingId, processId: processId } });
+}
+
+const unsetProcess = (buildingId: BuildingId) => {
+    gameDispatch({ type: 'UNSET_PROCESS', payload: { buildingId: buildingId } });
+}
+
 export const coreAPI = {
     getResourceData,
     getProcessData,
-    getBuildingData,
-    getBuildingProcesses,
+    building: {
+        assignWisp,
+        unassignWisp,
+        setProcess,
+        unsetProcess,
+        getProcesses: getBuildingProcesses ,
+        getData: getBuildingData ,
+    }
 }

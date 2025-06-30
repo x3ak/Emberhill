@@ -173,8 +173,8 @@ export class GameEngine {
                     }
                 }
 
-                if (buildingState.currentProcess) {
-                    building.setProcess(PROCESSES[buildingState.currentProcess]);
+                if (buildingState.activeProcessId) {
+                    building.setProcess(PROCESSES[buildingState.activeProcessId]);
                 }
             }
         })

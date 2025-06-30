@@ -8,7 +8,7 @@ export type BuildingState = {
     id: string;
     level: number;
     wispAssigned: boolean;
-    currentProcess: ProcessId | undefined;
+    activeProcessId: ProcessId | undefined;
 }
 
 export class BuildingBase {
@@ -21,18 +21,18 @@ export class BuildingBase {
 
     private isProcessing: boolean = false;
 
-    private currentProcess: ProcessData | undefined;
+    private activeProcessId: ProcessData | undefined;
 
     constructor(buildingData: BuildingData) {
         this.buildingData = buildingData;
     }
 
     setProcess(process:ProcessData): void {
-        this.currentProcess = process;
+        this.activeProcessId = process;
     }
 
     unsetProcess(): void {
-        this.currentProcess = undefined;
+        this.activeProcessId = undefined;
     }
 
     assignWisp(wisp: Wisp): void {
@@ -53,17 +53,17 @@ export class BuildingBase {
 
 
     update(deltaTime: number): void {
-        if (!this.wisp || !this.currentProcess) {
+        if (!this.wisp || !this.activeProcessId) {
             this.isProcessing = false;
             this.secondsSpentProcessing = 0;
             return;
         }
 
         // start the process
-        if (!this.isProcessing && game.resources.hasEnoughResourcesToStartTheProcess(this.currentProcess.inputs)) {
+        if (!this.isProcessing && game.resources.hasEnoughResourcesToStartTheProcess(this.activeProcessId.inputs)) {
             this.isProcessing = true;
             this.secondsSpentProcessing = 0;
-            game.resources.spendResourcesForProcess(this.currentProcess.inputs);
+            game.resources.spendResourcesForProcess(this.activeProcessId.inputs);
 
         }
 
@@ -71,24 +71,24 @@ export class BuildingBase {
             this.secondsSpentProcessing += deltaTime;
 
             // apply effects
-            this.currentProcess.effects.forEach(effect => {
+            this.activeProcessId.effects.forEach(effect => {
                 if (effect.warmstone_vitality_restoration > 0) {
                     warmstone.restoreVitality(effect.warmstone_vitality_restoration * deltaTime)
                 }
             })
 
-            while (this.secondsSpentProcessing >= this.currentProcess.duration) {
+            while (this.secondsSpentProcessing >= this.activeProcessId.duration) {
 
                 // apply outputs
-                game.resources.addResourcesFromProcess(this.currentProcess.outputs);
+                game.resources.addResourcesFromProcess(this.activeProcessId.outputs);
 
-                if (game.resources.hasEnoughResourcesToStartTheProcess(this.currentProcess.inputs)) {
-                    game.resources.spendResourcesForProcess(this.currentProcess.inputs);
+                if (game.resources.hasEnoughResourcesToStartTheProcess(this.activeProcessId.inputs)) {
+                    game.resources.spendResourcesForProcess(this.activeProcessId.inputs);
                 } else {
                     this.isProcessing = false;
                 }
 
-                this.secondsSpentProcessing -= this.currentProcess.duration;
+                this.secondsSpentProcessing -= this.activeProcessId.duration;
             }
         }
 
@@ -99,7 +99,7 @@ export class BuildingBase {
             id: this.buildingData.id,
             level: this.level,
             wispAssigned: !!this.wisp,
-            currentProcess: this.currentProcess?.id,
+            activeProcessId: this.activeProcessId?.id,
         };
     }
 

@@ -8,14 +8,24 @@ export const BUILDINGS : Record<BuildingId, BuildingData>= {
         processes: [
             PROCESSES.cut_tree_oak,
             PROCESSES.cut_tree_birch
-        ]
+        ],
+        levels: {
+            2: [
+                {type: "resource", id: "LOG_OAK", amount: 100},
+            ],
+            3: [
+                {type: "resource", id: "LOG_OAK", amount: 200},
+                {type: "resource", id: "LOG_BIRCH", amount: 100},
+            ],
+        },
     },
     campfire: {
         id: "campfire",
         name: "Campfire",
         processes: [
             PROCESSES.burn_log_oak
-        ]
+        ],
+        levels: {}
     }
 }
 

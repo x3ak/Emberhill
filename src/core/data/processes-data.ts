@@ -23,7 +23,7 @@ export const PROCESSES: Record<ProcessId, ProcessData> = {
         duration: 1.5,
         text: "The forest offers:",
         requirements: [
-            {type: "min_building_level", id: "woodcutter", amount: 1},
+            {type: "min_building_level", id: "woodcutter", amount: 2},
         ],
         inputs: [],
         outputs: [
