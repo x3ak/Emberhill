@@ -1,4 +1,4 @@
-import type {ProcessData, ProcessInputOutput} from "@/shared/types/process.type.ts";
+import type {ProcessData, ResourceAmount} from "@/shared/types/process.type.ts";
 
 export const AllBuildingIds = [
     'woodcutter',
@@ -8,7 +8,7 @@ export const AllBuildingIds = [
 export type BuildingId = typeof AllBuildingIds[number];
 
 export type BuildingLevelUp = {
-    resources: ProcessInputOutput[],
+    resources: ResourceAmount[],
     xp: number,
 }
 

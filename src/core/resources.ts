@@ -1,6 +1,5 @@
 import type {ResourceId} from "@/shared/types/resource.types.ts";
-import type {ProcessInputOutput} from "@/shared/types/process.type.ts";
-import {game} from "./engine.ts";
+import type {ResourceAmount} from "@/shared/types/process.type.ts";
 
 export class GameResources {
     private resources: Record<ResourceId, number> = {
@@ -10,7 +9,6 @@ export class GameResources {
 
     addResource(id: ResourceId, amount: number) {
         this.resources[id] += amount;
-        game.markStateDirty()
     }
 
     hasResource(id: ResourceId, amount: number): boolean {
@@ -19,18 +17,21 @@ export class GameResources {
 
     subResource(id: ResourceId, amount: number): void {
         this.resources[id] -= amount;
-        game.markStateDirty()
     }
 
     setResource(id: ResourceId, amount: number): void {
         this.resources[id] = amount;
     }
 
+    getAmount(id: ResourceId): number {
+        return this.resources[id];
+    }
+
     getResources(): Record<ResourceId, number> {
         return this.resources;
     }
 
-    hasEnoughResourcesToStartTheProcess(inputs: ProcessInputOutput[]): boolean {
+    hasEnoughResourcesToStartTheProcess(inputs: ResourceAmount[]): boolean {
         let hasEnough = true;
         inputs.forEach(processInput => {
             switch (processInput.type) {
@@ -45,7 +46,7 @@ export class GameResources {
         return hasEnough;
     }
 
-    spendResourcesForProcess(inputs: ProcessInputOutput[]) {
+    spendResourcesForProcess(inputs: ResourceAmount[]) {
         inputs.forEach(processInput => {
             switch (processInput.type) {
                 case 'resource':
@@ -55,7 +56,7 @@ export class GameResources {
         })
     }
 
-    addResourcesFromProcess(outputs: ProcessInputOutput[]) {
+    addResourcesFromProcess(outputs: ResourceAmount[]) {
         outputs.forEach(processOutput => {
             switch (processOutput.type) {
                 case 'resource':

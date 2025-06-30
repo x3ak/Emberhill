@@ -13,7 +13,7 @@ export default function Building({ buildingId }: { buildingId: BuildingId }) {
 
     const buildingState = gameState.buildings.get(buildingId);
     const buildingData = coreAPI.building.getData(buildingId);
-    const buildingProcesses = coreAPI.building.getProcesses(buildingId);
+    const buildingProcesses = buildingData.processes;
 
     const [selectedProcess, setSelectedProcess] = useState<ProcessId | null>(null);
 

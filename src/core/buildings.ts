@@ -1,8 +1,10 @@
 import type {Wisp} from "./wisps.ts";
 import {game} from "./engine.ts";
 import {warmstone} from "./warmstone.ts";
-import type {ProcessData, ProcessId} from "@/shared/types/process.type.ts";
+import type {ProcessData, ProcessId, ResourceAmount} from "@/shared/types/process.type.ts";
 import type {BuildingData, BuildingLevelUp} from "@/shared/types/building.types.ts";
+import type {GameCommand} from "./commands.ts";
+import type {ResourceId} from "@/shared/types/resource.types.ts";
 
 export type BuildingState = {
     id: string;
@@ -71,25 +73,55 @@ export class BuildingBase {
     }
 
 
-    update(deltaTime: number): boolean {
-        let lastSecondsData = this.secondsSpentProcessing;
+    hasEnoughAfterPlanned(cost: ResourceAmount[], plannedSpends: GameCommand[]): boolean {
+        if (cost.length == 0) {
+            return true;
+        }
+
+        const spendMap = new Map<ResourceId, number>();
+
+        plannedSpends
+            .filter(s => s.type == "SPEND_RESOURCES")
+            .flatMap(s => s.payload.resources)
+            .forEach(spend => {
+                spendMap.set(spend.id, (spendMap.get(spend.id) || 0) + spend.amount);
+            })
+
+        for (const costItem of cost) {
+            const currentAmount = game.resources.getAmount(costItem.id);
+            const plannedAmount = spendMap.get(costItem.id) || 0;
+
+            if (costItem.amount > currentAmount - plannedAmount) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    update(deltaTime: number): GameCommand[] {
+
+        const commands: GameCommand[] = [];
 
         if (!this.wisp) {
-            return false;
+            return commands;
         }
 
         if (!this.activeProcess) {
-            return false;
+            return commands;
         }
 
         // start the process
         if (!this.isProcessing) {
             if (this.secondsSpentProcessing > 0) {
                 this.isProcessing = true;
-            } else if (game.resources.hasEnoughResourcesToStartTheProcess(this.activeProcess.inputs)) {
+            } else if (this.hasEnoughAfterPlanned(this.activeProcess.inputs, commands)) {
                 this.isProcessing = true;
                 this.secondsSpentProcessing = 0;
-                game.resources.spendResourcesForProcess(this.activeProcess.inputs);
+
+                if (this.activeProcess.inputs.length > 0) {
+                    commands.push({type: 'SPEND_RESOURCES', payload: {resources: this.activeProcess.inputs}})
+                }
             }
         }
 
@@ -106,31 +138,33 @@ export class BuildingBase {
             while (this.secondsSpentProcessing >= this.activeProcess.duration) {
 
                 // apply outputs
-                game.resources.addResourcesFromProcess(this.activeProcess.outputs);
+                commands.push({ type: 'ADD_RESOURCES', payload: { resources: this.activeProcess.outputs } });
+                commands.push({ type: 'ADD_XP', payload: { buildingId: this.buildingData.id, amount: this.activeProcess.xp } });
 
-                // reward xp
-                this.xp += this.activeProcess.xp;
+                if (this.activeProcess.inputs.length > 0) {
+                    if (this.hasEnoughAfterPlanned(this.activeProcess.inputs, commands)) {
+                        commands.push({ type: 'SPEND_RESOURCES', payload: { resources: this.activeProcess.inputs } })
 
-                if (this.levelUpData) {
-                    this.xp = Math.min(this.xp, this.levelUpData.xp)
+                    } else {
+                        this.isProcessing = false;
+                    }
                 }
 
-
-                if (game.resources.hasEnoughResourcesToStartTheProcess(this.activeProcess.inputs)) {
-                    game.resources.spendResourcesForProcess(this.activeProcess.inputs);
-
-                } else {
-                    this.isProcessing = false;
-                }
 
                 this.secondsSpentProcessing -= this.activeProcess.duration;
             }
 
         }
 
-        return lastSecondsData === this.secondsSpentProcessing;
+        return commands;
+    }
 
+    addXP(amount: number) {
+        this.xp += amount;
 
+        if (this.levelUpData) {
+            this.xp = Math.min(this.xp, this.levelUpData.xp)
+        }
     }
 
     getState(): BuildingState {

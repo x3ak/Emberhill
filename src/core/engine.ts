@@ -7,6 +7,7 @@ import {GameResources} from "./resources.ts";
 import {type BuildingId} from "@/shared/types/building.types.ts";
 import type {ProcessData, ProcessId} from "@/shared/types/process.type.ts";
 import {AllResourceIds, type ResourceId} from "@/shared/types/resource.types.ts";
+import type {GameCommand} from "./commands.ts";
 
 export type GameAction =
     | { type: "TICK"; payload: { deltaTime: number } }
@@ -54,7 +55,7 @@ export class GameEngine {
     }
 
     private _dispatch(action: GameAction) {
-        this.reduce(action);
+        this.reducePlayerCommands(action);
 
         // Only update and notify if the state has actually changed
         if (this.isDirty) {
@@ -62,7 +63,7 @@ export class GameEngine {
         }
     }
 
-    private reduce(action: GameAction) {
+    private reducePlayerCommands(action: GameAction) {
         // console.log(action)
         switch (action.type) {
             case 'TICK': {
@@ -73,9 +74,14 @@ export class GameEngine {
                 }
 
                 // check for work at buildings
-                this.getAssignedWisps().forEach(wisp => {
-                    this.isDirty = !wisp.currentAssignment?.update(deltaTime);
-                })
+
+                const buildingCommands = this.getAssignedWisps()
+                    .filter(wisp => wisp.currentAssignment !== undefined)
+                    .flatMap(wisp => wisp.currentAssignment?.update(deltaTime) || [])
+
+
+                this.reduceGameCommands(buildingCommands);
+
 
                 break;
             }
@@ -132,6 +138,28 @@ export class GameEngine {
                 break;
             }
         }
+    }
+
+    reduceGameCommands(gameCommands: GameCommand[]) {
+        if (gameCommands.length === 0) {
+            return;
+        }
+
+        gameCommands.forEach(command => {
+            switch (command.type) {
+                case 'SPEND_RESOURCES':
+                    this.resources.spendResourcesForProcess(command.payload.resources)
+                    break;
+                case 'ADD_RESOURCES':
+                    this.resources.addResourcesFromProcess(command.payload.resources)
+                    break;
+                case 'ADD_XP':
+                    this.buildings.get(command.payload.buildingId)?.addXP(command.payload.amount)
+                    break;
+            }
+        })
+
+        this.isDirty = true;
     }
 
     public markStateDirty(): void {

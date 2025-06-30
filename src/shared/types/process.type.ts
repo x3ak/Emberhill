@@ -8,7 +8,7 @@ export const AllProcessIds = [
 
 export type ProcessId = typeof AllProcessIds[number];
 
-export type ProcessInputOutput =
+export type ResourceAmount =
     | { type: "resource"; id: ResourceId; amount: number }
 
 export type ProcessRequirement =
@@ -26,7 +26,7 @@ export type ProcessData = {
     text: string;
     xp: number;
     requirements: ProcessRequirement[];
-    inputs: ProcessInputOutput[];
-    outputs: ProcessInputOutput[];
+    inputs: ResourceAmount[];
+    outputs: ResourceAmount[];
     effects: ProcessEffect[];  // effects are applied while the process is active
 }

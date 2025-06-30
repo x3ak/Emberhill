@@ -20,17 +20,6 @@ function getBuildingData(id: BuildingId): BuildingData {
     return BUILDINGS[id];
 }
 
-function getBuildingProcesses(id: BuildingId): ProcessData[] {
-    switch (id) {
-        case "woodcutter":
-            return [PROCESSES['cut_tree_oak'], PROCESSES['cut_tree_birch']];
-        case "campfire":
-            return [PROCESSES['burn_log_oak'], PROCESSES['burn_log_birch']];
-
-    }
-}
-
-
 const unassignWisp = (buildingId: BuildingId) => {
     gameDispatch({ type: 'UNASSIGN_WISP', payload: { buildingId: buildingId } });
 }
@@ -55,7 +44,6 @@ export const coreAPI = {
         unassignWisp,
         setProcess,
         unsetProcess,
-        getProcesses: getBuildingProcesses ,
-        getData: getBuildingData ,
+        getData: getBuildingData,
     }
 }
