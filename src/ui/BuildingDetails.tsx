@@ -1,14 +1,19 @@
 import type {BuildingData, BuildingId} from "@/shared/types/building.types.ts";
 import {coreAPI} from "../core/core.api.ts";
 import type {BuildingState} from "../core/buildings.ts";
+import ProgressBar from "./components/ProgressBar.tsx";
 
 export default function BuildingDetails({ buildingId, buildingState, buildingData }: { buildingId: BuildingId, buildingState: BuildingState, buildingData: BuildingData }) {
 
     let activeProcessInfo;
-    if (buildingState.activeProcessId) {
-        const activeProcess = coreAPI.getProcessData(buildingState.activeProcessId)
+    if (buildingState.activeProcess) {
+        const activeProcess = coreAPI.getProcessData(buildingState.activeProcess.processId)
         activeProcessInfo = (
-            <p className="text-purple-400">Active Process: {activeProcess.name}</p>
+            <div>
+                <p className="text-purple-400">Active Process: {activeProcess.name} {buildingState.activeProcess?.secondsSpent.toFixed(2)} s</p>
+
+                <ProgressBar isActive={buildingState.isProcessing} totalDuration={buildingState.activeProcess?.duration} elapsedTime={buildingState.activeProcess?.secondsSpent} />
+            </div>
         )
     }
 

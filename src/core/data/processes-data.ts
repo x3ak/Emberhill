@@ -5,7 +5,7 @@ export const PROCESSES: Record<ProcessId, ProcessData> = {
         id: "cut_tree_oak",
         name: "Cut Oak Tree",
         description: "Take up your axe and venture into the woods. Find an oak tree. A few well-aimed swings will bring down one of the forest's sturdy children, ready to be turned to plank and purpose.",
-        duration: 1,
+        duration: 10,
         text: "The forest offers",
         requirements: [
             {type: "min_building_level", id: "woodcutter", amount: 1},
@@ -20,7 +20,7 @@ export const PROCESSES: Record<ProcessId, ProcessData> = {
         id: "cut_tree_birch",
         name: "Cut Birch Tree",
         description: "Take up your axe and venture into the woods. Find a birch tree. A few well-aimed swings will bring down one of the forest's sturdy children, ready to be turned to plank and purpose.",
-        duration: 1.5,
+        duration: 15,
         text: "The forest offers:",
         requirements: [
             {type: "min_building_level", id: "woodcutter", amount: 2},

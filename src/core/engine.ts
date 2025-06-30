@@ -63,7 +63,7 @@ export class GameEngine {
     }
 
     private reduce(action: GameAction) {
-        console.log(action)
+        // console.log(action)
         switch (action.type) {
             case 'TICK': {
                 const {deltaTime} = action.payload;
@@ -74,13 +74,8 @@ export class GameEngine {
 
                 // check for work at buildings
                 this.getAssignedWisps().forEach(wisp => {
-                    const production = wisp.currentAssignment?.update(deltaTime);
-
-                    if (production) {
-                        this.isDirty = true;
-                    }
+                    this.isDirty = !wisp.currentAssignment?.update(deltaTime);
                 })
-
 
                 break;
             }
@@ -173,8 +168,8 @@ export class GameEngine {
                     }
                 }
 
-                if (buildingState.activeProcessId) {
-                    building.setProcess(PROCESSES[buildingState.activeProcessId]);
+                if (buildingState.activeProcess?.processId) {
+                    building.setProcess(PROCESSES[buildingState.activeProcess?.processId]);
                 }
             }
         })

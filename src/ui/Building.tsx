@@ -1,5 +1,5 @@
 import { useGameDispatch, useGameState } from "../hooks/useGame.ts";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import ProcessDetails from "./ProcessDetails.tsx";
 import type {ProcessData, ProcessId} from "@/shared/types/process.type.ts";
 import type {BuildingId} from "@/shared/types/building.types.ts";
@@ -16,14 +16,6 @@ export default function Building({ buildingId }: { buildingId: BuildingId }) {
     const buildingProcesses = coreAPI.building.getProcesses(buildingId);
 
     const [selectedProcess, setSelectedProcess] = useState<ProcessId | null>(null);
-
-    useEffect(() => {
-        const activeProcessId = buildingState?.activeProcessId;
-        if (activeProcessId) {
-            setSelectedProcess(activeProcessId);
-        }
-
-    }, [buildingId, buildingState]);
 
     const setProcess = (processId: ProcessId) => {
         gameDispatch({ type: 'SET_PROCESS', payload: { buildingId: buildingId, processId: processId } });
@@ -61,7 +53,7 @@ export default function Building({ buildingId }: { buildingId: BuildingId }) {
                             processId={selectedProcess}
                             onPick={() => setProcess(selectedProcess)}
                             onUnset={unsetProcess}
-                            isActive={buildingState?.activeProcessId === selectedProcess}
+                            isActive={buildingState?.activeProcess?.processId === selectedProcess}
                         />
                     ) : (
                         <div className="text-center text-gray-400 flex items-center justify-center h-full">

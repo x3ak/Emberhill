@@ -8,7 +8,14 @@ export type BuildingState = {
     id: string;
     level: number;
     wispAssigned: boolean;
-    activeProcessId: ProcessId | undefined;
+    isProcessing: boolean;
+    activeProcess: {
+        processId: ProcessId;
+        secondsSpent: number;
+        duration: number;
+        timeLeft: number;
+        percentage: number;
+    } | null;
 }
 
 export class BuildingBase {
@@ -21,18 +28,23 @@ export class BuildingBase {
 
     private isProcessing: boolean = false;
 
-    private activeProcessId: ProcessData | undefined;
+    private activeProcess: ProcessData | undefined;
+
 
     constructor(buildingData: BuildingData) {
         this.buildingData = buildingData;
     }
 
     setProcess(process:ProcessData): void {
-        this.activeProcessId = process;
+        this.activeProcess = process;
+        this.isProcessing = false;
+        this.secondsSpentProcessing = 0;
     }
 
     unsetProcess(): void {
-        this.activeProcessId = undefined;
+        this.activeProcess = undefined;
+        this.isProcessing = false;
+        this.secondsSpentProcessing = 0;
     }
 
     assignWisp(wisp: Wisp): void {
@@ -48,58 +60,85 @@ export class BuildingBase {
 
         this.wisp.isAssigned = false;
         this.wisp.currentAssignment = undefined;
+        this.isProcessing = false;
         this.wisp = null;
     }
 
 
-    update(deltaTime: number): void {
-        if (!this.wisp || !this.activeProcessId) {
-            this.isProcessing = false;
-            this.secondsSpentProcessing = 0;
-            return;
+    update(deltaTime: number): boolean {
+        let lastSecondsData = this.secondsSpentProcessing;
+
+        if (!this.wisp) {
+            return false;
         }
 
-        // start the process
-        if (!this.isProcessing && game.resources.hasEnoughResourcesToStartTheProcess(this.activeProcessId.inputs)) {
-            this.isProcessing = true;
-            this.secondsSpentProcessing = 0;
-            game.resources.spendResourcesForProcess(this.activeProcessId.inputs);
+        if (!this.activeProcess) {
+            return false;
+        }
+        //
+        // if (!this.wisp || !this.activeProcess) {
+        //     this.isProcessing = false;
+        //     this.secondsSpentProcessing = 0;
+        //     return lastSecondsData === this.secondsSpentProcessing;
+        // }
 
+        // start the process
+        if (!this.isProcessing) {
+            if (this.secondsSpentProcessing > 0) {
+                this.isProcessing = true;
+            } else if (game.resources.hasEnoughResourcesToStartTheProcess(this.activeProcess.inputs)) {
+                this.isProcessing = true;
+                this.secondsSpentProcessing = 0;
+                game.resources.spendResourcesForProcess(this.activeProcess.inputs);
+            }
         }
 
         if (this.isProcessing) {
             this.secondsSpentProcessing += deltaTime;
 
             // apply effects
-            this.activeProcessId.effects.forEach(effect => {
+            this.activeProcess.effects.forEach(effect => {
                 if (effect.warmstone_vitality_restoration > 0) {
                     warmstone.restoreVitality(effect.warmstone_vitality_restoration * deltaTime)
                 }
             })
 
-            while (this.secondsSpentProcessing >= this.activeProcessId.duration) {
+            while (this.secondsSpentProcessing >= this.activeProcess.duration) {
 
                 // apply outputs
-                game.resources.addResourcesFromProcess(this.activeProcessId.outputs);
+                game.resources.addResourcesFromProcess(this.activeProcess.outputs);
 
-                if (game.resources.hasEnoughResourcesToStartTheProcess(this.activeProcessId.inputs)) {
-                    game.resources.spendResourcesForProcess(this.activeProcessId.inputs);
+                if (game.resources.hasEnoughResourcesToStartTheProcess(this.activeProcess.inputs)) {
+                    game.resources.spendResourcesForProcess(this.activeProcess.inputs);
                 } else {
                     this.isProcessing = false;
                 }
 
-                this.secondsSpentProcessing -= this.activeProcessId.duration;
+                this.secondsSpentProcessing -= this.activeProcess.duration;
             }
+
         }
+
+        return lastSecondsData === this.secondsSpentProcessing;
+
 
     }
 
     getState(): BuildingState {
+        let activeProcess = this.activeProcess ? {
+            processId: this.activeProcess.id,
+            secondsSpent: this.secondsSpentProcessing,
+            duration: this.activeProcess.duration,
+            timeLeft: this.activeProcess.duration - this.secondsSpentProcessing,
+            percentage: this.secondsSpentProcessing / this.activeProcess.duration
+        } : null;
+
         return {
             id: this.buildingData.id,
             level: this.level,
             wispAssigned: !!this.wisp,
-            activeProcessId: this.activeProcessId?.id,
+            isProcessing: this.isProcessing,
+            activeProcess: activeProcess,
         };
     }
 
