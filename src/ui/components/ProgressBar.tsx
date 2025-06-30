@@ -24,7 +24,6 @@ export default function ProgressBar({totalDuration, elapsedTime, isActive, color
         animationStartTimeRef.current = performance.now();
         const animate = () => {
             if (isActive) {
-                console.log(isActive)
                 const timeSinceAnimationStart = (performance.now() - animationStartTimeRef.current) / 1000; // in seconds
 
                 const totalElapsedTime = elapsedTime + timeSinceAnimationStart;

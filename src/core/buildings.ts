@@ -2,11 +2,12 @@ import type {Wisp} from "./wisps.ts";
 import {game} from "./engine.ts";
 import {warmstone} from "./warmstone.ts";
 import type {ProcessData, ProcessId} from "@/shared/types/process.type.ts";
-import type {BuildingData} from "@/shared/types/building.types.ts";
+import type {BuildingData, BuildingLevelUp} from "@/shared/types/building.types.ts";
 
 export type BuildingState = {
     id: string;
     level: number;
+    xp: number;
     wispAssigned: boolean;
     isProcessing: boolean;
     activeProcess: {
@@ -20,6 +21,8 @@ export type BuildingState = {
 
 export class BuildingBase {
     public level: number = 1;
+    private xp: number = 0;
+
     public wisp: Wisp | null = null;
 
     public buildingData: BuildingData;
@@ -30,9 +33,12 @@ export class BuildingBase {
 
     private activeProcess: ProcessData | undefined;
 
+    private levelUpData: BuildingLevelUp | null = null;
 
     constructor(buildingData: BuildingData) {
         this.buildingData = buildingData;
+
+        this.levelUpData = buildingData.levels[this.level + 1] || null;
     }
 
     setProcess(process:ProcessData): void {
@@ -75,12 +81,6 @@ export class BuildingBase {
         if (!this.activeProcess) {
             return false;
         }
-        //
-        // if (!this.wisp || !this.activeProcess) {
-        //     this.isProcessing = false;
-        //     this.secondsSpentProcessing = 0;
-        //     return lastSecondsData === this.secondsSpentProcessing;
-        // }
 
         // start the process
         if (!this.isProcessing) {
@@ -108,8 +108,17 @@ export class BuildingBase {
                 // apply outputs
                 game.resources.addResourcesFromProcess(this.activeProcess.outputs);
 
+                // reward xp
+                this.xp += this.activeProcess.xp;
+
+                if (this.levelUpData) {
+                    this.xp = Math.min(this.xp, this.levelUpData.xp)
+                }
+
+
                 if (game.resources.hasEnoughResourcesToStartTheProcess(this.activeProcess.inputs)) {
                     game.resources.spendResourcesForProcess(this.activeProcess.inputs);
+
                 } else {
                     this.isProcessing = false;
                 }
@@ -136,6 +145,7 @@ export class BuildingBase {
         return {
             id: this.buildingData.id,
             level: this.level,
+            xp: this.xp,
             wispAssigned: !!this.wisp,
             isProcessing: this.isProcessing,
             activeProcess: activeProcess,

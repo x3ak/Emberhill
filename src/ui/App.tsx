@@ -6,17 +6,18 @@ import {useState} from 'react';
 import Warmstone from './Warmstone.tsx';
 import Sidebar from './Sidebar.tsx';
 
+let timeSpeed: number = 1;
 function browserLoop() {
     let last = performance.now();
 
     setInterval(() => {
         const now = performance.now();
-        const deltaTime = (now - last) / 1000;
+        const deltaTime = (now - last) / 1000 * timeSpeed;
         last = now;
 
         game.dispatch({type: 'TICK', payload: {deltaTime}})
 
-    }, 200);
+    }, 1000);
 }
 
 browserLoop();
@@ -49,6 +50,7 @@ export default function App() {
         let loadedState = JSON.parse(localStorage.getItem('GAME_STATE') || '{}', retriever);
         game.setState(loadedState);
     }
+
 
     return (
         <div className="min-h-screen flex flex-col bg-zinc-900 text-gray-100 font-sans">

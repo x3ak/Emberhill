@@ -25,7 +25,7 @@ function getBuildingProcesses(id: BuildingId): ProcessData[] {
         case "woodcutter":
             return [PROCESSES['cut_tree_oak'], PROCESSES['cut_tree_birch']];
         case "campfire":
-            return [PROCESSES['burn_log_oak']]
+            return [PROCESSES['burn_log_oak'], PROCESSES['burn_log_birch']];
 
     }
 }

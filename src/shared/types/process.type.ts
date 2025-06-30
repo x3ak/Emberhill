@@ -3,7 +3,7 @@ import type {BuildingId} from "@/shared/types/building.types.ts";
 
 export const AllProcessIds = [
     'cut_tree_oak', 'cut_tree_birch',
-    'burn_log_oak',
+    'burn_log_oak', 'burn_log_birch'
 ] as const;
 
 export type ProcessId = typeof AllProcessIds[number];
@@ -23,7 +23,8 @@ export type ProcessData = {
     name: string;
     description: string;
     duration: number; // how much time it takes to perform the process/action
-    text: string,
+    text: string;
+    xp: number;
     requirements: ProcessRequirement[];
     inputs: ProcessInputOutput[];
     outputs: ProcessInputOutput[];

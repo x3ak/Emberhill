@@ -10,20 +10,27 @@ export const BUILDINGS : Record<BuildingId, BuildingData>= {
             PROCESSES.cut_tree_birch
         ],
         levels: {
-            2: [
-                {type: "resource", id: "LOG_OAK", amount: 100},
-            ],
-            3: [
-                {type: "resource", id: "LOG_OAK", amount: 200},
-                {type: "resource", id: "LOG_BIRCH", amount: 100},
-            ],
+            2: {
+                xp: 100,
+                resources: [
+                    {type: "resource", id: "LOG_OAK", amount: 100},
+                ]
+            },
+            3: {
+                xp: 500,
+                resources: [
+                    {type: "resource", id: "LOG_OAK", amount: 100},
+                    {type: "resource", id: "LOG_BIRCH", amount: 100},
+                ]
+            },
         },
     },
     campfire: {
         id: "campfire",
         name: "Campfire",
         processes: [
-            PROCESSES.burn_log_oak
+            PROCESSES.burn_log_oak,
+            PROCESSES.burn_log_birch,
         ],
         levels: {}
     }
