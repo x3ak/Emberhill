@@ -27,7 +27,6 @@ export default function Building({buildingId}: { buildingId: BuildingId }) {
 
     return (
         <div className="flex flex-col gap-4">
-            {JSON.stringify(buildingState, null, 2)}
             {buildingState && (
                 <BuildingDetails buildingId={buildingId} buildingState={buildingState} buildingData={buildingData}/>)}
 
