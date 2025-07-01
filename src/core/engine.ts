@@ -7,9 +7,8 @@ import {GameResources} from "./resources.ts";
 import {type BuildingId} from "@/shared/types/building.types.ts";
 import type {ProcessData, ProcessId} from "@/shared/types/process.type.ts";
 import {AllResourceIds, type ResourceId} from "@/shared/types/resource.types.ts";
-import type {GameCommand} from "./commands.ts";
 
-export type GameAction =
+export type PlayerCommand =
     | { type: "TICK"; payload: { deltaTime: number } }
     | { type: "ASSIGN_WISP"; payload: { buildingId: BuildingId } }
     | { type: "UNASSIGN_WISP"; payload: { buildingId: BuildingId } }
@@ -34,7 +33,7 @@ export class GameEngine {
     private isDirty: boolean = true;
 
     private listeners = new Set<() => void>();
-    public readonly dispatch: (action: GameAction) => void;
+    public readonly dispatch: (action: PlayerCommand) => void;
 
     public readonly resources: GameResources = new GameResources();
 
@@ -46,7 +45,7 @@ export class GameEngine {
 
         // find a better way to handle
         this.buildings.set('woodcutter', new BuildingBase(BUILDINGS.woodcutter));
-        this.buildings.set('campfire', new BuildingBase( BUILDINGS.campfire));
+        this.buildings.set('campfire', new BuildingBase(BUILDINGS.campfire));
 
         this.wisps.push(new Wisp());
 
@@ -54,8 +53,19 @@ export class GameEngine {
 
     }
 
-    private _dispatch(action: GameAction) {
-        this.reducePlayerCommands(action);
+    private _dispatch(command: PlayerCommand) {
+        this.reducePlayerCommands(command);
+
+        if (this.resources.hasChanged()) {
+            this.isDirty = true;
+        }
+
+        if (!this.isDirty) {
+            const hasChangedBuilding = this.getAssignedWisps().find(wisp => wisp.currentAssignment?.hasChanged())
+            if (hasChangedBuilding) {
+                this.isDirty = true;
+            }
+        }
 
         // Only update and notify if the state has actually changed
         if (this.isDirty) {
@@ -63,11 +73,11 @@ export class GameEngine {
         }
     }
 
-    private reducePlayerCommands(action: GameAction) {
+    private reducePlayerCommands(command: PlayerCommand) {
         // console.log(action)
-        switch (action.type) {
+        switch (command.type) {
             case 'TICK': {
-                const {deltaTime} = action.payload;
+                const {deltaTime} = command.payload;
 
                 if (warmstone.update(deltaTime)) {
                     this.isDirty = true;
@@ -75,13 +85,9 @@ export class GameEngine {
 
                 // check for work at buildings
 
-                const buildingCommands = this.getAssignedWisps()
+                this.getAssignedWisps()
                     .filter(wisp => wisp.currentAssignment !== undefined)
-                    .flatMap(wisp => wisp.currentAssignment?.update(deltaTime) || [])
-
-
-                this.reduceGameCommands(buildingCommands);
-
+                    .forEach(wisp => wisp.currentAssignment?.update(deltaTime))
 
                 break;
             }
@@ -92,7 +98,7 @@ export class GameEngine {
                     break;
                 }
 
-                const {buildingId} = action.payload;
+                const {buildingId} = command.payload;
                 this.buildings.get(buildingId)?.assignWisp(freeWisp);
 
                 this.isDirty = true;
@@ -100,7 +106,7 @@ export class GameEngine {
             }
 
             case 'UNASSIGN_WISP': {
-                const {buildingId} = action.payload;
+                const {buildingId} = command.payload;
                 this.buildings.get(buildingId)?.unassignWisp();
 
                 this.isDirty = true;
@@ -108,7 +114,7 @@ export class GameEngine {
             }
 
             case 'SET_PROCESS': {
-                const {buildingId, processId} = action.payload;
+                const {buildingId, processId} = command.payload;
                 const processData: ProcessData = PROCESSES[processId];
                 if (!processData) {
                     break
@@ -126,7 +132,7 @@ export class GameEngine {
             }
 
             case 'UNSET_PROCESS': {
-                const {buildingId} = action.payload;
+                const {buildingId} = command.payload;
                 let building = this.buildings.get(buildingId);
                 if (!building) {
                     break
@@ -140,37 +146,15 @@ export class GameEngine {
         }
     }
 
-    reduceGameCommands(gameCommands: GameCommand[]) {
-        if (gameCommands.length === 0) {
-            return;
-        }
-
-        gameCommands.forEach(command => {
-            switch (command.type) {
-                case 'SPEND_RESOURCES':
-                    this.resources.spendResourcesForProcess(command.payload.resources)
-                    break;
-                case 'ADD_RESOURCES':
-                    this.resources.addResourcesFromProcess(command.payload.resources)
-                    break;
-                case 'ADD_XP':
-                    this.buildings.get(command.payload.buildingId)?.addXP(command.payload.amount)
-                    break;
-            }
-        })
-
-        this.isDirty = true;
-    }
-
     public markStateDirty(): void {
         this.isDirty = true;
     }
 
-    private getUnassignedWisp() : Wisp | undefined {
+    private getUnassignedWisp(): Wisp | undefined {
         return this.wisps.find(wisp => !wisp.isAssigned);
     }
 
-    private getAssignedWisps() : Wisp[] {
+    private getAssignedWisps(): Wisp[] {
         return this.wisps.filter(wisp => wisp.isAssigned);
     }
 
@@ -215,7 +199,6 @@ export class GameEngine {
         this.buildings.forEach(building => {
             buildingsState.set(building.buildingData.id, building.getState());
         });
-
 
         this.cachedState = {
             resources: {...this.resources.getResources()}, // Return copies

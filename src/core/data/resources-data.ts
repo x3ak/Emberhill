@@ -1,6 +1,6 @@
 import type {ResourceId, ResourceData} from "@/shared/types/resource.types.ts";
 
-export const RESOURCES : Record<ResourceId, ResourceData> = {
+export const RESOURCES: Record<ResourceId, ResourceData> = {
     LOG_BIRCH: {
         id: 'LOG_BIRCH',
         name: 'Birch Log',

@@ -1,7 +1,7 @@
 import {useSyncExternalStore} from "react";
-import {game, type GameAction, type GameState} from "../core/engine";
+import {game, type PlayerCommand, type GameState} from "../core/engine";
 
-export type Dispatch = (action: GameAction) => void;
+export type Dispatch = (action: PlayerCommand) => void;
 
 export function useGameState(): GameState {
     return useSyncExternalStore(

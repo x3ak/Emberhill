@@ -7,6 +7,7 @@ import Warmstone from './Warmstone.tsx';
 import Sidebar from './Sidebar.tsx';
 
 let timeSpeed: number = 1;
+
 function browserLoop() {
     let last = performance.now();
 
@@ -17,7 +18,7 @@ function browserLoop() {
 
         game.dispatch({type: 'TICK', payload: {deltaTime}})
 
-    }, 1000);
+    }, 200);
 }
 
 browserLoop();
@@ -60,7 +61,7 @@ export default function App() {
                 <div className="flex flex-1"></div>
                 {/* Sidebar */}
                 <aside className="w-64 bg-zinc-800 p-4 border-r border-zinc-700 flex-1">
-                    <Sidebar onSelect={setActiveSection} activeSection={activeSection} />
+                    <Sidebar onSelect={setActiveSection} activeSection={activeSection}/>
                 </aside>
 
                 {/* Main Section */}
@@ -71,17 +72,19 @@ export default function App() {
                     <div className='fixed bottom-4 right-4 z-50 flex flex-col gap-2 items-end'>
                         <Warmstone/>
                         <div className="flex gap-2">
-                            <button title="Save" onClick={saveState} className="bg-green-500 hover:bg-green-600 text-white font-bold p-3 rounded shadow-lg transition-transform transform hover:scale-110">
+                            <button title="Save" onClick={saveState}
+                                    className="bg-green-500 hover:bg-green-600 text-white font-bold p-3 rounded shadow-lg transition-transform transform hover:scale-110">
                                 💾
                             </button>
-                            <button title="Load" onClick={loadState} className="bg-amber-500 hover:bg-amber-600 text-white font-bold p-3 rounded shadow-lg transition-transform transform hover:scale-110">
+                            <button title="Load" onClick={loadState}
+                                    className="bg-amber-500 hover:bg-amber-600 text-white font-bold p-3 rounded shadow-lg transition-transform transform hover:scale-110">
                                 📂
                             </button>
                         </div>
                     </div>
                     {activeSection !== 'home' && <Building buildingId={activeSection as any}/>}
                 </main>
-                
+
                 <div className="flex flex-1"></div>
             </div>
         </div>

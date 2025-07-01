@@ -1,12 +1,12 @@
-import { useGameDispatch, useGameState } from "../hooks/useGame.ts";
-import { useState } from "react";
+import {useGameDispatch, useGameState} from "../hooks/useGame.ts";
+import {useState} from "react";
 import ProcessDetails from "./ProcessDetails.tsx";
 import type {ProcessData, ProcessId} from "@/shared/types/process.type.ts";
 import type {BuildingId} from "@/shared/types/building.types.ts";
 import {coreAPI} from "../core/core.api.ts";
 import BuildingDetails from "./BuildingDetails.tsx";
 
-export default function Building({ buildingId }: { buildingId: BuildingId }) {
+export default function Building({buildingId}: { buildingId: BuildingId }) {
 
     const gameDispatch = useGameDispatch();
     const gameState = useGameState();
@@ -18,16 +18,18 @@ export default function Building({ buildingId }: { buildingId: BuildingId }) {
     const [selectedProcess, setSelectedProcess] = useState<ProcessId | null>(null);
 
     const setProcess = (processId: ProcessId) => {
-        gameDispatch({ type: 'SET_PROCESS', payload: { buildingId: buildingId, processId: processId } });
+        gameDispatch({type: 'SET_PROCESS', payload: {buildingId: buildingId, processId: processId}});
     }
 
     const unsetProcess = () => {
-        gameDispatch({ type: 'UNSET_PROCESS', payload: { buildingId: buildingId } });
+        gameDispatch({type: 'UNSET_PROCESS', payload: {buildingId: buildingId}});
     }
 
     return (
         <div className="flex flex-col gap-4">
-            {buildingState && (<BuildingDetails buildingId={buildingId} buildingState={buildingState} buildingData={buildingData} />)}
+            {JSON.stringify(buildingState, null, 2)}
+            {buildingState && (
+                <BuildingDetails buildingId={buildingId} buildingState={buildingState} buildingData={buildingData}/>)}
 
             <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col gap-2 bg-zinc-800 p-4 rounded-lg shadow-lg">

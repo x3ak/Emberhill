@@ -13,7 +13,13 @@ function clamp(number: number, min: number, max: number): number {
     return Math.min(Math.max(number, min), max);
 }
 
-export default function ProgressBar({totalDuration, elapsedTime, isActive, color = 'bg-yellow-500', height = 'h-2'}: ProgressBarProps) {
+export default function ProgressBar({
+                                        totalDuration,
+                                        elapsedTime,
+                                        isActive,
+                                        color = 'bg-yellow-500',
+                                        height = 'h-2'
+                                    }: ProgressBarProps) {
     const [visualPercentage, setVisualPercentage] = useState(0);
 
     // Clamp the percentage between 0 and 100 to prevent overflow
@@ -28,7 +34,7 @@ export default function ProgressBar({totalDuration, elapsedTime, isActive, color
 
                 const totalElapsedTime = elapsedTime + timeSinceAnimationStart;
 
-                setVisualPercentage(totalElapsedTime/totalDuration * 100);
+                setVisualPercentage(totalElapsedTime / totalDuration * 100);
             }
 
 
@@ -53,7 +59,7 @@ export default function ProgressBar({totalDuration, elapsedTime, isActive, color
         >
             <div
                 className={`h-full ${color}`}
-                style={{ width: percentage.toString().concat("%") }}
+                style={{width: percentage.toString().concat("%")}}
             />
         </div>
     );

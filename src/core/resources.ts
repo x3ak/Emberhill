@@ -2,13 +2,16 @@ import type {ResourceId} from "@/shared/types/resource.types.ts";
 import type {ResourceAmount} from "@/shared/types/process.type.ts";
 
 export class GameResources {
+    private isDirty: boolean = false;
+
     private resources: Record<ResourceId, number> = {
-        LOG_OAK: 0,
-        LOG_BIRCH: 0,
+        LOG_OAK: 19,
+        LOG_BIRCH: 2,
     };
 
     addResource(id: ResourceId, amount: number) {
         this.resources[id] += amount;
+        this.isDirty = true;
     }
 
     hasResource(id: ResourceId, amount: number): boolean {
@@ -17,10 +20,12 @@ export class GameResources {
 
     subResource(id: ResourceId, amount: number): void {
         this.resources[id] -= amount;
+        this.isDirty = true;
     }
 
     setResource(id: ResourceId, amount: number): void {
         this.resources[id] = amount;
+        this.isDirty = true;
     }
 
     getAmount(id: ResourceId): number {
@@ -31,7 +36,7 @@ export class GameResources {
         return this.resources;
     }
 
-    hasEnoughResourcesToStartTheProcess(inputs: ResourceAmount[]): boolean {
+    hasEnoughToStartTheProcess(inputs: ResourceAmount[]): boolean {
         let hasEnough = true;
         inputs.forEach(processInput => {
             switch (processInput.type) {
@@ -64,5 +69,9 @@ export class GameResources {
                     break;
             }
         })
+    }
+
+    hasChanged(): boolean {
+        return this.isDirty;
     }
 }

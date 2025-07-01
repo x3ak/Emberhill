@@ -1,4 +1,4 @@
-import { useGameState} from "../hooks/useGame"
+import {useGameState} from "../hooks/useGame"
 import ResourceDisplay from "./ResourceDisplay.tsx";
 import {coreAPI} from "../core/core.api.ts";
 import {AllResourceIds} from "@/shared/types/resource.types.ts";
@@ -8,7 +8,8 @@ export default function ResourceBar() {
 
     let resourcesList = AllResourceIds.map((resourceId) => {
         return (
-            <ResourceDisplay key={resourceId} name={coreAPI.getResourceData(resourceId).name} amount={gameState.resources[resourceId]}/>
+            <ResourceDisplay key={resourceId} name={coreAPI.getResourceData(resourceId).name}
+                             amount={gameState.resources[resourceId]}/>
         )
     })
 
