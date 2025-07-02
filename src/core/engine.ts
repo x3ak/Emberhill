@@ -49,6 +49,7 @@ export class GameEngine {
         this.buildings.set('campfire', new BuildingBase(BUILDINGS.campfire));
 
         this.wisps.push(new Wisp());
+        this.wisps.push(new Wisp());
 
         this.dispatch = this._dispatch.bind(this);
 
@@ -96,9 +97,7 @@ export class GameEngine {
                             return;
                         }
 
-                        const buildingUpdateResult = wisp.currentAssignment.update(deltaTime);
-
-                        gameCommands.push( ...buildingUpdateResult.commands )
+                        const buildingUpdateResult = wisp.currentAssignment.update(deltaTime, gameCommands);
 
                         if (buildingUpdateResult.hasChangedState) {
                             hasStateChanges = true;

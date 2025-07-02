@@ -37,7 +37,7 @@ export const PROCESSES: Record<ProcessId, ProcessData> = {
         id: "burn_log_oak",
         name: "Burn Oak Log",
         description: "Burn Oak Log to get some warmth into stone",
-        duration: 0.5,
+        duration: 5,
         xp: 5,
         text: "Your spirit feels:",
         requirements: [

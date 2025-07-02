@@ -17,6 +17,7 @@ export default function ResourceBar() {
         <header className="bg-zinc-800 border-b-2 border-zinc-700 p-3 flex justify-center gap-8 shadow-md">
 
             {resourcesList}
+            {JSON.stringify(gameState.wisps, null, 2)}
 
         </header>
     )

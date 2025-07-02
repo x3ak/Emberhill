@@ -85,12 +85,10 @@ export class BuildingBase {
         }
     }
 
-    update(deltaTime: number): {commands: GameCommand[], hasChangedState: boolean} {
-
-        const commands: GameCommand[] = [];
+    update(deltaTime: number, commands: GameCommand[]): {hasChangedState: boolean} {
 
         if (!this.wisp || !this.activeProcess) {
-            return {commands: commands, hasChangedState: false};
+            return {hasChangedState: false};
         }
 
         const wasProcessing = this.isProcessing;
@@ -154,7 +152,7 @@ export class BuildingBase {
             }
         }
 
-        return {commands: commands, hasChangedState: wasProcessing !== this.isProcessing}
+        return {hasChangedState: wasProcessing !== this.isProcessing}
     }
 
     updateOld(deltaTime: number): void {

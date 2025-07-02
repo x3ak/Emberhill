@@ -18,7 +18,7 @@ function browserLoop() {
 
         game.dispatch({type: 'TICK', payload: {deltaTime}})
 
-    }, 200);
+    }, 800);
 }
 
 browserLoop();

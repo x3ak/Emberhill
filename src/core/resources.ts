@@ -6,8 +6,8 @@ export class GameResources {
     private isDirty: boolean = false;
 
     private resources: Record<ResourceId, number> = {
-        LOG_OAK: 19,
-        LOG_BIRCH: 2,
+        LOG_OAK: 0,
+        LOG_BIRCH: 0,
     };
 
     addResource(id: ResourceId, amount: number) {
