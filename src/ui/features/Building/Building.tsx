@@ -3,8 +3,9 @@ import {useEffect, useState} from "react";
 import type {ProcessData, ProcessId} from "@/shared/types/process.type.ts";
 import type {BuildingId} from "@/shared/types/building.types.ts";
 import {coreAPI} from "../../../core/core.api.ts";
-import BuildingDetails from "@/components/BuildingDetails/BuildingDetails.tsx";
-import ProcessDetails from "@/components/ProcessDetails/ProcessDetails.tsx";
+import BuildingDetails from "../../components/BuildingDetails/BuildingDetails.tsx";
+import ProcessDetails from "../../components/ProcessDetails/ProcessDetails.tsx";
+import styles from './Building.module.css';
 
 export default function Building({buildingId}: { buildingId: BuildingId }) {
 
@@ -29,20 +30,21 @@ export default function Building({buildingId}: { buildingId: BuildingId }) {
             {buildingState && (
                 <BuildingDetails buildingId={buildingId} buildingState={buildingState} buildingData={buildingData}/>)}
 
-            <div>
-                <div>
-                    <h4>Processes</h4>
+            <div className={styles.container}>
+                <ul className={styles.processesList}>
                     {buildingProcesses.map((process: ProcessData) => (
-                        <button
+                        <li
                             key={process.id}
+                            className={`${styles.processButton} ${selectedProcess === process.id ? styles.active : ''}`}
                             onClick={() =>  setSelectedProcess(process.id)}
+
                         >
                             {process.name}
-                        </button>
+                        </li>
                     ))}
-                </div>
+                </ul>
 
-                <div>
+                <div className={styles.processDetails}>
                     {selectedProcess ? (
                         <ProcessDetails
                             processId={selectedProcess}
