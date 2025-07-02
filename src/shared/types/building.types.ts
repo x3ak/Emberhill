@@ -1,4 +1,4 @@
-import type {ProcessData, ResourceAmount} from "@/shared/types/process.type.ts";
+import type {ProcessData, ProcessId, ResourceAmount} from "@/shared/types/process.type.ts";
 
 export const AllBuildingIds = [
     'woodcutter',
@@ -15,6 +15,6 @@ export type BuildingLevelUp = {
 export type BuildingData = {
     id: BuildingId;
     name: string;
-    processes: ProcessData[],
+    processes: {[key in ProcessId]?: ProcessData},
     levels: Record<number, BuildingLevelUp>,
 }

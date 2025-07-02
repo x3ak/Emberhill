@@ -2,7 +2,6 @@ import {type BuildingState, BuildingBase} from "./buildings";
 import {Wisp} from "./wisps.ts";
 import {BUILDINGS} from "./data/buildings-data.ts";
 import {warmstone, type WarmstoneState} from "./warmstone.ts";
-import {PROCESSES} from "./data/processes-data.ts";
 import {GameResources} from "./resources.ts";
 import {type BuildingId} from "@/shared/types/building.types.ts";
 import type {ProcessData, ProcessId} from "@/shared/types/process.type.ts";
@@ -137,7 +136,7 @@ export class GameEngine {
 
             case 'SET_PROCESS': {
                 const {buildingId, processId} = command.payload;
-                const processData: ProcessData = PROCESSES[processId];
+                const processData: ProcessData | null = BUILDINGS[buildingId].processes[processId] || null;
                 if (!processData) {
                     break
                 }
@@ -240,7 +239,12 @@ export class GameEngine {
                 }
 
                 if (buildingState.activeProcess?.processId) {
-                    building.setProcess(PROCESSES[buildingState.activeProcess?.processId]);
+                    const processId = buildingState.activeProcess?.processId;
+                    const processData = BUILDINGS[buildingId]?.processes[processId] || null;
+                    if (processData) {
+                        building.setProcess(processData);
+                    }
+
                 }
             }
         })

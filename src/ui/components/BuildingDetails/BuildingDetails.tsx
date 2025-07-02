@@ -13,10 +13,10 @@ export default function BuildingDetails({buildingId, buildingState, buildingData
     let activeProcessInfo;
 
     if (buildingState.activeProcess) {
-        const activeProcess = coreAPI.getProcessData(buildingState.activeProcess.processId)
+        const activeProcess = coreAPI.getProcessData(buildingId, buildingState.activeProcess.processId)
         activeProcessInfo = (
             <div>
-                <p>Active Process: {activeProcess.name}</p>
+                <p>Active Process: {activeProcess?.name}</p>
 
                 <ProgressBar isActive={buildingState.isProcessing}
                              totalDuration={buildingState.activeProcess?.duration}

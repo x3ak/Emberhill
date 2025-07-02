@@ -1,16 +1,17 @@
-import type {ProcessId} from "@/shared/types/process.type.ts";
-import {coreAPI} from "../../../core/core.api.ts";
+import type {ProcessData} from "@/shared/types/process.type.ts";
 
 type ProcessDetailsProps = {
-    processId: ProcessId;
+    processData: ProcessData | null;
     onPick: () => void;
     onUnset: () => void;
     isActive: boolean;
 };
 
-export default function ProcessDetails({processId, onPick, onUnset, isActive}: ProcessDetailsProps) {
+export default function ProcessDetails({processData, onPick, onUnset, isActive}: ProcessDetailsProps) {
 
-    const processData = coreAPI.getProcessData(processId);
+    if (!processData) {
+        return (<b>no process data found</b>)
+    }
 
     const outputs = processData.outputs.map((output, idx) => {
         return (

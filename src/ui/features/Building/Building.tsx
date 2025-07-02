@@ -13,7 +13,14 @@ export default function Building({buildingId}: { buildingId: BuildingId }) {
 
     const buildingState = gameState.buildings.get(buildingId);
     const buildingData = coreAPI.building.getData(buildingId);
-    const buildingProcesses = buildingData.processes;
+
+    const buildingProcesses: ProcessData[] = [];
+    for (const processId in buildingData.processes) {
+        let process = buildingData.processes[processId as ProcessId];
+        if (process) {
+            buildingProcesses.push(process);
+        }
+    }
 
     const [selectedProcess, setSelectedProcess] = useState<ProcessId | null>(null);
 
@@ -36,7 +43,7 @@ export default function Building({buildingId}: { buildingId: BuildingId }) {
                         <li
                             key={process.id}
                             className={`${styles.processButton} ${selectedProcess === process.id ? styles.active : ''}`}
-                            onClick={() =>  setSelectedProcess(process.id)}
+                            onClick={() => setSelectedProcess(process.id)}
 
                         >
                             {process.name}
@@ -47,9 +54,9 @@ export default function Building({buildingId}: { buildingId: BuildingId }) {
                 <div className={styles.processDetails}>
                     {selectedProcess ? (
                         <ProcessDetails
-                            processId={selectedProcess}
-                            onPick={() => coreAPI.building.setProcess(buildingId, selectedProcess) }
-                            onUnset={() => coreAPI.building.unsetProcess(buildingId) }
+                            processData={coreAPI.getProcessData(buildingId, selectedProcess)}
+                            onPick={() => coreAPI.building.setProcess(buildingId, selectedProcess)}
+                            onUnset={() => coreAPI.building.unsetProcess(buildingId)}
                             isActive={buildingState?.activeProcess?.processId === selectedProcess}
                         />
                     ) : (
