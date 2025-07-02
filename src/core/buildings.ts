@@ -3,6 +3,7 @@ import {game} from "./engine.ts";
 import {warmstone} from "./warmstone.ts";
 import type {ProcessData, ProcessId} from "@/shared/types/process.type.ts";
 import type {BuildingData, BuildingLevelUp} from "@/shared/types/building.types.ts";
+import type {GameCommand} from "./commands.ts";
 
 export type BuildingState = {
     id: string;
@@ -76,8 +77,87 @@ export class BuildingBase {
         this.isDirty = true;
     }
 
+    addXP(amount: number) {
+        this.xp += amount;
 
-    update(deltaTime: number): void {
+        if (this.levelUpData) {
+            this.xp = Math.min(this.xp, this.levelUpData.xp)
+        }
+    }
+
+    update(deltaTime: number): {commands: GameCommand[], hasChangedState: boolean} {
+
+        const commands: GameCommand[] = [];
+
+        if (!this.wisp || !this.activeProcess) {
+            return {commands: commands, hasChangedState: false};
+        }
+
+        const wasProcessing = this.isProcessing;
+
+        this.secondsSpentProcessing += deltaTime;
+        const maxCyclesByTime = Math.floor(this.secondsSpentProcessing / this.activeProcess.duration);
+
+        // enough time waiting to get more than one process completed
+        if (maxCyclesByTime > 1) {
+            for (let i = 1; i < maxCyclesByTime; i++) {
+                if (this.activeProcess.inputs.length > 0) {
+                    if (game.resources.hasEnoughAfterPlanned(this.activeProcess.inputs, commands)) {
+                        commands.push({type: 'SPEND_RESOURCES', payload: {resources: this.activeProcess.inputs}})
+                    } else {
+                        // no resources to start the iteration
+                        break;
+                    }
+                }
+
+                if (this.activeProcess.outputs.length > 0) {
+                    commands.push({type: 'ADD_RESOURCES', payload: {resources: this.activeProcess.outputs}});
+                }
+
+                commands.push({ type: 'ADD_XP', payload: { buildingId: this.buildingData.id, amount: this.activeProcess.xp } });
+            }
+
+            this.secondsSpentProcessing -= this.activeProcess.duration * (maxCyclesByTime - 1);
+        }
+
+        // start processing
+        if (!this.isProcessing) {
+            if (this.activeProcess.inputs.length > 0 && game.resources.hasEnoughAfterPlanned(this.activeProcess.inputs, commands)) {
+                this.isProcessing = true;
+                this.secondsSpentProcessing = 0;
+                commands.push({type: 'SPEND_RESOURCES', payload: {resources: this.activeProcess.inputs}})
+            } else if (this.activeProcess.inputs.length === 0) {
+                this.isProcessing = true;
+                this.secondsSpentProcessing = 0;
+
+
+            }
+        }
+
+        if (this.isProcessing) {
+            if (this.secondsSpentProcessing >= this.activeProcess.duration) {
+                this.secondsSpentProcessing -= this.activeProcess.duration;
+
+                if (this.activeProcess.outputs.length > 0) {
+                    commands.push({type: 'ADD_RESOURCES', payload: {resources: this.activeProcess.outputs}});
+                }
+
+                commands.push({ type: 'ADD_XP', payload: { buildingId: this.buildingData.id, amount: this.activeProcess.xp } });
+
+                if (this.activeProcess.inputs.length > 0) {
+                    if (game.resources.hasEnoughAfterPlanned(this.activeProcess.inputs, commands)) {
+                        commands.push({type: 'SPEND_RESOURCES', payload: {resources: this.activeProcess.inputs}})
+                    } else {
+                        this.isProcessing = false;
+                    }
+                }
+            }
+        }
+
+        return {commands: commands, hasChangedState: wasProcessing !== this.isProcessing}
+    }
+
+    updateOld(deltaTime: number): void {
         if (!this.wisp || !this.activeProcess) {
             return;
         }

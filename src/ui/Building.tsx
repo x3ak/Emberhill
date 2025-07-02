@@ -1,5 +1,5 @@
-import {useGameDispatch, useGameState} from "../hooks/useGame.ts";
-import {useState} from "react";
+import {useGameState} from "../hooks/useGame.ts";
+import {useEffect, useState} from "react";
 import ProcessDetails from "./ProcessDetails.tsx";
 import type {ProcessData, ProcessId} from "@/shared/types/process.type.ts";
 import type {BuildingId} from "@/shared/types/building.types.ts";
@@ -8,7 +8,6 @@ import BuildingDetails from "./BuildingDetails.tsx";
 
 export default function Building({buildingId}: { buildingId: BuildingId }) {
 
-    const gameDispatch = useGameDispatch();
     const gameState = useGameState();
 
     const buildingState = gameState.buildings.get(buildingId);
@@ -17,13 +16,13 @@ export default function Building({buildingId}: { buildingId: BuildingId }) {
 
     const [selectedProcess, setSelectedProcess] = useState<ProcessId | null>(null);
 
-    const setProcess = (processId: ProcessId) => {
-        gameDispatch({type: 'SET_PROCESS', payload: {buildingId: buildingId, processId: processId}});
-    }
-
-    const unsetProcess = () => {
-        gameDispatch({type: 'UNSET_PROCESS', payload: {buildingId: buildingId}});
-    }
+    useEffect(() => {
+        if (buildingState?.activeProcess) {
+            setSelectedProcess(buildingState?.activeProcess.processId)
+        } else {
+            setSelectedProcess(buildingProcesses[0].id)
+        }
+    }, [buildingId]);
 
     return (
         <div className="flex flex-col gap-4">
@@ -41,7 +40,7 @@ export default function Building({buildingId}: { buildingId: BuildingId }) {
                                     ? 'bg-purple-600 text-white'
                                     : 'bg-zinc-700 hover:bg-zinc-600 text-purple-300'
                             }`}
-                            onClick={() => setSelectedProcess(process.id)}
+                            onClick={() =>  setSelectedProcess(process.id)}
                         >
                             {process.name}
                         </button>
@@ -52,8 +51,8 @@ export default function Building({buildingId}: { buildingId: BuildingId }) {
                     {selectedProcess ? (
                         <ProcessDetails
                             processId={selectedProcess}
-                            onPick={() => setProcess(selectedProcess)}
-                            onUnset={unsetProcess}
+                            onPick={() => coreAPI.building.setProcess(buildingId, selectedProcess) }
+                            onUnset={() => coreAPI.building.unsetProcess(buildingId) }
                             isActive={buildingState?.activeProcess?.processId === selectedProcess}
                         />
                     ) : (

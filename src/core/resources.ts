@@ -1,5 +1,6 @@
 import type {ResourceId} from "@/shared/types/resource.types.ts";
 import type {ResourceAmount} from "@/shared/types/process.type.ts";
+import type {GameCommand} from "./commands.ts";
 
 export class GameResources {
     private isDirty: boolean = false;
@@ -69,6 +70,32 @@ export class GameResources {
                     break;
             }
         })
+    }
+
+    hasEnoughAfterPlanned(cost: ResourceAmount[], plannedSpends: GameCommand[]): boolean {
+        if (cost.length == 0) {
+            return true;
+        }
+
+        const spendMap = new Map<ResourceId, number>();
+
+        plannedSpends
+            .filter(s => s.type == "SPEND_RESOURCES")
+            .flatMap(s => s.payload.resources)
+            .forEach(spend => {
+                spendMap.set(spend.id, (spendMap.get(spend.id) || 0) + spend.amount);
+            })
+
+        for (const costItem of cost) {
+            const currentAmount = this.getAmount(costItem.id);
+            const plannedAmount = spendMap.get(costItem.id) || 0;
+
+            if (costItem.amount > currentAmount - plannedAmount) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     hasChanged(): boolean {

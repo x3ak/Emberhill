@@ -7,6 +7,7 @@ import {GameResources} from "./resources.ts";
 import {type BuildingId} from "@/shared/types/building.types.ts";
 import type {ProcessData, ProcessId} from "@/shared/types/process.type.ts";
 import {AllResourceIds, type ResourceId} from "@/shared/types/resource.types.ts";
+import type {GameCommand} from "./commands.ts";
 
 export type PlayerCommand =
     | { type: "TICK"; payload: { deltaTime: number } }
@@ -60,12 +61,12 @@ export class GameEngine {
             this.isDirty = true;
         }
 
-        if (!this.isDirty) {
-            const hasChangedBuilding = this.getAssignedWisps().find(wisp => wisp.currentAssignment?.hasChanged())
-            if (hasChangedBuilding) {
-                this.isDirty = true;
-            }
-        }
+        // if (!this.isDirty) {
+        //     const hasChangedBuilding = this.getAssignedWisps().find(wisp => wisp.currentAssignment?.hasChanged())
+        //     if (hasChangedBuilding) {
+        //         this.isDirty = true;
+        //     }
+        // }
 
         // Only update and notify if the state has actually changed
         if (this.isDirty) {
@@ -85,9 +86,31 @@ export class GameEngine {
 
                 // check for work at buildings
 
+                const gameCommands: GameCommand[] = [];
+                let hasStateChanges = false;
+
                 this.getAssignedWisps()
                     .filter(wisp => wisp.currentAssignment !== undefined)
-                    .forEach(wisp => wisp.currentAssignment?.update(deltaTime))
+                    .forEach(wisp => {
+                        if (!wisp.currentAssignment) {
+                            return;
+                        }
+
+                        const buildingUpdateResult = wisp.currentAssignment.update(deltaTime);
+
+                        gameCommands.push( ...buildingUpdateResult.commands )
+
+                        if (buildingUpdateResult.hasChangedState) {
+                            hasStateChanges = true;
+                        }
+                    });
+
+
+                this.reduceGameCommands(gameCommands);
+                if (hasStateChanges) {
+                    this.isDirty = true;
+                }
+
 
                 break;
             }
@@ -145,6 +168,30 @@ export class GameEngine {
             }
         }
     }
+
+    reduceGameCommands(gameCommands: GameCommand[]) {
+        if (gameCommands.length === 0) {
+            return;
+        }
+
+        gameCommands.forEach(command => {
+            console.log("GAME_COMMAND", command);
+            switch (command.type) {
+                case 'SPEND_RESOURCES':
+                    this.resources.spendResourcesForProcess(command.payload.resources)
+                    break;
+                case 'ADD_RESOURCES':
+                    this.resources.addResourcesFromProcess(command.payload.resources)
+                    break;
+                case 'ADD_XP':
+                    this.buildings.get(command.payload.buildingId)?.addXP(command.payload.amount)
+                    break;
+            }
+        })
+
+        this.isDirty = true;
+    }
+
 
     public markStateDirty(): void {
         this.isDirty = true;
