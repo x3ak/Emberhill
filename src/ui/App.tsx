@@ -6,7 +6,7 @@ import type {BuildingId} from "@/shared/types/building.types.ts";
 import MainContentArea, {type MainContentSection} from "@/features/MainContentArea/MainContentArea.tsx";
 import TownFeatureList from "@/features/TownFeatureList/TownFeatureList.tsx";
 
-let timeSpeed: number = 1;
+let timeSpeed: number = 10;
 
 function browserLoop() {
     let last = performance.now();

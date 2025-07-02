@@ -165,6 +165,19 @@ export class GameEngine {
                 this.isDirty = true;
                 break;
             }
+
+            case 'UPGRADE_BUILDING': {
+                const {buildingId} = command.payload;
+                let building = this.buildings.get(buildingId);
+                if (!building) {
+                    break
+                }
+
+                building.upgrade();
+
+                this.isDirty = true;
+                break;
+            }
         }
     }
 

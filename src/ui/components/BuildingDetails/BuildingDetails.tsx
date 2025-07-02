@@ -10,7 +10,7 @@ export default function BuildingDetails({buildingId, buildingState, buildingData
     buildingState: BuildingState,
     buildingData: BuildingData
 }) {
-
+    console.log(buildingData.levels);
     let activeProcessInfo;
     if (buildingState.activeProcess) {
         const activeProcess = coreAPI.getProcessData(buildingState.activeProcess.processId)
@@ -33,6 +33,9 @@ export default function BuildingDetails({buildingId, buildingState, buildingData
         }
     }
 
+    const levelUpHandler = () => {
+        coreAPI.building.upgrade(buildingId);
+    }
     return (
         <div className={styles.buildingDetails}>
             <div>
@@ -42,8 +45,11 @@ export default function BuildingDetails({buildingId, buildingState, buildingData
                     <li className={styles.propertyLine}><label>XP:</label> <b>{buildingState?.xp} / {buildingData.levels[buildingState.level + 1]?.xp}</b></li>
                 </ul>
 
-
+                {JSON.stringify(buildingState)}
                 {activeProcessInfo}
+
+                <button onClick={levelUpHandler} disabled={!buildingState.canLevelUp}>Level up</button>
+
             </div>
             <div className={styles.buildingActions}>
                 <div className={styles.toggleContainer}>

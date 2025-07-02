@@ -11,6 +11,7 @@ export type BuildingState = {
     xp: number;
     wispAssigned: boolean;
     isProcessing: boolean;
+    canLevelUp: boolean;
     activeProcess: {
         processId: ProcessId;
         secondsSpent: number;
@@ -31,6 +32,7 @@ export class BuildingBase {
     private secondsSpentProcessing: number = 0;
 
     private isProcessing: boolean = false;
+    private canLevelUp: boolean = false;
 
     private activeProcess: ProcessData | undefined;
 
@@ -81,14 +83,24 @@ export class BuildingBase {
         this.xp += amount;
 
         if (this.levelUpData) {
-            this.xp = Math.min(this.xp, this.levelUpData.xp)
+            this.xp = Math.min(this.xp, this.levelUpData.xp);
         }
     }
 
     update(deltaTime: number, commands: GameCommand[]): {hasChangedState: boolean} {
+        const wasAbleToLevelUp = this.canLevelUp;
+        if (this.levelUpData) {
+            const hasEnoughResources = game.resources.hasEnoughAfterPlanned( this.levelUpData.resources, commands)
+
+            if (!hasEnoughResources) {
+                this.canLevelUp = false;
+            } else if(this.xp >= this.levelUpData.xp) {
+                this.canLevelUp = true;
+            }
+        }
 
         if (!this.wisp || !this.activeProcess) {
-            return {hasChangedState: false};
+            return {hasChangedState: wasAbleToLevelUp !== this.canLevelUp};
         }
 
         const wasProcessing = this.isProcessing;
@@ -152,7 +164,7 @@ export class BuildingBase {
             }
         }
 
-        return {hasChangedState: wasProcessing !== this.isProcessing}
+        return {hasChangedState: (wasProcessing !== this.isProcessing || wasAbleToLevelUp !== this.canLevelUp) };
     }
 
     updateOld(deltaTime: number): void {
@@ -231,9 +243,20 @@ export class BuildingBase {
             xp: this.xp,
             wispAssigned: !!this.wisp,
             isProcessing: this.isProcessing,
+            canLevelUp: this.canLevelUp,
             activeProcess: activeProcess,
         };
     }
 
+    upgrade() {
+        if (!this.levelUpData || !this.canLevelUp) {
+            return;
+        }
+        this.level += 1;
+        this.xp = 0;
+        game.resources.spendResourcesForProcess(this.levelUpData.resources);
+        this.levelUpData = this.buildingData.levels[this.level + 1] || null;
+        this.canLevelUp = false;
+    }
 }
 

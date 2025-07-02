@@ -13,7 +13,7 @@ export const BUILDINGS: Record<BuildingId, BuildingData> = {
             2: {
                 xp: 100,
                 resources: [
-                    {type: "resource", id: "LOG_OAK", amount: 100},
+                    {type: "resource", id: "LOG_OAK", amount: 20},
                 ]
             },
             3: {

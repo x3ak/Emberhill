@@ -20,6 +20,10 @@ function getBuildingData(id: BuildingId): BuildingData {
     return BUILDINGS[id];
 }
 
+const buildingLevelUp = (buildingId: BuildingId) => {
+    gameDispatch({type: 'UPGRADE_BUILDING', payload: {buildingId: buildingId}});
+}
+
 const unassignWisp = (buildingId: BuildingId) => {
     gameDispatch({type: 'UNASSIGN_WISP', payload: {buildingId: buildingId}});
 }
@@ -45,5 +49,6 @@ export const coreAPI = {
         setProcess,
         unsetProcess,
         getData: getBuildingData,
+        upgrade: buildingLevelUp,
     }
 }
