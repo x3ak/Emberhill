@@ -1,5 +1,5 @@
 import type {ProcessId} from "@/shared/types/process.type.ts";
-import {coreAPI} from "../core/core.api.ts";
+import {coreAPI} from "../../../core/core.api.ts";
 
 type ProcessDetailsProps = {
     processId: ProcessId;

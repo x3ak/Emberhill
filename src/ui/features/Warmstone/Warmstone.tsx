@@ -1,4 +1,4 @@
-import {useGameState} from "../hooks/useGame"
+import {useGameState} from "../../../hooks/useGame.ts"
 
 export default function Warmstone() {
     const gameState = useGameState();

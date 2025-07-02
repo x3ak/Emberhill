@@ -1,10 +1,10 @@
-import {game} from '../core/engine';
-import ResourceBar from './ResourceBar';
-import Building from './Building';
 import {useState} from 'react';
 
-import Warmstone from './Warmstone.tsx';
-import Sidebar from './Sidebar.tsx';
+import {game} from '../core/engine';
+import BuildingsList from '@/features/BuildingsList/BuildingsList.tsx';
+import type {BuildingId} from "@/shared/types/building.types.ts";
+import MainContentArea, {type MainContentSection} from "@/features/MainContentArea/MainContentArea.tsx";
+import TownFeatureList from "@/features/TownFeatureList/TownFeatureList.tsx";
 
 let timeSpeed: number = 1;
 
@@ -23,10 +23,8 @@ function browserLoop() {
 
 browserLoop();
 
-type Section = string;
-
 export default function App() {
-    const [activeSection, setActiveSection] = useState<Section>('home');
+    const [activeSection, setActiveSection] = useState<MainContentSection>({type: 'page', pageId: 'home'});
 
     function saveState() {
 
@@ -52,41 +50,27 @@ export default function App() {
         game.setState(loadedState);
     }
 
+    function setActiveBuilding(buildingId: BuildingId) {
+        setActiveSection({type: 'building', buildingId: buildingId});
+    }
 
     return (
-        <div className="min-h-screen flex flex-col bg-zinc-900 text-gray-100 font-sans">
-            <ResourceBar/>
+        <div className="game-layout">
+            <nav className="sidebar-nav">
+                <TownFeatureList setActiveSection={setActiveSection} activeSection={activeSection} />
+                <BuildingsList onSelect={setActiveBuilding} activeSection={activeSection} />
 
-            <div className="flex flex-6">
-                <div className="flex flex-1"></div>
-                {/* Sidebar */}
-                <aside className="w-64 bg-zinc-800 p-4 border-r border-zinc-700 flex-1">
-                    <Sidebar onSelect={setActiveSection} activeSection={activeSection}/>
-                </aside>
-
-                {/* Main Section */}
-                <main className=" p-6 overflow-auto flex-3">
-                    {activeSection === 'home' && (
-                        <div className="text-center text-lg">Welcome! Select something from the sidebar.</div>
-                    )}
-                    <div className='fixed bottom-4 right-4 z-50 flex flex-col gap-2 items-end'>
-                        <Warmstone/>
-                        <div className="flex gap-2">
-                            <button title="Save" onClick={saveState}
-                                    className="bg-green-500 hover:bg-green-600 text-white font-bold p-3 rounded shadow-lg transition-transform transform hover:scale-110">
-                                💾
-                            </button>
-                            <button title="Load" onClick={loadState}
-                                    className="bg-amber-500 hover:bg-amber-600 text-white font-bold p-3 rounded shadow-lg transition-transform transform hover:scale-110">
-                                📂
-                            </button>
-                        </div>
+                <div >
+                    <div>
+                        <button title="Save" onClick={saveState}> 💾 </button>
+                        <button title="Load" onClick={loadState}> 📂 </button>
                     </div>
-                    {activeSection !== 'home' && <Building buildingId={activeSection as any}/>}
-                </main>
+                </div>
+            </nav>
 
-                <div className="flex flex-1"></div>
-            </div>
+            <main className="main-content-area">
+                <MainContentArea activeSection={activeSection} />
+            </main>
         </div>
     );
 

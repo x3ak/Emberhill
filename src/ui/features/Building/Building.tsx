@@ -1,10 +1,10 @@
-import {useGameState} from "../hooks/useGame.ts";
+import {useGameState} from "../../../hooks/useGame.ts";
 import {useEffect, useState} from "react";
-import ProcessDetails from "./ProcessDetails.tsx";
 import type {ProcessData, ProcessId} from "@/shared/types/process.type.ts";
 import type {BuildingId} from "@/shared/types/building.types.ts";
-import {coreAPI} from "../core/core.api.ts";
-import BuildingDetails from "./BuildingDetails.tsx";
+import {coreAPI} from "../../../core/core.api.ts";
+import BuildingDetails from "@/components/BuildingDetails/BuildingDetails.tsx";
+import ProcessDetails from "@/components/ProcessDetails/ProcessDetails.tsx";
 
 export default function Building({buildingId}: { buildingId: BuildingId }) {
 
@@ -25,21 +25,16 @@ export default function Building({buildingId}: { buildingId: BuildingId }) {
     }, [buildingId]);
 
     return (
-        <div className="flex flex-col gap-4">
+        <div>
             {buildingState && (
                 <BuildingDetails buildingId={buildingId} buildingState={buildingState} buildingData={buildingData}/>)}
 
-            <div className="grid grid-cols-2 gap-4">
-                <div className="flex flex-col gap-2 bg-zinc-800 p-4 rounded-lg shadow-lg">
-                    <h4 className="text-xl font-bold text-yellow-400 mb-2">Processes</h4>
+            <div>
+                <div>
+                    <h4>Processes</h4>
                     {buildingProcesses.map((process: ProcessData) => (
                         <button
                             key={process.id}
-                            className={`p-3 rounded-lg text-left transition-colors ${
-                                selectedProcess === process.id
-                                    ? 'bg-purple-600 text-white'
-                                    : 'bg-zinc-700 hover:bg-zinc-600 text-purple-300'
-                            }`}
                             onClick={() =>  setSelectedProcess(process.id)}
                         >
                             {process.name}
@@ -47,7 +42,7 @@ export default function Building({buildingId}: { buildingId: BuildingId }) {
                     ))}
                 </div>
 
-                <div className="bg-zinc-800 p-4 rounded-lg shadow-lg h-full">
+                <div>
                     {selectedProcess ? (
                         <ProcessDetails
                             processId={selectedProcess}
@@ -56,7 +51,7 @@ export default function Building({buildingId}: { buildingId: BuildingId }) {
                             isActive={buildingState?.activeProcess?.processId === selectedProcess}
                         />
                     ) : (
-                        <div className="text-center text-gray-400 flex items-center justify-center h-full">
+                        <div>
                             <p>Select a process to see its details.</p>
                         </div>
                     )}

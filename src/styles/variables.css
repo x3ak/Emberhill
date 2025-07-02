@@ -1,0 +1,134 @@
+/*
+ * ===================================================================
+ *               EMBERHILL UI THEME - "DARCULA" STYLE
+ * ===================================================================
+ * This file acts as the central design system for the game's UI.
+ * It uses a consistent dark theme inspired by code editors for
+ * clarity, comfort, and a focus on content.
+ */
+
+:root {
+    /* ----------------------------------------- */
+    /*                 COLORS                    */
+    /* ----------------------------------------- */
+    /* Inspired by Darcula/Dracula themes. Cool grays with vibrant accents. */
+
+    /* Neutral Palette (The Grays) */
+    --raw-color-neutral-900: #282a36;
+    --raw-color-neutral-800: #3a3c4e;
+    --raw-color-neutral-700: #44475a;
+    --raw-color-neutral-600: #6272a4;
+    --raw-color-neutral-200: #bd93f9;
+    --raw-color-neutral-100: #f8f8f2;
+
+    /* Primary Accent (Your Emberhill Gold) */
+    --raw-color-primary-300: #ffe5c4;
+    --raw-color-primary-400: #ffcf99;
+    --raw-color-primary-500: #ffb86c;
+    --raw-color-primary-600: #e99e4f;
+    --raw-color-primary-700: #d08534;
+    --raw-color-primary-800: #b56c1a;
+    --raw-color-primary-text: #282a36;
+
+    /* Feedback Colors */
+    --raw-color-success-400: #50fa7b;
+    --raw-color-danger-400:  #ff5555;
+    --raw-color-info-400:    #8be9fd;
+
+
+    /* ----------------------------------------- */
+    /*            2. SEMANTIC ALIASES            */
+    /* ----------------------------------------- */
+    /* This is the layer used by components. It assigns a PURPOSE
+       to a raw color from the palette above. This is the "paintbrush." */
+
+    /* -- Backgrounds -- */
+    --color-background:        var(--raw-color-neutral-900); /* The main page/app background */
+    --color-surface:           var(--raw-color-neutral-700); /* The background of cards, panels, modals */
+    --color-surface-secondary: var(--raw-color-neutral-800); /* The background of cards, panels, modals */
+    --color-surface-hover:     var(--raw-color-neutral-600); /* Hover state for interactive surfaces */
+
+    /* -- Text -- */
+    --color-text-primary:      var(--raw-color-neutral-100); /* Main, high-emphasis text */
+    --color-text-secondary:    var(--raw-color-neutral-600); /* Lower-emphasis text, descriptions */
+    --color-text-muted:        var(--raw-color-neutral-200); /* Muted, placeholder, or disabled text */
+    --color-text-on-primary:   var(--raw-color-primary-text);  /* Text that sits on a primary-colored background */
+    --color-text-accent:       var(--raw-color-primary-500); /* Text that needs to pop, like a header */
+
+    /* -- Borders & Dividers -- */
+    --color-border:            var(--raw-color-neutral-700); /* Borders for cards and inputs */
+    --color-border-interactive:var(--raw-color-neutral-600); /* Border for focused/hovered elements */
+
+    /* -- Interactive Elements (Buttons, etc.) -- */
+    --color-interactive-primary-bg:         var(--raw-color-primary-500);
+    --color-interactive-primary-bg-hover:   var(--raw-color-primary-600);
+    --color-interactive-primary-bg-active:  var(--raw-color-primary-800);
+    --color-interactive-primary-text:       var(--color-text-on-primary);
+
+    --color-interactive-secondary-bg:       var(--raw-color-neutral-700);
+    --color-interactive-secondary-bg-hover: var(--raw-color-neutral-600);
+    --color-interactive-secondary-text:     var(--color-text-primary);
+
+    /* -- Feedback & Status -- */
+    --color-status-success:    var(--raw-color-success-400);
+    --color-status-danger:     var(--raw-color-danger-400);
+    --color-status-info:       var(--raw-color-info-400);
+
+
+    /* ----------------------------------------- */
+    /*            SPACING & SIZING               */
+    /* ----------------------------------------- */
+    /* A consistent, power-of-two scale for harmony. */
+
+    --size-xs: 4px;    /* Extra Small */
+    --size-sm: 8px;    /* Small */
+    --size-md: 16px;   /* Medium (base for many paddings/margins) */
+    --size-lg: 32px;   /* Large */
+    --size-xl: 64px;   /* Extra Large */
+
+
+    /* ----------------------------------------- */
+    /*               TYPOGRAPHY                  */
+    /* ----------------------------------------- */
+    --font-family-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, serif;
+    --font-family-mono: "Fira Code", "JetBrains Mono", Consolas, monaco, monospace;
+
+    --font-size-xs: 8px;
+    --font-size-sm: 14px;
+    --font-size-md: 16px; /* Base body text size */
+    --font-size-lg: 20px;
+    --font-size-xl: 24px;
+
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-bold: 700;
+
+
+    /* ----------------------------------------- */
+    /*                 BORDERS                   */
+    /* ----------------------------------------- */
+    --border-radius-sm: 4px;
+    --border-radius-md: 8px;
+    --border-radius-lg: 16px;
+    --border-radius-full: 9999px;
+
+    --border-width-sm: 1px;
+    --border-width-md: 2px;
+
+
+    /* ----------------------------------------- */
+    /*          SHADOWS & EFFECTS                */
+    /* ----------------------------------------- */
+    /* Subtle shadows work best on dark themes. */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.15);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.2), 0 2px 4px -2px rgb(0 0 0 / 0.2);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.25), 0 4px 6px -4px rgb(0 0 0 / 0.25);
+
+
+    /* ----------------------------------------- */
+    /*               TRANSITIONS                 */
+    /* ----------------------------------------- */
+    --transition-duration-fast: 150ms;
+    --transition-duration-normal: 300ms;
+    --transition-timing-function: ease-in-out;
+}
