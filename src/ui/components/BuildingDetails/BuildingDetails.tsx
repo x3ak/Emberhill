@@ -10,8 +10,8 @@ export default function BuildingDetails({buildingId, buildingState, buildingData
     buildingState: BuildingState,
     buildingData: BuildingData
 }) {
-    console.log(buildingData.levels);
     let activeProcessInfo;
+
     if (buildingState.activeProcess) {
         const activeProcess = coreAPI.getProcessData(buildingState.activeProcess.processId)
         activeProcessInfo = (
@@ -25,6 +25,7 @@ export default function BuildingDetails({buildingId, buildingState, buildingData
         )
     }
 
+
     const handleWispToggle = () => {
         if (buildingState?.wispAssigned) {
             coreAPI.building.unassignWisp(buildingId)
@@ -36,20 +37,20 @@ export default function BuildingDetails({buildingId, buildingState, buildingData
     const levelUpHandler = () => {
         coreAPI.building.upgrade(buildingId);
     }
+
+    const levelUpData = buildingData.levels[buildingState.level + 1] || null;
+
     return (
         <div className={styles.buildingDetails}>
             <div>
-                <h3 className={styles.name}>{buildingData.name}</h3>
-                <ul className={styles.properties}>
-                    <li className={styles.propertyLine}><label>Level:</label> <b>{buildingState?.level}</b></li>
+                <h3 className={styles.name}>{buildingData.name} (Lvl: {buildingState?.level})</h3>
+                {levelUpData && (<ul className={styles.properties}>
                     <li className={styles.propertyLine}><label>XP:</label> <b>{buildingState?.xp} / {buildingData.levels[buildingState.level + 1]?.xp}</b></li>
-                </ul>
+                </ul>)}
 
-                {JSON.stringify(buildingState)}
+                {levelUpData && (<button onClick={levelUpHandler} disabled={!buildingState.canLevelUp}>Level up</button>)}
+
                 {activeProcessInfo}
-
-                <button onClick={levelUpHandler} disabled={!buildingState.canLevelUp}>Level up</button>
-
             </div>
             <div className={styles.buildingActions}>
                 <div className={styles.toggleContainer}>

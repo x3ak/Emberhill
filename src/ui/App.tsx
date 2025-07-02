@@ -57,9 +57,11 @@ export default function App() {
     return (
         <div className="game-layout">
             <nav className="sidebar-nav">
+                <div className="section-heading">Town features</div>
                 <TownFeatureList setActiveSection={setActiveSection} activeSection={activeSection} />
+                <div className="section-heading">Buildings</div>
                 <BuildingsList onSelect={setActiveBuilding} activeSection={activeSection} />
-
+                <div className="section-heading">Misc</div>
                 <div >
                     <div>
                         <button title="Save" onClick={saveState}> 💾 </button>
@@ -67,6 +69,7 @@ export default function App() {
                     </div>
                 </div>
             </nav>
+
 
             <main className="main-content-area">
                 <MainContentArea activeSection={activeSection} />

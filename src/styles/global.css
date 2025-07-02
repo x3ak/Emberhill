@@ -51,4 +51,13 @@ body {
     background-color: var(--color-surface);
     display: flex;
     flex-direction: column; /* Stack logo and nav list vertically */
+
+    .section-heading {
+        padding: var(--size-sm) var(--size-md);
+        color: var(--color-text-muted);
+        font-size: var(--font-size-sm);
+
+        text-transform: uppercase;
+
+    }
 }

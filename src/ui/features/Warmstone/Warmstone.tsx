@@ -18,9 +18,6 @@ export default function Warmstone() {
         progressbarText = "The final spark has fled, leaving naught but shadow's dread."
     }
 
-    function LevelUpHandler() {
-        console.log("clicked")
-    }
 
     return (
         <div className="bg-zinc-800 border-2 border-purple-500 rounded-lg p-6 w-72 text-center shadow-xl">
@@ -37,9 +34,7 @@ export default function Warmstone() {
                         style={{width: vitality.toString().concat("%")}}>{vitality}%
                     </div>
                 </div>
-                <button
-                    className="bg-purple-600 text-white font-bold py-2 px-6 rounded mt-4 w-full disabled:bg-zinc-600 disabled:cursor-not-allowed"
-                    onClick={LevelUpHandler}>
+                <button>
                     Level Up
                 </button>
             </div>

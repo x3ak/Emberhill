@@ -19,11 +19,6 @@ export default function TownStorage() {
         <div className={styles.storageGrid}>
 
             {resourcesList}
-            {resourcesList}
-            {resourcesList}
-            {resourcesList}
-            {resourcesList}
-            {resourcesList}
 
         </div>
     )

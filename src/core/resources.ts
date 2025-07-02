@@ -1,4 +1,4 @@
-import type {ResourceId} from "@/shared/types/resource.types.ts";
+import {type ResourceId} from "@/shared/types/resource.types.ts";
 import type {ResourceAmount} from "@/shared/types/process.type.ts";
 import type {GameCommand} from "./commands.ts";
 
@@ -6,11 +6,33 @@ export class GameResources {
     private isDirty: boolean = false;
 
     private resources: Record<ResourceId, number> = {
-        LOG_OAK: 0,
         LOG_BIRCH: 0,
-    };
-
+        LOG_OAK: 0,
+        LOG_PINE: 0,
+        LOG_MAPLE: 0,
+        LOG_YEW: 0,
+        LOG_IRONWOOD: 0,
+        LOG_WHISPERWOOD: 0,
+        ESSENCE_SHADOW: 0,
+        BIRCH_BARK: 0,
+        KINDLING: 0,
+        RESIN: 0,
+        FIBERS: 0,
+        MAPLE_SAP: 0,
+        FEATHERS: 0,
+        SEED_ANCIENT: 0,
+        GRUBS: 0,
+        MUSHROOMS: 0,
+        LOST_COIN: 0,
+        MOSS_GLOWING: 0,
+        TOTEM_DECOY: 0,
+        BLOSSOM_SUNPETAL: 0,
+        TOOL_BUCKET: 0,
+        TOOL_STEEL_AXE: 0,
+        TOOL_BLESSED_SICKLE: 0
+    }
     addResource(id: ResourceId, amount: number) {
+
         this.resources[id] += amount;
         this.isDirty = true;
     }
