@@ -1,6 +1,6 @@
-import {BuildingBase} from "./buildings.ts";
+import {Building} from "./Building.ts";
 
 export class Wisp {
     public isAssigned: boolean = false;
-    public currentAssignment: BuildingBase | undefined;
+    public currentAssignment: Building | undefined;
 }

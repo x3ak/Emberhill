@@ -1,12 +1,12 @@
 // src/components/ProgressBar.tsx
 import {useEffect, useRef, useState} from 'react';
 
+import styles from "./ProgressBar.module.css";
+
 type ProgressBarProps = {
     totalDuration: number;
     elapsedTime: number;
-    isActive: boolean;
-    color?: string;
-    height?: string;
+    playing: boolean;
 }
 
 function clamp(number: number, min: number, max: number): number {
@@ -16,9 +16,7 @@ function clamp(number: number, min: number, max: number): number {
 export default function ProgressBar({
                                         totalDuration,
                                         elapsedTime,
-                                        isActive,
-                                        color = 'bg-yellow-500',
-                                        height = 'h-2'
+                                        playing,
                                     }: ProgressBarProps) {
     const [visualPercentage, setVisualPercentage] = useState(0);
 
@@ -29,7 +27,7 @@ export default function ProgressBar({
     useEffect(() => {
         animationStartTimeRef.current = performance.now();
         const animate = () => {
-            if (isActive) {
+            if (playing) {
                 const timeSinceAnimationStart = (performance.now() - animationStartTimeRef.current) / 1000; // in seconds
 
                 const totalElapsedTime = elapsedTime + timeSinceAnimationStart;
@@ -48,17 +46,17 @@ export default function ProgressBar({
                 cancelAnimationFrame(animationFrameId.current);
             }
         }
-    }, [elapsedTime, totalDuration, isActive])
+    }, [elapsedTime, totalDuration, playing])
 
     const percentage = clamp(visualPercentage, 0, 100)
 
     return (
         <div
-            className={`w-full bg-zinc-700 rounded-full overflow-hidden ${height}`}
+            className={styles.container}
             role="progressbar"
         >
             <div
-                className={`h-full ${color}`}
+                className={styles.progressBar}
                 style={{width: percentage.toString().concat("%")}}
             />
         </div>

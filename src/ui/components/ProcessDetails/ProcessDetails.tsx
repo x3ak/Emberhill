@@ -1,13 +1,19 @@
-import type {ProcessData} from "@/shared/types/process.type.ts";
+import type {ProcessData, ProcessId} from "@/shared/types/process.type.ts";
+import type {BuildingId} from "@/shared/types/building.types.ts";
+import {coreAPI} from "../../../core/core.api.ts";
 
 type ProcessDetailsProps = {
     processData: ProcessData | null;
     onPick: () => void;
     onUnset: () => void;
     isActive: boolean;
+    buildingId: BuildingId;
+    processId: ProcessId;
 };
 
-export default function ProcessDetails({processData, onPick, onUnset, isActive}: ProcessDetailsProps) {
+export default function ProcessDetails({buildingId, processId, onPick, onUnset, isActive}: ProcessDetailsProps) {
+
+    const processData = coreAPI.getProcessData(buildingId, processId);
 
     if (!processData) {
         return (<b>no process data found</b>)

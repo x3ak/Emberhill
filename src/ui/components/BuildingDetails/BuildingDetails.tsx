@@ -1,27 +1,38 @@
-import type {BuildingData, BuildingId} from "@/shared/types/building.types.ts";
+import type { BuildingId} from "@/shared/types/building.types.ts";
 import {coreAPI} from "../../../core/core.api.ts";
-import type {BuildingState} from "../../../core/buildings.ts";
 import ProgressBar from "@/components/ProgressBar/ProgressBar.tsx";
 
 import styles from './BuildingDetails.module.css'
+import {useBuildingState, useProcessState} from "../../../hooks/useGame.ts";
+import type {ProcessId} from "@/shared/types/process.type.ts";
 
-export default function BuildingDetails({buildingId, buildingState, buildingData}: {
+function ActiveProcessInfo({buildingId, processId}: {buildingId: BuildingId, processId: ProcessId}) {
+    const process = useProcessState(buildingId, processId);
+    const activeProcess = coreAPI.getProcessData(buildingId, processId)
+    return (
+        <div>
+            <p>Active Process: {activeProcess?.name}</p>
+            {process.isProcessing ? 'processing...' : 'stopped'}
+            {process.secondsSpent.toFixed(2)}
+            <ProgressBar playing={process.isProcessing}
+                         totalDuration={process?.duration}
+                         elapsedTime={process?.secondsSpent}/>
+        </div>
+    )
+}
+
+export default function BuildingDetails({buildingId}: {
     buildingId: BuildingId,
-    buildingState: BuildingState,
-    buildingData: BuildingData
 }) {
     let activeProcessInfo;
 
-    if (buildingState.activeProcess) {
-        const activeProcess = coreAPI.getProcessData(buildingId, buildingState.activeProcess.processId)
-        activeProcessInfo = (
-            <div>
-                <p>Active Process: {activeProcess?.name}</p>
+    const buildingState = useBuildingState(buildingId);
+    const buildingData = coreAPI.building.getData(buildingId);
 
-                <ProgressBar isActive={buildingState.isProcessing}
-                             totalDuration={buildingState.activeProcess?.duration}
-                             elapsedTime={buildingState.activeProcess?.secondsSpent}/>
-            </div>
+    if (buildingState.currentProcessId) {
+
+        activeProcessInfo = (
+            <ActiveProcessInfo buildingId={buildingId} processId={buildingState.currentProcessId} />
         )
     }
 

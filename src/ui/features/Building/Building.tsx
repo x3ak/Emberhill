@@ -1,18 +1,18 @@
-import {useGameState} from "../../../hooks/useGame.ts";
+import {useBuildingState} from "../../../hooks/useGame.ts";
 import {useEffect, useState} from "react";
 import type {ProcessData, ProcessId} from "@/shared/types/process.type.ts";
 import type {BuildingId} from "@/shared/types/building.types.ts";
 import {coreAPI} from "../../../core/core.api.ts";
 import BuildingDetails from "../../components/BuildingDetails/BuildingDetails.tsx";
-import ProcessDetails from "../../components/ProcessDetails/ProcessDetails.tsx";
 import styles from './Building.module.css';
 import ProcessTile from "@/components/ProcessTile/ProcessTile.tsx";
+import ProcessDetails from "@/components/ProcessDetails/ProcessDetails.tsx";
 
 export default function Building({buildingId}: { buildingId: BuildingId }) {
 
-    const gameState = useGameState();
 
-    const buildingState = gameState.buildings.get(buildingId);
+    const buildingState = useBuildingState(buildingId);
+
     const buildingData = coreAPI.building.getData(buildingId);
 
     const buildingProcesses: ProcessData[] = [];
@@ -26,8 +26,8 @@ export default function Building({buildingId}: { buildingId: BuildingId }) {
     const [selectedProcess, setSelectedProcess] = useState<ProcessId | null>(null);
 
     useEffect(() => {
-        if (buildingState?.activeProcess) {
-            setSelectedProcess(buildingState?.activeProcess.processId)
+        if (buildingState?.currentProcessId) {
+            setSelectedProcess(buildingState?.currentProcessId)
         } else {
             setSelectedProcess(buildingProcesses[0].id)
         }
@@ -35,13 +35,15 @@ export default function Building({buildingId}: { buildingId: BuildingId }) {
 
     return (
         <div>
-            {buildingState && (
-                <BuildingDetails buildingId={buildingId} buildingState={buildingState} buildingData={buildingData}/>)}
+
+            <BuildingDetails buildingId={buildingId} />
 
             <div className={styles.processGrid}>
                 {buildingProcesses.map((process: ProcessData) => (
                     <ProcessTile
-                        processData={process}
+                        key={process.id}
+                        buildingId={buildingId}
+                        processId={process.id}
                         setSelectedProcess={setSelectedProcess}
                         isActive={selectedProcess === process.id}
                     />
@@ -54,10 +56,11 @@ export default function Building({buildingId}: { buildingId: BuildingId }) {
             <div className={styles.processDetails}>
                 {selectedProcess ? (
                     <ProcessDetails
-                        processData={coreAPI.getProcessData(buildingId, selectedProcess)}
+                        buildingId={buildingId}
+                        processId={selectedProcess}
                         onPick={() => coreAPI.building.setProcess(buildingId, selectedProcess)}
                         onUnset={() => coreAPI.building.unsetProcess(buildingId)}
-                        isActive={buildingState?.activeProcess?.processId === selectedProcess}
+                        isActive={buildingState?.currentProcessId === selectedProcess} processData={null}
                     />
                 ) : (
                     <div>

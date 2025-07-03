@@ -1,0 +1,11 @@
+.container{
+    width:  100%;
+    overflow: hidden;
+    background-color: var(--color-interactive-secondary-bg);
+    height: 24px;
+}
+
+.progressBar {
+    height: 100%;
+    background-color: var(--color-interactive-primary-bg);
+}
