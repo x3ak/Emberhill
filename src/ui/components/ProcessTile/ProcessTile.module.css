@@ -1,0 +1,13 @@
+.tile {
+    cursor: pointer;
+    padding:  var(--size-sm);
+    background-color: var(--color-surface-secondary);
+
+    &:hover {
+        background-color: var(--color-interactive-secondary-bg-hover);
+    }
+
+    &.active {
+        background-color: var(--color-interactive-primary-bg-active);
+    }
+}
