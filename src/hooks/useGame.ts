@@ -40,3 +40,5 @@ export function useProcessState(buildingId: BuildingId, processId: ProcessId): P
     );
 }
 
+export const SIMULATION_SPEED: number = 5;
+
