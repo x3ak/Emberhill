@@ -3,6 +3,7 @@ import styles from "./ProcessTile.module.css";
 import {useProcessState} from "@/hooks/useGame.ts";
 import type {BuildingId} from "@/shared/types/building.types.ts";
 import {coreAPI} from "../../../core/core.api.ts";
+import ProgressBar from "@/components/ProgressBar/ProgressBar.tsx";
 
 
 export default function ProcessTile({buildingId, processId, isActive, setSelectedProcess}: {
@@ -22,6 +23,13 @@ export default function ProcessTile({buildingId, processId, isActive, setSelecte
         >
             {processState.percentage.toFixed(2)}
             {processData?.name}
+
+            {processState.isProcessing ? ' processing ': ''}
+            {processState.isActive ? ' active ' : ' inactive '}
+
+            <ProgressBar playing={processState.isProcessing && processState.isActive}
+                         totalDuration={processState?.duration}
+                         elapsedTime={processState?.secondsSpent}/>
         </div>
     )
 }

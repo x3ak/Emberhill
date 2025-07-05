@@ -33,6 +33,10 @@ export default function Building({buildingId}: { buildingId: BuildingId }) {
         }
     }, [buildingId]);
 
+    useEffect(() => {
+        coreAPI.building.setProcess(buildingId, selectedProcess as ProcessId);
+    }, [selectedProcess]);
+
     return (
         <div>
 
@@ -58,9 +62,6 @@ export default function Building({buildingId}: { buildingId: BuildingId }) {
                     <ProcessDetails
                         buildingId={buildingId}
                         processId={selectedProcess}
-                        onPick={() => coreAPI.building.setProcess(buildingId, selectedProcess)}
-                        onUnset={() => coreAPI.building.unsetProcess(buildingId)}
-                        isActive={buildingState?.currentProcessId === selectedProcess} processData={null}
                     />
                 ) : (
                     <div>

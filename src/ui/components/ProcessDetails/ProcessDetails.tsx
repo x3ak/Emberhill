@@ -1,17 +1,13 @@
-import type {ProcessData, ProcessId} from "@/shared/types/process.type.ts";
+import type {ProcessId} from "@/shared/types/process.type.ts";
 import type {BuildingId} from "@/shared/types/building.types.ts";
 import {coreAPI} from "../../../core/core.api.ts";
 
 type ProcessDetailsProps = {
-    processData: ProcessData | null;
-    onPick: () => void;
-    onUnset: () => void;
-    isActive: boolean;
     buildingId: BuildingId;
     processId: ProcessId;
 };
 
-export default function ProcessDetails({buildingId, processId, onPick, onUnset, isActive}: ProcessDetailsProps) {
+export default function ProcessDetails({buildingId, processId}: ProcessDetailsProps) {
 
     const processData = coreAPI.getProcessData(buildingId, processId);
 
@@ -36,16 +32,6 @@ export default function ProcessDetails({buildingId, processId, onPick, onUnset, 
             <div className="flex-grow">
                 {outputs}
             </div>
-
-            {isActive ? (
-                <button onClick={onUnset}>
-                    Stop Process
-                </button>
-            ) : (
-                <button onClick={onPick}>
-                    Start Process
-                </button>
-            )}
         </div>
     )
 }

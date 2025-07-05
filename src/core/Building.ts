@@ -66,6 +66,10 @@ export class Building extends Subscribable<BuildingState, typeof EmptyBase>(Empt
             return;
         }
 
+        if (this.currentProcess) {
+            this.currentProcess.setActive(false)
+        }
+
         this.currentProcess = processObject;
 
         const hasWispAssigned = this.wisp != null;
