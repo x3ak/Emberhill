@@ -4,9 +4,6 @@ import type {PlayerCommand} from "@/shared/types/player.commands.ts";
 console.log("Game Worker thread started.");
 
 
-setInterval(() => {
-    gameInstance.dispatch({type: "TICK"});
-}, 500)
 
 self.onmessage = (event: MessageEvent<PlayerCommand>) => {
     if(event.data.type == "REQUEST_INITIAL_STATE") {

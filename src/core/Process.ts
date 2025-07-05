@@ -4,7 +4,6 @@ import type {Building} from "./Building.ts";
 import type {ProcessData, ProcessId} from "@/shared/types/process.type.ts";
 import {gameInstance} from "./engine.ts";
 
-
 export type ProcessState = {
     id: ProcessId;
     processId: ProcessId;
@@ -15,15 +14,17 @@ export type ProcessState = {
     isProcessing: boolean;
     isActive: boolean;
     isUnlocked: boolean;
+    status: ProcessStatus;
 }
+
+type ProcessStatus = 'STOPPED' | 'IDLE' | 'PAUSED' | 'RUNNING';
 
 export class Process extends Subscribable<ProcessState, typeof EmptyBase>(EmptyBase)  {
     private building: Building;
-    private isProcessing: boolean = false;
     private secondsSpentProcessing: number = 0;
     private processData: ProcessData;
-    private isActive: boolean = false;
     private isUnlocked: boolean = false;
+    private status: ProcessStatus = 'STOPPED';
 
     constructor(building: Building, processData: ProcessData) {
         super();
@@ -52,10 +53,6 @@ export class Process extends Subscribable<ProcessState, typeof EmptyBase>(EmptyB
     public getId(): ProcessId {
         return this.processData.id;
     }
-    public setActive(active: boolean): void {
-        this.isActive = active;
-        this.setDirty();
-    }
 
     public init() {
 
@@ -65,75 +62,79 @@ export class Process extends Subscribable<ProcessState, typeof EmptyBase>(EmptyB
 
     }
 
+    private setStatus(newStatus: ProcessStatus) {
+        if (this.status !== newStatus) {
+            this.status = newStatus;
+            this.setDirty();
+        }
+    }
+
     public update(deltaTime: number, commands: GameCommand[]) {
 
-        if (!this.isActive || !this.isUnlocked) {
+        if (!this.isUnlocked) {
             return;
         }
 
-        this.secondsSpentProcessing += deltaTime;
-        const maxCyclesByTime = Math.floor(this.secondsSpentProcessing / this.processData.duration);
-
-        // enough time waiting to get more than one process completed
-        if (maxCyclesByTime > 1) {
-            for (let i = 1; i < maxCyclesByTime; i++) {
-                if (this.processData.inputs.length > 0) {
-                    if (gameInstance.resources.hasEnoughAfterPlanned(this.processData.inputs, commands)) {
-                        commands.push({type: 'SPEND_RESOURCES', payload: {resources: this.processData.inputs}})
-                    } else {
-                        // no resources to start the iteration
-                        break;
-                    }
-                }
-
-                if (this.processData.outputs.length > 0) {
-                    commands.push({type: 'ADD_RESOURCES', payload: {resources: this.processData.outputs}});
-                }
-
-                commands.push({ type: 'ADD_XP', payload: { buildingId: this.building.buildingData.id, amount: this.processData.xp } });
+        if (this.building.wisp && this.building.getCurrentProcess() && this.building.getCurrentProcess()?.getId() == this.getId()) {
+            if (this.status === 'PAUSED') {
+                this.setStatus('RUNNING');
+            } else if (this.status === 'STOPPED') {
+                this.setStatus('IDLE');
             }
-
-            this.secondsSpentProcessing -= this.processData.duration * (maxCyclesByTime - 1);
-        }
-
-        // start processing
-        if (!this.isProcessing) {
-            if (this.processData.inputs.length > 0 && gameInstance.resources.hasEnoughAfterPlanned(this.processData.inputs, commands)) {
-                this.isProcessing = true;
-                this.secondsSpentProcessing = 0;
-                commands.push({type: 'SPEND_RESOURCES', payload: {resources: this.processData.inputs}})
-            } else if (this.processData.inputs.length === 0) {
-                this.isProcessing = true;
-                this.secondsSpentProcessing = 0;
-
-
+        } else {
+            if (this.status === 'RUNNING') {
+                this.setStatus('PAUSED');
+            }
+            if (this.status === 'IDLE') {
+                this.setStatus('STOPPED');
             }
         }
 
-        if (this.isProcessing) {
-            if (this.secondsSpentProcessing >= this.processData.duration) {
-                this.secondsSpentProcessing -= this.processData.duration;
+        let timeToProcess = deltaTime;
 
-                if (this.processData.outputs.length > 0) {
-                    commands.push({type: 'ADD_RESOURCES', payload: {resources: this.processData.outputs}});
+        while (timeToProcess > 0) {
+            let workWasDoneThisIteration = false;
+
+            if (this.status === 'IDLE') {
+                if (gameInstance.resources.hasEnoughAfterPlanned(this.processData.inputs, commands)) {
+                    commands.push({type: 'SPEND_RESOURCES', payload: {resources: this.processData.inputs}});
+                    this.secondsSpentProcessing = 0;
+                    this.setStatus('RUNNING');
+                } else {
+                    break;
                 }
+            }
 
-                commands.push({ type: 'ADD_XP', payload: { buildingId: this.building.buildingData.id, amount: this.processData.xp } });
+            if (this.status === 'RUNNING') {
+                const timeNeededToFinish = this.processData.duration - this.secondsSpentProcessing;
+                const timeToSpendThisLoop = Math.min(timeToProcess, timeNeededToFinish);
 
-                if (this.processData.inputs.length > 0) {
-                    if (gameInstance.resources.hasEnoughAfterPlanned(this.processData.inputs, commands)) {
-                        commands.push({type: 'SPEND_RESOURCES', payload: {resources: this.processData.inputs}})
-                    } else {
-                        this.isProcessing = false;
-                    }
+                this.secondsSpentProcessing += timeToSpendThisLoop;
+                timeToProcess -= timeToSpendThisLoop;
+                this.setDirty();
+
+                workWasDoneThisIteration = true;
+
+                // --- Check for Completion ---
+                if (this.secondsSpentProcessing >= this.processData.duration) {
+                    commands.push({ type: 'ADD_RESOURCES', payload: { resources: this.processData.outputs } });
+                    commands.push({ type: 'ADD_XP', payload: { buildingId: this.building.buildingData.id, amount: this.processData.xp } });
+                    this.secondsSpentProcessing -= this.processData.duration;
+                    this.setStatus('IDLE');
                 }
+            }
+
+            if (!workWasDoneThisIteration) {
+                break;
             }
         }
 
-        this.setDirty();
     }
 
     protected computeSnapshot(): ProcessState {
+
+        // console.log(`computeSnapshot ${this.processData.id} ${this.secondsSpentProcessing}`)
+
         return {
             id: this.processData.id,
             processId: this.processData.id,
@@ -141,8 +142,9 @@ export class Process extends Subscribable<ProcessState, typeof EmptyBase>(EmptyB
             duration: this.processData.duration,
             timeLeft: this.processData.duration - this.secondsSpentProcessing,
             percentage: this.secondsSpentProcessing / this.processData.duration,
-            isProcessing: this.isProcessing,
-            isActive: this.isActive,
+            isProcessing: this.status === 'RUNNING',
+            isActive: this.status === 'IDLE' || this.status === 'RUNNING',
+            status: this.status,
             isUnlocked: this.isUnlocked,
         };
     }

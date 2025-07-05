@@ -24,7 +24,9 @@ export default function ProcessTile({buildingState, processId, isActive, setSele
 
             >
                 <div className={styles.details}>
-                    {processData?.name}
+                    {processData?.name}<br />
+                    {processState.status}<br />
+                    {processState?.secondsSpent.toFixed(2)}
                 </div>
                 <div>
                     <ProgressBar playing={processState.isProcessing && processState.isActive}

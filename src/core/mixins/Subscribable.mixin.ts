@@ -12,7 +12,13 @@ export function Subscribable<TState, TBase extends Constructor>(Base: TBase) {
         }
 
         public postUpdate() {
+
+
             if (this.hasChanged) {
+
+                // if (this.processData !== undefined) {
+                //     console.log(`postUpdate-process-[${this.processData.id}]${this.hasChanged ? 'Changed' : ''}`, this.isActive)
+                // }
                 this.listeners.forEach(listener => listener());
             }
         }
@@ -27,8 +33,14 @@ export function Subscribable<TState, TBase extends Constructor>(Base: TBase) {
                 return this.cachedSnapshot;
             }
 
+
             this.cachedSnapshot = this.computeSnapshot();
             this.hasChanged = false;
+
+            //
+            // if (this.processData !== undefined) {
+            //     console.log(`getSnapshot-process-[${this.processData.id}]${this.hasChanged ? 'Changed' : ''}`, this.cachedSnapshot)
+            // }
 
             return this.cachedSnapshot;
         }

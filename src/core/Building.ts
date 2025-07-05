@@ -58,6 +58,7 @@ export class Building extends Subscribable<BuildingState, typeof EmptyBase>(Empt
     }
 
     public getCurrentProcess(): Process | null {
+
         return this.currentProcess;
     }
 
@@ -75,15 +76,8 @@ export class Building extends Subscribable<BuildingState, typeof EmptyBase>(Empt
         if (!processObject) {
             return;
         }
-
-        if (this.currentProcess) {
-            this.currentProcess.setActive(false)
-        }
-
         this.currentProcess = processObject;
 
-        const hasWispAssigned = this.wisp != null;
-        this.currentProcess.setActive(hasWispAssigned);
 
         this.setDirty();
     }
@@ -93,7 +87,6 @@ export class Building extends Subscribable<BuildingState, typeof EmptyBase>(Empt
             return;
         }
 
-        this.currentProcess.setActive(false);
         this.currentProcess = null;
 
 
@@ -104,10 +97,6 @@ export class Building extends Subscribable<BuildingState, typeof EmptyBase>(Empt
         this.wisp = wisp;
         wisp.isAssigned = true;
         wisp.currentAssignment = this;
-
-        if (this.currentProcess) {
-            this.currentProcess.setActive(true);
-        }
 
         this.setDirty();
     }
@@ -120,10 +109,6 @@ export class Building extends Subscribable<BuildingState, typeof EmptyBase>(Empt
         this.wisp.isAssigned = false;
         this.wisp.currentAssignment = undefined;
         this.wisp = null;
-
-        if (this.currentProcess) {
-            this.currentProcess.setActive(false);
-        }
 
         this.setDirty();
     }

@@ -18,7 +18,10 @@ export const workerAPI = {
     },
 
     dispatch(action: PlayerCommand) {
-        console.log(`---> ${action.type}`);
         gameWorker.postMessage(action);
+
+        // Make UI Feel snappy by updating state of game "immediately" after the action
+        // important! do not remove
+        gameWorker.postMessage({type: "TICK"});
     },
 };

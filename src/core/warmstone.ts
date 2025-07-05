@@ -31,7 +31,7 @@ export class Warmstone {
             }
         }
 
-        return didChange;
+        return false;
     }
 
     restoreVitality(amount: number) {

@@ -12,8 +12,6 @@ import type {PlayerCommand} from "@/shared/types/player.commands.ts";
 
 export const SIMULATION_SPEED: number = 1;
 
-
-
 export type GameState = {
     warmstone: WarmstoneState;
     wisps: {
@@ -78,7 +76,6 @@ class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
 
 
         this.wisps.push(new Wisp());
-        this.wisps.push(new Wisp());
     }
 
 
@@ -86,10 +83,15 @@ class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
         this.init();
 
         this.buildings.forEach((building) => building.init())
-        this.buildings.forEach((building) => building.processes.forEach(process => process.init()))
+        this.buildings.forEach((building) => building.getProcesses().forEach(process => process.init()))
 
         this.buildings.forEach((building) => building.ready())
-        this.buildings.forEach((building) => building.processes.forEach(process => process.ready()))
+        this.buildings.forEach((building) => building.getProcesses().forEach(process => process.ready()))
+
+
+        setInterval(() => {
+            this._dispatch({type: "TICK"});
+        }, 400)
     }
 
     computeSnapshot(): GameState {
@@ -113,11 +115,12 @@ class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
         this.runUpdates(deltaTime, gameCommands);
 
         this.reducePlayerCommands(playerCommand);
+
         this.reduceGameCommands(gameCommands);
 
         this.buildings.forEach((building) => {
             building.postUpdate()
-            building.getCurrentProcess()?.postUpdate()
+            building.getProcesses().forEach(process => process.postUpdate());
         })
 
         this.resources.postUpdate();
@@ -129,16 +132,18 @@ class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
             this.setDirty()
         }
 
-        this.getAssignedWisps()
-            .forEach(wisp => {
-                if (!wisp.currentAssignment) {
-                    return;
-                }
+        this.buildings.forEach((building) => {
+            building.update(deltaTime, gameCommands)
+            building.getProcesses().forEach(process => process.update(deltaTime, gameCommands));
+        })
 
-                wisp.currentAssignment.update(deltaTime, gameCommands);
-
-                wisp.currentAssignment.getCurrentProcess()?.update(deltaTime, gameCommands);
-            });
+        // this.wisps
+        //     .forEach(wisp => {
+        //         wisp.runForEveryAssignment((building) => {
+        //             building.update(deltaTime, gameCommands);
+        //             building.getCurrentProcess()?.update(deltaTime, gameCommands);
+        //         })
+        //     });
     }
 
     private reducePlayerCommands(command: PlayerCommand) {
@@ -258,9 +263,6 @@ class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
         return this.wisps.find(wisp => !wisp.isAssigned);
     }
 
-    private getAssignedWisps(): Wisp[] {
-        return this.wisps.filter(wisp => wisp.isAssigned);
-    }
 }
 
 const gameEngineInstance = new GameEngine();
