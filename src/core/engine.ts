@@ -76,6 +76,7 @@ class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
 
 
         this.wisps.push(new Wisp());
+        this.wisps.push(new Wisp());
     }
 
 

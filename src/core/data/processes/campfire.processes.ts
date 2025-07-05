@@ -5,7 +5,7 @@ export const campfireProcesses: {[key in ProcessId]?: ProcessData} = {
         id: "burn_log_oak",
         name: "Burn Oak Log",
         description: "Burn Oak Log to get some warmth into stone",
-        duration: 5,
+        duration: 30,
         xp: 5,
         text: "Your spirit feels:",
         requirements: [

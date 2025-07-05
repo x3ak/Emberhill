@@ -5,8 +5,8 @@ export const woodcutterProcesses: {[key in ProcessId]?: ProcessData} = {
         id: "cut_tree_oak",
         name: "Cut Oak Tree",
         description: "A sturdy, common hardwood. The backbone of any new settlement, providing reliable logs for basic construction.",
-        duration: 10,
-        xp: 10,
+        duration: 5,
+        xp: 5,
         text: "The familiar scent of oak fills the air.",
         requirements: [
             { type: "min_building_level", id: "woodcutter", amount: 1 }
