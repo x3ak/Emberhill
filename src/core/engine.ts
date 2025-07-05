@@ -8,8 +8,10 @@ import type {ProcessData, ProcessId} from "@/shared/types/process.type.ts";
 import type {GameCommand} from "./commands.ts";
 import {EmptyBase, Subscribable} from "./mixins/Subscribable.mixin.ts";
 
+export const SIMULATION_SPEED: number = 1;
+
 export type PlayerCommand =
-    | { type: "TICK"; payload: { deltaTime: number } }
+    | { type: "TICK"; }
     | { type: "ASSIGN_WISP"; payload: { buildingId: BuildingId } }
     | { type: "UNASSIGN_WISP"; payload: { buildingId: BuildingId } }
     | { type: 'UPGRADE_BUILDING'; payload: { buildingId: BuildingId } }
@@ -27,6 +29,8 @@ export type GameState = {
 
 
 export class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
+
+    private lastTickTime: number = performance.now();
 
     public readonly dispatch: (action: PlayerCommand) => void;
 
@@ -58,7 +62,6 @@ export class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyB
 
         // @ts-ignore
         return this.buildings.get(buildingId);
-
     }
 
     computeSnapshot(): GameState {
@@ -72,10 +75,16 @@ export class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyB
 
     }
 
-    private _dispatch(command: PlayerCommand) {
+    private _dispatch(playerCommand: PlayerCommand) {
         const gameCommands: GameCommand[] = [];
 
-        this.reducePlayerCommands(command, gameCommands);
+        const now = performance.now();
+        const deltaTime = (now - this.lastTickTime) / 1000;
+        this.lastTickTime = now;
+
+        this.runUpdates(deltaTime, gameCommands);
+
+        this.reducePlayerCommands(playerCommand);
         this.reduceGameCommands(gameCommands);
 
         this.buildings.forEach((building) => {
@@ -85,32 +94,30 @@ export class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyB
 
         this.resources.postUpdate();
         this.postUpdate();
-
     }
 
-    private reducePlayerCommands(command: PlayerCommand, gameCommands: GameCommand[]) {
+    private runUpdates(deltaTime: number, gameCommands: GameCommand[]): void {
+        if (warmstone.update(deltaTime)) {
+            this.setDirty()
+        }
+
+        this.getAssignedWisps()
+            .forEach(wisp => {
+                if (!wisp.currentAssignment) {
+                    return;
+                }
+
+                wisp.currentAssignment.update(deltaTime, gameCommands);
+
+                wisp.currentAssignment.getCurrentProcess()?.update(deltaTime, gameCommands);
+            });
+    }
+
+    private reducePlayerCommands(command: PlayerCommand) {
         // console.log(action)
         switch (command.type) {
             case 'TICK': {
-                const {deltaTime} = command.payload;
-
-                if (warmstone.update(deltaTime)) {
-                    this.setDirty()
-                }
-
-                this.getAssignedWisps()
-                    .forEach(wisp => {
-                        if (!wisp.currentAssignment) {
-                            return;
-                        }
-
-                        wisp.currentAssignment.update(deltaTime, gameCommands);
-
-                        wisp.currentAssignment.getCurrentProcess()?.update(deltaTime, gameCommands);
-
-                    });
-
-
+                // is handled before in runUpdates
                 break;
             }
 

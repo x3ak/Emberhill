@@ -11,6 +11,7 @@ export type ProcessState = {
     timeLeft: number;
     percentage: number;
     isProcessing: boolean;
+    isActive: boolean;
 }
 
 export class Process extends Subscribable<ProcessState, typeof EmptyBase>(EmptyBase)  {
@@ -110,6 +111,7 @@ export class Process extends Subscribable<ProcessState, typeof EmptyBase>(EmptyB
             timeLeft: this.processData.duration - this.secondsSpentProcessing,
             percentage: this.secondsSpentProcessing / this.processData.duration,
             isProcessing: this.isProcessing,
+            isActive: this.isActive,
         };
     }
 }

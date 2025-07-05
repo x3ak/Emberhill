@@ -13,8 +13,9 @@ function ActiveProcessInfo({buildingId, processId}: {buildingId: BuildingId, pro
         <div>
             <p>Active Process: {activeProcess?.name}</p>
             {process.isProcessing ? 'processing...' : 'stopped'}
+            {process.isActive ? 'active...' : 'stopped'}
             {process.secondsSpent.toFixed(2)}
-            <ProgressBar playing={process.isProcessing}
+            <ProgressBar playing={process.isProcessing && process.isActive}
                          totalDuration={process?.duration}
                          elapsedTime={process?.secondsSpent}/>
         </div>

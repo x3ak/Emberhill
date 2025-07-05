@@ -3,14 +3,11 @@ import type {ProcessData, ProcessId} from "@/shared/types/process.type.ts";
 import {RESOURCES} from "./data/resources-data.ts";
 import {BUILDINGS} from "./data/buildings-data.ts";
 import type {BuildingData, BuildingId} from "@/shared/types/building.types.ts";
-import {useGameDispatch} from "@/hooks/useGame.ts";
+import {game} from "./engine.ts";
 
-
-export const SIMULATION_SPEED: number = 5;
-
-
-
-const gameDispatch = useGameDispatch();
+export function sendTick() {
+    game.dispatch({type: 'TICK' })
+}
 
 function getResourceData(id: ResourceId): ResourceData {
     return RESOURCES[id];
@@ -25,26 +22,27 @@ function getBuildingData(id: BuildingId): BuildingData {
 }
 
 const buildingLevelUp = (buildingId: BuildingId) => {
-    gameDispatch({type: 'UPGRADE_BUILDING', payload: {buildingId: buildingId}});
+    game.dispatch({type: 'UPGRADE_BUILDING', payload: {buildingId: buildingId}});
 }
 
 const unassignWisp = (buildingId: BuildingId) => {
-    gameDispatch({type: 'UNASSIGN_WISP', payload: {buildingId: buildingId}});
+    game.dispatch({type: 'UNASSIGN_WISP', payload: {buildingId: buildingId}});
 }
 
 const assignWisp = (buildingId: BuildingId) => {
-    gameDispatch({type: 'ASSIGN_WISP', payload: {buildingId: buildingId}});
+    game.dispatch({type: 'ASSIGN_WISP', payload: {buildingId: buildingId}});
 }
 
 const setProcess = (buildingId: BuildingId, processId: ProcessId) => {
-    gameDispatch({type: 'SET_PROCESS', payload: {buildingId: buildingId, processId: processId}});
+    game.dispatch({type: 'SET_PROCESS', payload: {buildingId: buildingId, processId: processId}});
 }
 
 const unsetProcess = (buildingId: BuildingId) => {
-    gameDispatch({type: 'UNSET_PROCESS', payload: {buildingId: buildingId}});
+    game.dispatch({type: 'UNSET_PROCESS', payload: {buildingId: buildingId}});
 }
 
 export const coreAPI = {
+    sendTick,
     getResourceData,
     getProcessData,
     building: {

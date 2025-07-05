@@ -1,21 +1,14 @@
 import {useState} from 'react';
 
-import {game} from '../core/engine';
 import BuildingsList from '@/features/BuildingsList/BuildingsList.tsx';
 import type {BuildingId} from "@/shared/types/building.types.ts";
 import MainContentArea, {type MainContentSection} from "@/features/MainContentArea/MainContentArea.tsx";
 import TownFeatureList from "@/features/TownFeatureList/TownFeatureList.tsx";
-import {SIMULATION_SPEED} from "../core/core.api.ts";
+import {coreAPI} from "../core/core.api.ts";
 
 function browserLoop() {
-    let last = performance.now();
-
     setInterval(() => {
-        const now = performance.now();
-        const deltaTime = (now - last) / 1000 * SIMULATION_SPEED;
-        last = now;
-
-        game.dispatch({type: 'TICK', payload: {deltaTime}})
+        coreAPI.sendTick();
 
     }, 800);
 }
