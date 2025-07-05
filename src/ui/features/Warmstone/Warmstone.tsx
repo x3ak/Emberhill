@@ -1,9 +1,6 @@
-import {useGameState} from "@/hooks/useGame.ts"
-
 export default function Warmstone() {
-    const gameState = useGameState();
 
-    const vitality = Math.floor((gameState.warmstone.currentVitality / gameState.warmstone.maxVitality) * 100);
+    const vitality = 50;
     let progressbarText;
     if (vitality > 50) {
         progressbarText = "A defiant blaze against the gloom."

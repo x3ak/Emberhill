@@ -1,4 +1,3 @@
-import {useBuildingState} from "@/hooks/useGame.ts";
 import {useEffect, useState} from "react";
 import type {ProcessData, ProcessId} from "@/shared/types/process.type.ts";
 import type {BuildingId} from "@/shared/types/building.types.ts";
@@ -7,6 +6,7 @@ import BuildingDetails from "../../components/BuildingDetails/BuildingDetails.ts
 import styles from './Building.module.css';
 import ProcessTile from "@/components/ProcessTile/ProcessTile.tsx";
 import ProcessDetails from "@/components/ProcessDetails/ProcessDetails.tsx";
+import {useBuildingState} from "@/hooks/useBuildingState.ts";
 
 export default function Building({buildingId}: { buildingId: BuildingId }) {
 
@@ -46,7 +46,7 @@ export default function Building({buildingId}: { buildingId: BuildingId }) {
                 {buildingProcesses.map((process: ProcessData) => (
                     <ProcessTile
                         key={process.id}
-                        buildingId={buildingId}
+                        buildingState={buildingState}
                         processId={process.id}
                         setSelectedProcess={setSelectedProcess}
                         isActive={selectedProcess === process.id}

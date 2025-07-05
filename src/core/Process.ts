@@ -1,10 +1,12 @@
 import {EmptyBase, Subscribable} from "./mixins/Subscribable.mixin.ts";
 import type {GameCommand} from "./commands.ts";
-import {game} from "./engine.ts";
 import type {Building} from "./Building.ts";
 import type {ProcessData, ProcessId} from "@/shared/types/process.type.ts";
+import {gameInstance} from "./engine.ts";
+
 
 export type ProcessState = {
+    id: ProcessId;
     processId: ProcessId;
     secondsSpent: number;
     duration: number;
@@ -12,6 +14,7 @@ export type ProcessState = {
     percentage: number;
     isProcessing: boolean;
     isActive: boolean;
+    isUnlocked: boolean;
 }
 
 export class Process extends Subscribable<ProcessState, typeof EmptyBase>(EmptyBase)  {
@@ -20,11 +23,30 @@ export class Process extends Subscribable<ProcessState, typeof EmptyBase>(EmptyB
     private secondsSpentProcessing: number = 0;
     private processData: ProcessData;
     private isActive: boolean = false;
+    private isUnlocked: boolean = false;
 
     constructor(building: Building, processData: ProcessData) {
         super();
         this.building = building;
         this.processData = processData;
+    }
+
+    public checkIfUnlocked() {
+        if (this.isUnlocked) {
+            return;
+        }
+
+        this.processData.requirements.forEach(requirement => {
+            switch (requirement.type) {
+                case "min_building_level":
+                    const building = gameInstance.getBuilding(requirement.id);
+                    if (building.level >= requirement.amount) {
+                        this.isUnlocked = true;
+                        this.setDirty()
+                    }
+                    break;
+            }
+        })
     }
 
     public getId(): ProcessId {
@@ -35,9 +57,17 @@ export class Process extends Subscribable<ProcessState, typeof EmptyBase>(EmptyB
         this.setDirty();
     }
 
+    public init() {
+
+    }
+
+    public ready() {
+
+    }
+
     public update(deltaTime: number, commands: GameCommand[]) {
 
-        if (!this.isActive) {
+        if (!this.isActive || !this.isUnlocked) {
             return;
         }
 
@@ -48,7 +78,7 @@ export class Process extends Subscribable<ProcessState, typeof EmptyBase>(EmptyB
         if (maxCyclesByTime > 1) {
             for (let i = 1; i < maxCyclesByTime; i++) {
                 if (this.processData.inputs.length > 0) {
-                    if (game.resources.hasEnoughAfterPlanned(this.processData.inputs, commands)) {
+                    if (gameInstance.resources.hasEnoughAfterPlanned(this.processData.inputs, commands)) {
                         commands.push({type: 'SPEND_RESOURCES', payload: {resources: this.processData.inputs}})
                     } else {
                         // no resources to start the iteration
@@ -68,7 +98,7 @@ export class Process extends Subscribable<ProcessState, typeof EmptyBase>(EmptyB
 
         // start processing
         if (!this.isProcessing) {
-            if (this.processData.inputs.length > 0 && game.resources.hasEnoughAfterPlanned(this.processData.inputs, commands)) {
+            if (this.processData.inputs.length > 0 && gameInstance.resources.hasEnoughAfterPlanned(this.processData.inputs, commands)) {
                 this.isProcessing = true;
                 this.secondsSpentProcessing = 0;
                 commands.push({type: 'SPEND_RESOURCES', payload: {resources: this.processData.inputs}})
@@ -91,7 +121,7 @@ export class Process extends Subscribable<ProcessState, typeof EmptyBase>(EmptyB
                 commands.push({ type: 'ADD_XP', payload: { buildingId: this.building.buildingData.id, amount: this.processData.xp } });
 
                 if (this.processData.inputs.length > 0) {
-                    if (game.resources.hasEnoughAfterPlanned(this.processData.inputs, commands)) {
+                    if (gameInstance.resources.hasEnoughAfterPlanned(this.processData.inputs, commands)) {
                         commands.push({type: 'SPEND_RESOURCES', payload: {resources: this.processData.inputs}})
                     } else {
                         this.isProcessing = false;
@@ -105,6 +135,7 @@ export class Process extends Subscribable<ProcessState, typeof EmptyBase>(EmptyB
 
     protected computeSnapshot(): ProcessState {
         return {
+            id: this.processData.id,
             processId: this.processData.id,
             secondsSpent: this.secondsSpentProcessing,
             duration: this.processData.duration,
@@ -112,6 +143,7 @@ export class Process extends Subscribable<ProcessState, typeof EmptyBase>(EmptyB
             percentage: this.secondsSpentProcessing / this.processData.duration,
             isProcessing: this.isProcessing,
             isActive: this.isActive,
+            isUnlocked: this.isUnlocked,
         };
     }
 }

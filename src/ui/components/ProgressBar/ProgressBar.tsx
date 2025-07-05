@@ -2,7 +2,7 @@
 import {useEffect, useRef, useState} from 'react';
 
 import styles from "./ProgressBar.module.css";
-import {SIMULATION_SPEED} from "../../../core/engine.ts";
+
 
 type ProgressBarProps = {
     totalDuration: number;
@@ -36,7 +36,7 @@ export default function ProgressBar({
             if (playing) {
                 const timeSinceAnimationStart = (performance.now() - animationStartTimeRef.current) / 1000; // in seconds
 
-                const totalElapsedTime = elapsedTime + timeSinceAnimationStart * SIMULATION_SPEED;
+                const totalElapsedTime = elapsedTime + timeSinceAnimationStart;
 
                 setVisualPercentage(totalElapsedTime / totalDuration * 100);
             }

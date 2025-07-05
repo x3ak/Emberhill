@@ -1,7 +1,7 @@
-import { useResourcesState} from "@/hooks/useGame.ts";
 import ResourceDisplay from "@/components/ResourceDisplay/ResourceDisplay.tsx";
 import {coreAPI} from "../../../core/core.api.ts";
 import styles from './TownStorage.module.css'
+import {useResourcesState} from "@/hooks/useResourcesState.ts";
 
 export default function TownStorage() {
 

@@ -2,14 +2,30 @@ import type { BuildingId} from "@/shared/types/building.types.ts";
 import {coreAPI} from "../../../core/core.api.ts";
 
 import styles from './BuildingDetails.module.css'
-import {useBuildingState} from "@/hooks/useGame.ts";
+import type {ResourceAmount} from "@/shared/types/process.type.ts";
+import type {ResourcesState} from "../../../core/resources.ts";
+import {useBuildingState} from "@/hooks/useBuildingState.ts";
+import {useResourcesState} from "@/hooks/useResourcesState.ts";
+
+function ResourcesListDetails({resources, resourcesState}: {resources: ResourceAmount[]; resourcesState: ResourcesState}) {
+    return resources.filter(resource => resource.type === 'resource').map((resource: ResourceAmount) => {
+        const resourceData = coreAPI.getResourceData(resource.id);
+        return (
+            <li key={resource.id}>
+                {resourceData.name}: {resource.amount}, you have: {resourcesState.resources.get(resource.id)}
+            </li>
+        )
+    })
+}
 
 export default function BuildingDetails({buildingId}: {
     buildingId: BuildingId,
 }) {
 
+
     const buildingState = useBuildingState(buildingId);
     const buildingData = coreAPI.building.getData(buildingId);
+    const resourcesState = useResourcesState();
 
     const handleWispToggle = () => {
         if (buildingState?.wispAssigned) {
@@ -33,7 +49,17 @@ export default function BuildingDetails({buildingId}: {
                     <li className={styles.propertyLine}><label>XP:</label> <b>{buildingState?.xp} / {buildingData.levels[buildingState.level + 1]?.xp}</b></li>
                 </ul>)}
 
-                {levelUpData && (<button onClick={levelUpHandler} disabled={!buildingState.canLevelUp}>Level up</button>)}
+                <div>
+                    {levelUpData && (<button onClick={levelUpHandler} disabled={!buildingState.canLevelUp}>UPGRADE</button>)}
+
+                    <div>
+                        To upgrade the building you need:
+                        <ul>
+                            {levelUpData && (<ResourcesListDetails resources={levelUpData.resources} resourcesState={resourcesState} />)}
+                        </ul>
+
+                    </div>
+                </div>
 
             </div>
             <div className={styles.buildingActions}>

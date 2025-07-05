@@ -1,13 +1,13 @@
 import type {Wisp} from "./wisps.ts";
-import {game} from "./engine.ts";
 import type {ProcessData, ProcessId} from "@/shared/types/process.type.ts";
-import type {BuildingData, BuildingLevelUp} from "@/shared/types/building.types.ts";
+import type {BuildingData, BuildingId, BuildingLevelUp} from "@/shared/types/building.types.ts";
 import type {GameCommand} from "./commands.ts";
 import {EmptyBase, Subscribable} from "./mixins/Subscribable.mixin.ts";
 import {Process} from "./Process.ts";
+import {gameInstance} from "./engine.ts";
 
 export type BuildingState = {
-    id: string;
+    id: BuildingId;
     level: number;
     xp: number;
     wispAssigned: boolean;
@@ -28,7 +28,7 @@ export class Building extends Subscribable<BuildingState, typeof EmptyBase>(Empt
 
     private levelUpData: BuildingLevelUp | null = null;
 
-    private processes: Map<ProcessId, Process> = new Map<ProcessId, Process>()
+    public processes: Map<ProcessId, Process> = new Map<ProcessId, Process>()
 
     private currentProcess: Process | null = null;
 
@@ -40,19 +40,29 @@ export class Building extends Subscribable<BuildingState, typeof EmptyBase>(Empt
         this.levelUpData = buildingData.levels[this.level + 1] || null;
 
         this.initialiseProcessObjects();
+
     }
 
     private initialiseProcessObjects(): void {
         for (const processId in this.buildingData.processes) {
             const processData = this.buildingData.processes[processId as ProcessId];
             if (processData) {
-                this.processes.set(processId as ProcessId, new Process(this, processData));
+                const process = new Process(this, processData);
+                this.processes.set(processId as ProcessId, process);
             }
         }
     }
 
+    private checkIfProcessesUnlocked() {
+        this.processes.forEach(process => process.checkIfUnlocked());
+    }
+
     public getCurrentProcess(): Process | null {
         return this.currentProcess;
+    }
+
+    public getProcesses(): Map<ProcessId, Process> {
+        return this.processes;
     }
 
     public getProcess(processId: ProcessId): Process | null {
@@ -136,17 +146,29 @@ export class Building extends Subscribable<BuildingState, typeof EmptyBase>(Empt
 
         this.level += 1;
         this.xp = 0;
-        game.resources.spend(this.levelUpData.resources);
+        gameInstance.resources.spend(this.levelUpData.resources);
         this.levelUpData = this.buildingData.levels[this.level + 1] || null;
         this.canLevelUp = false;
 
+
+
+        this.checkIfProcessesUnlocked();
         this.setDirty();
+    }
+
+    init() {
+
+    }
+
+    ready() {
+        this.checkIfProcessesUnlocked();
+
     }
 
     update(_deltaTime: number, commands: GameCommand[]) {
         const wasAbleToLevelUp = this.canLevelUp;
         if (this.levelUpData) {
-            const hasEnoughResources = game.resources.hasEnoughAfterPlanned( this.levelUpData.resources, commands)
+            const hasEnoughResources = gameInstance.resources.hasEnoughAfterPlanned( this.levelUpData.resources, commands)
 
             if (!hasEnoughResources) {
                 this.canLevelUp = false;

@@ -1,25 +1,42 @@
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 
 import BuildingsList from '@/features/BuildingsList/BuildingsList.tsx';
 import type {BuildingId} from "@/shared/types/building.types.ts";
 import MainContentArea, {type MainContentSection} from "@/features/MainContentArea/MainContentArea.tsx";
 import TownFeatureList from "@/features/TownFeatureList/TownFeatureList.tsx";
-import {coreAPI} from "../core/core.api.ts";
+import {uiStateManager} from "./UIStateManager.ts";
 
-function browserLoop() {
-    setInterval(() => {
-        coreAPI.sendTick();
-
-    }, 800);
+function LoadingScreen() {
+    return (
+        <div>The warmstone awakens ...</div>
+    )
 }
-
-browserLoop();
 
 export default function App() {
     const [activeSection, setActiveSection] = useState<MainContentSection>({type: 'page', pageId: 'home'});
 
+    const [isGameReady, setGameReady] = useState(false);
+
+    useEffect(() => {
+        const handleGameReady = () => {
+            console.log("Game state received, UI is now ready");
+            setGameReady(true);
+        }
+
+        const unsubscribe = uiStateManager.onReady(handleGameReady);
+
+        uiStateManager.initialize();
+
+        return () => { unsubscribe() };
+
+    }, []);
+
     function setActiveBuilding(buildingId: BuildingId) {
         setActiveSection({type: 'building', buildingId: buildingId});
+    }
+
+    if (!isGameReady) {
+        return <LoadingScreen />;
     }
 
     return (

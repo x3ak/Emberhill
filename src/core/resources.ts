@@ -85,6 +85,15 @@ export class GameResources extends Subscribable<ResourcesState, typeof EmptyBase
 
         return true;
     }
+    public init(): void {
+    }
+
+    public ready(): void {
+    }
+
+    public update(_deltaTime: number, _commands: GameCommand[]): void {
+
+    }
 
     protected computeSnapshot(): ResourcesState {
         const resources:Map<ResourceId, number> = new Map<ResourceId, number>();

@@ -21,7 +21,6 @@ The UI is built using React and is located in the `src/ui/` directory. It is res
 ### Key Components of the UI:
 
 *   **`App.tsx` (`src/ui/App.tsx`):** The root component of the React application. It sets up the main layout and routing.
-*   **`useGame.ts` (`src/hooks/useGame.ts`):** This custom React hook is the primary bridge between the UI and the core game logic. It creates an instance of the `Engine` and provides it to the UI components through a React Context. This allows any component in the application to access the game state and dispatch commands.
 *   **UI Components (`src/ui/components/` and `src/ui/features/`):** These are the individual React components that make up the UI. They use the `useGame` hook to get the current game state and render it. They also dispatch commands to the `Engine` in response to user actions.
 
 ## Connecting the UI and Core Logic

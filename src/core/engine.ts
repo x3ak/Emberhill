@@ -1,22 +1,17 @@
-import {Building} from "./Building.ts";
+import {Building, type BuildingState} from "./Building.ts";
 import {Wisp} from "./wisps.ts";
 import {BUILDINGS} from "./data/buildings-data.ts";
 import {warmstone, type WarmstoneState} from "./warmstone.ts";
-import {GameResources} from "./resources.ts";
+import {GameResources, type ResourcesState} from "./resources.ts";
 import {type BuildingId} from "@/shared/types/building.types.ts";
-import type {ProcessData, ProcessId} from "@/shared/types/process.type.ts";
+import type {ProcessData} from "@/shared/types/process.type.ts";
 import type {GameCommand} from "./commands.ts";
 import {EmptyBase, Subscribable} from "./mixins/Subscribable.mixin.ts";
+import type {ProcessState} from "./Process.ts";
+import type {PlayerCommand} from "@/shared/types/player.commands.ts";
 
 export const SIMULATION_SPEED: number = 1;
 
-export type PlayerCommand =
-    | { type: "TICK"; }
-    | { type: "ASSIGN_WISP"; payload: { buildingId: BuildingId } }
-    | { type: "UNASSIGN_WISP"; payload: { buildingId: BuildingId } }
-    | { type: 'UPGRADE_BUILDING'; payload: { buildingId: BuildingId } }
-    | { type: 'SET_PROCESS'; payload: { buildingId: BuildingId; processId: ProcessId } }
-    | { type: 'UNSET_PROCESS'; payload: { buildingId: BuildingId; } }
 
 
 export type GameState = {
@@ -27,8 +22,18 @@ export type GameState = {
     }
 };
 
+export type FullGameState = {
+    resources: ResourcesState;
+    warmstone: WarmstoneState;
+    wisps: {
+        freeWisps: number,
+        busyWisps: number,
+    },
+    buildings: BuildingState[],
+    processes: ProcessState[],
+}
 
-export class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
+class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
 
     private lastTickTime: number = performance.now();
 
@@ -43,15 +48,14 @@ export class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyB
     constructor() {
 
         super();
-        // find a better way to handle
-        this.buildings.set('woodcutter', new Building(BUILDINGS.woodcutter));
-        this.buildings.set('campfire', new Building(BUILDINGS.campfire));
-
-        this.wisps.push(new Wisp());
-        this.wisps.push(new Wisp());
+        console.log("GameEngine instance created.");
 
         this.dispatch = this._dispatch.bind(this);
 
+    }
+
+    public getBuildings(): Map<BuildingId, Building> {
+        return this.buildings;
     }
 
     public getBuilding(buildingId:BuildingId): Building {
@@ -62,6 +66,30 @@ export class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyB
 
         // @ts-ignore
         return this.buildings.get(buildingId);
+    }
+
+    init() {
+        // find a better way to handle
+        const woodcutter = new Building(BUILDINGS.woodcutter);
+        this.buildings.set('woodcutter', woodcutter);
+
+        const campfire = new Building(BUILDINGS.campfire);
+        this.buildings.set('campfire', campfire);
+
+
+        this.wisps.push(new Wisp());
+        this.wisps.push(new Wisp());
+    }
+
+
+    start() {
+        this.init();
+
+        this.buildings.forEach((building) => building.init())
+        this.buildings.forEach((building) => building.processes.forEach(process => process.init()))
+
+        this.buildings.forEach((building) => building.ready())
+        this.buildings.forEach((building) => building.processes.forEach(process => process.ready()))
     }
 
     computeSnapshot(): GameState {
@@ -114,7 +142,6 @@ export class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyB
     }
 
     private reducePlayerCommands(command: PlayerCommand) {
-        // console.log(action)
         switch (command.type) {
             case 'TICK': {
                 // is handled before in runUpdates
@@ -206,6 +233,27 @@ export class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyB
         this.setDirty()
     }
 
+    public computeFullGameSnapshot(): FullGameState {
+
+        const buildingsState = [... this.buildings]
+            .map(([_buildingId, building]) => building.getSnapshot());
+
+        const processesState = [... this.buildings].flatMap(([_buildingId, building]) => {
+            return [... building.getProcesses()].map(([_processId, process]) => process.getSnapshot())
+        });
+
+        return {
+            warmstone: warmstone.getState(),
+            resources: this.resources.getSnapshot(),
+            wisps: {
+                freeWisps: this.wisps.filter(wisp => !wisp.isAssigned).length,
+                busyWisps: this.wisps.filter(wisp => wisp.isAssigned).length,
+            },
+            buildings: buildingsState,
+            processes: processesState,
+        }
+    }
+
     private getUnassignedWisp(): Wisp | undefined {
         return this.wisps.find(wisp => !wisp.isAssigned);
     }
@@ -215,4 +263,8 @@ export class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyB
     }
 }
 
-export const game = new GameEngine();
+const gameEngineInstance = new GameEngine();
+
+export const gameInstance = gameEngineInstance as GameEngine;
+
+export type { GameEngine };
