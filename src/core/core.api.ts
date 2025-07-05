@@ -3,7 +3,12 @@ import type {ProcessData, ProcessId} from "@/shared/types/process.type.ts";
 import {RESOURCES} from "./data/resources-data.ts";
 import {BUILDINGS} from "./data/buildings-data.ts";
 import type {BuildingData, BuildingId} from "@/shared/types/building.types.ts";
-import {useGameDispatch} from "../hooks/useGame.ts";
+import {useGameDispatch} from "@/hooks/useGame.ts";
+
+
+export const SIMULATION_SPEED: number = 5;
+
+
 
 const gameDispatch = useGameDispatch();
 

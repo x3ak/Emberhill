@@ -5,7 +5,6 @@ import {warmstone, type WarmstoneState} from "./warmstone.ts";
 import {GameResources} from "./resources.ts";
 import {type BuildingId} from "@/shared/types/building.types.ts";
 import type {ProcessData, ProcessId} from "@/shared/types/process.type.ts";
-import {type ResourceId} from "@/shared/types/resource.types.ts";
 import type {GameCommand} from "./commands.ts";
 import {EmptyBase, Subscribable} from "./mixins/Subscribable.mixin.ts";
 
@@ -19,7 +18,6 @@ export type PlayerCommand =
 
 
 export type GameState = {
-    resources: Record<ResourceId, number>;
     warmstone: WarmstoneState;
     wisps: {
         freeWisps: number,
@@ -52,23 +50,45 @@ export class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyB
 
     }
 
-    private _dispatch(command: PlayerCommand) {
-        this.reducePlayerCommands(command);
+    public getBuilding(buildingId:BuildingId): Building {
 
-        if (this.resources.hasChanged()) {
-            this.setDirty()
+        if (!this.buildings.has(buildingId)) {
+            throw new Error(`Building ${buildingId} not found!`);
         }
+
+        // @ts-ignore
+        return this.buildings.get(buildingId);
+
+    }
+
+    computeSnapshot(): GameState {
+        return {
+            warmstone: warmstone.getState(),
+            wisps: {
+                freeWisps: this.wisps.filter(wisp => !wisp.isAssigned).length,
+                busyWisps: this.wisps.filter(wisp => wisp.isAssigned).length,
+            }
+        };
+
+    }
+
+    private _dispatch(command: PlayerCommand) {
+        const gameCommands: GameCommand[] = [];
+
+        this.reducePlayerCommands(command, gameCommands);
+        this.reduceGameCommands(gameCommands);
 
         this.buildings.forEach((building) => {
             building.postUpdate()
             building.getCurrentProcess()?.postUpdate()
         })
 
+        this.resources.postUpdate();
         this.postUpdate();
 
     }
 
-    private reducePlayerCommands(command: PlayerCommand) {
+    private reducePlayerCommands(command: PlayerCommand, gameCommands: GameCommand[]) {
         // console.log(action)
         switch (command.type) {
             case 'TICK': {
@@ -78,32 +98,17 @@ export class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyB
                     this.setDirty()
                 }
 
-                // check for work at buildings
-
-                const gameCommands: GameCommand[] = [];
-                let hasStateChanges = false;
-
                 this.getAssignedWisps()
-                    .filter(wisp => wisp.currentAssignment !== undefined)
                     .forEach(wisp => {
                         if (!wisp.currentAssignment) {
                             return;
                         }
 
-                        const buildingUpdateResult = wisp.currentAssignment.update(deltaTime, gameCommands);
+                        wisp.currentAssignment.update(deltaTime, gameCommands);
 
                         wisp.currentAssignment.getCurrentProcess()?.update(deltaTime, gameCommands);
 
-                        if (buildingUpdateResult.hasChangedState) {
-                            hasStateChanges = true;
-                        }
                     });
-
-
-                this.reduceGameCommands(gameCommands);
-                if (hasStateChanges) {
-                    this.setDirty()
-                }
 
 
                 break;
@@ -118,7 +123,6 @@ export class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyB
                 const {buildingId} = command.payload;
                 this.buildings.get(buildingId)?.assignWisp(freeWisp);
 
-                this.setDirty()
                 break;
             }
 
@@ -126,7 +130,6 @@ export class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyB
                 const {buildingId} = command.payload;
                 this.buildings.get(buildingId)?.unassignWisp();
 
-                this.setDirty()
                 break;
             }
 
@@ -144,7 +147,6 @@ export class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyB
 
                 building.setProcess(processData);
 
-                this.setDirty()
                 break;
             }
 
@@ -157,7 +159,6 @@ export class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyB
 
                 building.unsetProcess();
 
-                this.setDirty()
                 break;
             }
 
@@ -170,13 +171,12 @@ export class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyB
 
                 building.upgrade();
 
-                this.setDirty()
                 break;
             }
         }
     }
 
-    reduceGameCommands(gameCommands: GameCommand[]) {
+    private reduceGameCommands(gameCommands: GameCommand[]) {
         if (gameCommands.length === 0) {
             return;
         }
@@ -185,10 +185,10 @@ export class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyB
             console.log("GAME_COMMAND", command);
             switch (command.type) {
                 case 'SPEND_RESOURCES':
-                    this.resources.spendResourcesForProcess(command.payload.resources)
+                    this.resources.spend(command.payload.resources)
                     break;
                 case 'ADD_RESOURCES':
-                    this.resources.addResourcesFromProcess(command.payload.resources)
+                    this.resources.add(command.payload.resources)
                     break;
                 case 'ADD_XP':
                     this.buildings.get(command.payload.buildingId)?.addXP(command.payload.amount)
@@ -205,29 +205,6 @@ export class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyB
 
     private getAssignedWisps(): Wisp[] {
         return this.wisps.filter(wisp => wisp.isAssigned);
-    }
-
-    computeSnapshot(): GameState {
-        return {
-            resources: {...this.resources.getResources()}, // Return copies
-            warmstone: warmstone.getState(),
-            wisps: {
-                freeWisps: this.wisps.filter(wisp => !wisp.isAssigned).length,
-                busyWisps: this.wisps.filter(wisp => wisp.isAssigned).length,
-            }
-        };
-
-    }
-
-    public getBuilding(buildingId:BuildingId): Building {
-
-        if (!this.buildings.has(buildingId)) {
-            throw new Error(`Building ${buildingId} not found!`);
-        }
-
-        // @ts-ignore
-        return this.buildings.get(buildingId);
-
     }
 }
 

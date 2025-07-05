@@ -1,80 +1,46 @@
-import {type ResourceId} from "@/shared/types/resource.types.ts";
+import {AllResourceIds, type ResourceId} from "@/shared/types/resource.types.ts";
 import type {ResourceAmount} from "@/shared/types/process.type.ts";
 import type {GameCommand} from "./commands.ts";
+import {EmptyBase, Subscribable} from "./mixins/Subscribable.mixin.ts";
 
-export class GameResources {
-    private isDirty: boolean = false;
+export type ResourcesState = {
+    resources: Map<ResourceId, number>
+}
 
-    private resources: Record<ResourceId, number> = {
-        LOG_BIRCH: 0,
-        LOG_OAK: 0,
-        LOG_PINE: 0,
-        LOG_MAPLE: 0,
-        LOG_YEW: 0,
-        LOG_IRONWOOD: 0,
-        LOG_WHISPERWOOD: 0,
-        ESSENCE_SHADOW: 0,
-        BIRCH_BARK: 0,
-        KINDLING: 0,
-        RESIN: 0,
-        FIBERS: 0,
-        MAPLE_SAP: 0,
-        FEATHERS: 0,
-        SEED_ANCIENT: 0,
-        GRUBS: 0,
-        MUSHROOMS: 0,
-        LOST_COIN: 0,
-        MOSS_GLOWING: 0,
-        TOTEM_DECOY: 0,
-        BLOSSOM_SUNPETAL: 0,
-        TOOL_BUCKET: 0,
-        TOOL_STEEL_AXE: 0,
-        TOOL_BLESSED_SICKLE: 0
+export class GameResources extends Subscribable<ResourcesState, typeof EmptyBase>(EmptyBase) {
+    private resources: Map<ResourceId, number> = new Map<ResourceId, number>();
+
+    constructor() {
+        super();
+
+        AllResourceIds.map((resourceId: ResourceId) => {
+            this.resources.set(resourceId, 0);
+        });
     }
+
     addResource(id: ResourceId, amount: number) {
 
-        this.resources[id] += amount;
-        this.isDirty = true;
-    }
+        const currentAmount = this.resources.get(id) || 0;
 
-    hasResource(id: ResourceId, amount: number): boolean {
-        return this.resources[id] >= amount;
+        this.resources.set(id, currentAmount + amount);
+
+        this.setDirty();
     }
 
     subResource(id: ResourceId, amount: number): void {
-        this.resources[id] -= amount;
-        this.isDirty = true;
-    }
 
-    setResource(id: ResourceId, amount: number): void {
-        this.resources[id] = amount;
-        this.isDirty = true;
+        const currentAmount = this.resources.get(id) || 0;
+
+        this.resources.set(id, currentAmount - amount);
+
+        this.setDirty();
     }
 
     getAmount(id: ResourceId): number {
-        return this.resources[id];
+        return this.resources.get(id) || 0;
     }
 
-    getResources(): Record<ResourceId, number> {
-        return this.resources;
-    }
-
-    hasEnoughToStartTheProcess(inputs: ResourceAmount[]): boolean {
-        let hasEnough = true;
-        inputs.forEach(processInput => {
-            switch (processInput.type) {
-                case 'resource':
-                    if (!this.hasResource(processInput.id, processInput.amount)) {
-                        hasEnough = false;
-                    }
-                    break;
-            }
-        })
-
-        return hasEnough;
-    }
-
-    spendResourcesForProcess(inputs: ResourceAmount[]) {
+    spend(inputs: ResourceAmount[]) {
         inputs.forEach(processInput => {
             switch (processInput.type) {
                 case 'resource':
@@ -84,7 +50,7 @@ export class GameResources {
         })
     }
 
-    addResourcesFromProcess(outputs: ResourceAmount[]) {
+    add(outputs: ResourceAmount[]) {
         outputs.forEach(processOutput => {
             switch (processOutput.type) {
                 case 'resource':
@@ -120,7 +86,15 @@ export class GameResources {
         return true;
     }
 
-    hasChanged(): boolean {
-        return this.isDirty;
+    protected computeSnapshot(): ResourcesState {
+        const resources:Map<ResourceId, number> = new Map<ResourceId, number>();
+
+        AllResourceIds.map((resourceId: ResourceId) => {
+            resources.set(resourceId, this.getAmount(resourceId));
+        });
+
+        return {
+            resources: resources,
+        }
     }
 }

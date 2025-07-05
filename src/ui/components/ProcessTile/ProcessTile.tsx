@@ -1,6 +1,6 @@
 import type { ProcessId} from "@/shared/types/process.type.ts";
 import styles from "./ProcessTile.module.css";
-import {useProcessState} from "../../../hooks/useGame.ts";
+import {useProcessState} from "@/hooks/useGame.ts";
 import type {BuildingId} from "@/shared/types/building.types.ts";
 import {coreAPI} from "../../../core/core.api.ts";
 

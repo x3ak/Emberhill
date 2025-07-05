@@ -2,7 +2,7 @@
 import {useEffect, useRef, useState} from 'react';
 
 import styles from "./ProgressBar.module.css";
-import {SIMULATION_SPEED} from "../../../hooks/useGame.ts";
+import {SIMULATION_SPEED} from "../../../core/core.api.ts";
 
 type ProgressBarProps = {
     totalDuration: number;

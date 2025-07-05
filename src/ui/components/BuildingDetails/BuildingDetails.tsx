@@ -3,7 +3,7 @@ import {coreAPI} from "../../../core/core.api.ts";
 import ProgressBar from "@/components/ProgressBar/ProgressBar.tsx";
 
 import styles from './BuildingDetails.module.css'
-import {useBuildingState, useProcessState} from "../../../hooks/useGame.ts";
+import {useBuildingState, useProcessState} from "@/hooks/useGame.ts";
 import type {ProcessId} from "@/shared/types/process.type.ts";
 
 function ActiveProcessInfo({buildingId, processId}: {buildingId: BuildingId, processId: ProcessId}) {

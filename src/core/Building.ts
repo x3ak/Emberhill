@@ -121,6 +121,8 @@ export class Building extends Subscribable<BuildingState, typeof EmptyBase>(Empt
             this.xp = Math.min(this.xp, this.levelUpData.xp);
         }
 
+        this.setDirty();
+
     }
 
     upgrade() {
@@ -130,14 +132,14 @@ export class Building extends Subscribable<BuildingState, typeof EmptyBase>(Empt
 
         this.level += 1;
         this.xp = 0;
-        game.resources.spendResourcesForProcess(this.levelUpData.resources);
+        game.resources.spend(this.levelUpData.resources);
         this.levelUpData = this.buildingData.levels[this.level + 1] || null;
         this.canLevelUp = false;
 
         this.setDirty();
     }
 
-    update(_deltaTime: number, commands: GameCommand[]): {hasChangedState: boolean} {
+    update(_deltaTime: number, commands: GameCommand[]) {
         const wasAbleToLevelUp = this.canLevelUp;
         if (this.levelUpData) {
             const hasEnoughResources = game.resources.hasEnoughAfterPlanned( this.levelUpData.resources, commands)
@@ -147,10 +149,11 @@ export class Building extends Subscribable<BuildingState, typeof EmptyBase>(Empt
             } else if(this.xp >= this.levelUpData.xp) {
                 this.canLevelUp = true;
             }
+
+            if (this.canLevelUp != wasAbleToLevelUp) {
+                this.setDirty();
+            }
         }
-
-        return {hasChangedState: wasAbleToLevelUp !== this.canLevelUp}
-
     }
 
     protected computeSnapshot(): BuildingState {

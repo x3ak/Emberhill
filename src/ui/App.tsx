@@ -5,7 +5,7 @@ import BuildingsList from '@/features/BuildingsList/BuildingsList.tsx';
 import type {BuildingId} from "@/shared/types/building.types.ts";
 import MainContentArea, {type MainContentSection} from "@/features/MainContentArea/MainContentArea.tsx";
 import TownFeatureList from "@/features/TownFeatureList/TownFeatureList.tsx";
-import {SIMULATION_SPEED} from "../hooks/useGame.ts";
+import {SIMULATION_SPEED} from "../core/core.api.ts";
 
 function browserLoop() {
     let last = performance.now();

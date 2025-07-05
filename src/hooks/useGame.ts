@@ -4,6 +4,7 @@ import type {BuildingId} from "@/shared/types/building.types.ts";
 import type {BuildingState} from "../core/Building.ts";
 import type {ProcessId} from "@/shared/types/process.type.ts";
 import type {ProcessState} from "../core/Process.ts";
+import type {ResourcesState} from "../core/resources.ts";
 
 export type Dispatch = (action: PlayerCommand) => void;
 
@@ -40,5 +41,10 @@ export function useProcessState(buildingId: BuildingId, processId: ProcessId): P
     );
 }
 
-export const SIMULATION_SPEED: number = 5;
+export function useResourcesState(): ResourcesState {
+    return useSyncExternalStore(
+        game.resources.subscribe.bind(game.resources),
+        game.resources.getSnapshot.bind(game.resources)
+    );
+}
 

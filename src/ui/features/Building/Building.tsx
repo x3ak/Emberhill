@@ -1,4 +1,4 @@
-import {useBuildingState} from "../../../hooks/useGame.ts";
+import {useBuildingState} from "@/hooks/useGame.ts";
 import {useEffect, useState} from "react";
 import type {ProcessData, ProcessId} from "@/shared/types/process.type.ts";
 import type {BuildingId} from "@/shared/types/building.types.ts";

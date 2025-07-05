@@ -1,17 +1,18 @@
-import {useGameState} from "../../../hooks/useGame.ts";
-import {AllResourceIds} from "@/shared/types/resource.types.ts";
+import { useResourcesState} from "@/hooks/useGame.ts";
 import ResourceDisplay from "@/components/ResourceDisplay/ResourceDisplay.tsx";
 import {coreAPI} from "../../../core/core.api.ts";
 import styles from './TownStorage.module.css'
 
 export default function TownStorage() {
 
-    const gameState = useGameState();
+    const resourcesState = useResourcesState();
 
-    let resourcesList = AllResourceIds.map((resourceId) => {
+    let resourcesList = [... resourcesState.resources].map(([resourceId, amount]) => {
+        const resourceData = coreAPI.getResourceData(resourceId);
+
         return (
-            <ResourceDisplay key={resourceId} name={coreAPI.getResourceData(resourceId).name}
-                             amount={gameState.resources[resourceId]}/>
+            <ResourceDisplay key={resourceId} name={resourceData.name}
+                             amount={amount}/>
         )
     })
 
