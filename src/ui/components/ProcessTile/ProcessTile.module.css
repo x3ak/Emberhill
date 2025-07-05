@@ -1,7 +1,10 @@
 .tile {
     cursor: pointer;
-    padding:  var(--size-sm);
+
     background-color: var(--color-surface-secondary);
+
+    display: flex;
+    flex-direction: column;
 
     &:hover {
         background-color: var(--color-interactive-secondary-bg-hover);
@@ -10,4 +13,14 @@
     &.active {
         background-color: var(--color-interactive-primary-bg-active);
     }
+}
+
+.details {
+    padding:  var(--size-sm);
+    flex-grow: 1;
+
+}
+
+.name {
+
 }

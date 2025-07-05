@@ -21,15 +21,14 @@ export default function ProcessTile({buildingId, processId, isActive, setSelecte
             onClick={() => setSelectedProcess(processId)}
 
         >
-            {processState.percentage.toFixed(2)}
-            {processData?.name}
-
-            {processState.isProcessing ? ' processing ': ''}
-            {processState.isActive ? ' active ' : ' inactive '}
-
-            <ProgressBar playing={processState.isProcessing && processState.isActive}
-                         totalDuration={processState?.duration}
-                         elapsedTime={processState?.secondsSpent}/>
+            <div className={styles.details}>
+                {processData?.name}
+            </div>
+            <div>
+                <ProgressBar playing={processState.isProcessing && processState.isActive}
+                             totalDuration={processState?.duration}
+                             elapsedTime={processState?.secondsSpent}/>
+            </div>
         </div>
     )
 }

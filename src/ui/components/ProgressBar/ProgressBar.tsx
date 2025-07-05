@@ -8,6 +8,7 @@ type ProgressBarProps = {
     totalDuration: number;
     elapsedTime: number;
     playing: boolean;
+    height?: string;
 }
 
 function clamp(number: number, min: number, max: number): number {
@@ -18,6 +19,7 @@ export default function ProgressBar({
                                         totalDuration,
                                         elapsedTime,
                                         playing,
+                                        height = '8px',
                                     }: ProgressBarProps) {
     const [visualPercentage, setVisualPercentage] = useState(0);
 
@@ -54,13 +56,16 @@ export default function ProgressBar({
 
     const percentage = clamp(visualPercentage, 0, 100)
 
+    let progressBarClassName = `${styles.progressBar} ${playing ? '' : styles.inactive }`;
+
     return (
         <div
             className={styles.container}
             role="progressbar"
+            style={{height: height}}
         >
             <div
-                className={styles.progressBar}
+                className={progressBarClassName}
                 style={{width: percentage.toString().concat("%")}}
             />
         </div>

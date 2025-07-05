@@ -3,9 +3,17 @@
     overflow: hidden;
     background-color: var(--color-interactive-secondary-bg);
     height: 24px;
+
 }
+
+
 
 .progressBar {
     height: 100%;
     background-color: var(--color-interactive-primary-bg);
+
+
+    &.inactive {
+        background-color: var(--color-interactive-primary-bg-active);
+    }
 }

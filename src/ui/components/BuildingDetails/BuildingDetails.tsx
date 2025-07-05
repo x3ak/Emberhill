@@ -1,42 +1,15 @@
 import type { BuildingId} from "@/shared/types/building.types.ts";
 import {coreAPI} from "../../../core/core.api.ts";
-import ProgressBar from "@/components/ProgressBar/ProgressBar.tsx";
 
 import styles from './BuildingDetails.module.css'
-import {useBuildingState, useProcessState} from "@/hooks/useGame.ts";
-import type {ProcessId} from "@/shared/types/process.type.ts";
-
-function ActiveProcessInfo({buildingId, processId}: {buildingId: BuildingId, processId: ProcessId}) {
-    const process = useProcessState(buildingId, processId);
-    const activeProcess = coreAPI.getProcessData(buildingId, processId)
-    return (
-        <div>
-            <p>Active Process: {activeProcess?.name}</p>
-            {process.isProcessing ? 'processing...' : 'stopped'}
-            {process.isActive ? 'active...' : 'stopped'}
-            {process.secondsSpent.toFixed(2)}
-            <ProgressBar playing={process.isProcessing && process.isActive}
-                         totalDuration={process?.duration}
-                         elapsedTime={process?.secondsSpent}/>
-        </div>
-    )
-}
+import {useBuildingState} from "@/hooks/useGame.ts";
 
 export default function BuildingDetails({buildingId}: {
     buildingId: BuildingId,
 }) {
-    let activeProcessInfo;
 
     const buildingState = useBuildingState(buildingId);
     const buildingData = coreAPI.building.getData(buildingId);
-
-    if (buildingState.currentProcessId) {
-
-        activeProcessInfo = (
-            <ActiveProcessInfo buildingId={buildingId} processId={buildingState.currentProcessId} />
-        )
-    }
-
 
     const handleWispToggle = () => {
         if (buildingState?.wispAssigned) {
@@ -62,7 +35,6 @@ export default function BuildingDetails({buildingId}: {
 
                 {levelUpData && (<button onClick={levelUpHandler} disabled={!buildingState.canLevelUp}>Level up</button>)}
 
-                {activeProcessInfo}
             </div>
             <div className={styles.buildingActions}>
                 <div className={styles.toggleContainer}>
