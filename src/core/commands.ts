@@ -1,5 +1,5 @@
 import type {BuildingId} from "@/shared/types/building.types.ts";
-import type {ResourceAmount} from "@/shared/types/process.type.ts";
+import type {ResourceAmount} from "@/shared/types/process.types.ts";
 
 export type GameCommand =
     | { type: "UPDATE_STATE"; payload: { buildingId: BuildingId } }

@@ -1,5 +1,5 @@
 import type {BuildingId} from "@/shared/types/building.types.ts";
-import type {ProcessId} from "@/shared/types/process.type.ts";
+import type {ProcessId} from "@/shared/types/process.types.ts";
 
 export type PlayerCommand =
     | { type: "REQUEST_INITIAL_STATE"; }

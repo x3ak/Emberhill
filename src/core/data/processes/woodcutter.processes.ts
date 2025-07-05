@@ -1,4 +1,4 @@
-import type {ProcessData, ProcessId} from "@/shared/types/process.type.ts";
+import type {ProcessData, ProcessId} from "@/shared/types/process.types.ts";
 
 export const woodcutterProcesses: {[key in ProcessId]?: ProcessData} = {
     cut_tree_oak: {

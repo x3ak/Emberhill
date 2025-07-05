@@ -1,4 +1,4 @@
-import type { ProcessId} from "@/shared/types/process.type.ts";
+import type { ProcessId} from "@/shared/types/process.types.ts";
 import styles from "./ProcessTile.module.css";
 import {coreAPI} from "../../../core/core.api.ts";
 import ProgressBar from "@/components/ProgressBar/ProgressBar.tsx";

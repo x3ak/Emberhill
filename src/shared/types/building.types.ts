@@ -1,4 +1,4 @@
-import type {ProcessData, ProcessId, ResourceAmount} from "@/shared/types/process.type.ts";
+import type {ProcessData, ProcessId, ResourceAmount} from "@/shared/types/process.types.ts";
 
 export const AllBuildingIds = [
     'woodcutter',

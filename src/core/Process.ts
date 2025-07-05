@@ -1,7 +1,7 @@
 import {EmptyBase, Subscribable} from "./mixins/Subscribable.mixin.ts";
 import type {GameCommand} from "./commands.ts";
 import type {Building} from "./Building.ts";
-import type {ProcessData, ProcessId, ProcessState, ProcessStatus} from "@/shared/types/process.type.ts";
+import type {ProcessData, ProcessId, ProcessState, ProcessStatus} from "@/shared/types/process.types.ts";
 import {gameInstance} from "./engine.ts";
 
 

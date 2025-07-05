@@ -1,5 +1,5 @@
 import type {Wisp} from "./wisps.ts";
-import type {ProcessData, ProcessId} from "@/shared/types/process.type.ts";
+import type {ProcessData, ProcessId} from "@/shared/types/process.types.ts";
 import type {BuildingData, BuildingLevelUp, BuildingState} from "@/shared/types/building.types.ts";
 import type {GameCommand} from "./commands.ts";
 import {EmptyBase, Subscribable} from "./mixins/Subscribable.mixin.ts";

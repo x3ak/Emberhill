@@ -2,7 +2,7 @@ import type { BuildingId} from "@/shared/types/building.types.ts";
 import {coreAPI} from "../../../core/core.api.ts";
 
 import styles from './BuildingDetails.module.css'
-import type {ResourceAmount} from "@/shared/types/process.type.ts";
+import type {ResourceAmount} from "@/shared/types/process.types.ts";
 import {useBuildingState} from "@/hooks/useBuildingState.ts";
 import {useResourcesState} from "@/hooks/useResourcesState.ts";
 import type {ResourcesState} from "@/shared/types/resource.types.ts";

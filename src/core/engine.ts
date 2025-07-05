@@ -4,7 +4,7 @@ import {BUILDINGS} from "./data/buildings-data.ts";
 import {Warmstone, warmstone} from "./warmstone.ts";
 import {GameResources} from "./resources.ts";
 import {type BuildingId} from "@/shared/types/building.types.ts";
-import type {ProcessData} from "@/shared/types/process.type.ts";
+import type {ProcessData} from "@/shared/types/process.types.ts";
 import type {GameCommand} from "./commands.ts";
 import {EmptyBase, Subscribable} from "./mixins/Subscribable.mixin.ts";
 import type {PlayerCommand} from "@/shared/types/player.commands.ts";
