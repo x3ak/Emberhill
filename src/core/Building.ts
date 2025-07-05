@@ -1,19 +1,11 @@
 import type {Wisp} from "./wisps.ts";
 import type {ProcessData, ProcessId} from "@/shared/types/process.type.ts";
-import type {BuildingData, BuildingId, BuildingLevelUp} from "@/shared/types/building.types.ts";
+import type {BuildingData, BuildingLevelUp, BuildingState} from "@/shared/types/building.types.ts";
 import type {GameCommand} from "./commands.ts";
 import {EmptyBase, Subscribable} from "./mixins/Subscribable.mixin.ts";
 import {Process} from "./Process.ts";
 import {gameInstance} from "./engine.ts";
 
-export type BuildingState = {
-    id: BuildingId;
-    level: number;
-    xp: number;
-    wispAssigned: boolean;
-    canLevelUp: boolean;
-    currentProcessId: ProcessId | null;
-}
 
 export class Building extends Subscribable<BuildingState, typeof EmptyBase>(EmptyBase)  {
 

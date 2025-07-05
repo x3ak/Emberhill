@@ -1,7 +1,6 @@
 import {uiStateManager} from "../ui/UIStateManager.ts";
 import {useSyncExternalStore} from "react";
-import type {ProcessId} from "@/shared/types/process.type.ts";
-import type {ProcessState} from "../core/Process.ts";
+import type {ProcessId, ProcessState} from "@/shared/types/process.type.ts";
 
 export function useProcessState(processId: ProcessId): ProcessState {
     const topic = `process-${processId}` as const;

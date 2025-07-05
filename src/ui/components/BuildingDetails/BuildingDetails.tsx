@@ -3,9 +3,9 @@ import {coreAPI} from "../../../core/core.api.ts";
 
 import styles from './BuildingDetails.module.css'
 import type {ResourceAmount} from "@/shared/types/process.type.ts";
-import type {ResourcesState} from "../../../core/resources.ts";
 import {useBuildingState} from "@/hooks/useBuildingState.ts";
 import {useResourcesState} from "@/hooks/useResourcesState.ts";
+import type {ResourcesState} from "@/shared/types/resource.types.ts";
 
 function ResourcesListDetails({resources, resourcesState}: {resources: ResourceAmount[]; resourcesState: ResourcesState}) {
     return resources.filter(resource => resource.type === 'resource').map((resource: ResourceAmount) => {

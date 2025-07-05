@@ -1,9 +1,9 @@
-export type WarmstoneState = {
-    currentVitality: number,
-    maxVitality: number
-}
+import {EmptyBase, Subscribable} from "./mixins/Subscribable.mixin.ts";
+import type {WarmstoneState} from "@/shared/types/warmstone.types.ts";
 
-export class Warmstone {
+
+export class Warmstone extends Subscribable<WarmstoneState, typeof EmptyBase>(EmptyBase) {
+
     private currentVitality: number;
     private maxVitality: number;
 
@@ -12,43 +12,35 @@ export class Warmstone {
     private timeSinceLastDrain: number = 0;
 
     constructor(vitality: number) {
+        super()
         this.currentVitality = vitality;
         this.maxVitality = vitality;
     }
 
     public update(deltaTime: number): boolean {
-        let didChange: boolean = false;
         this.timeSinceLastDrain += deltaTime;
 
         if (this.timeSinceLastDrain >= this.vitalityDrainInterval) {
             this.currentVitality -= this.vitalityDrainAmount;
             this.timeSinceLastDrain -= this.vitalityDrainInterval;
+            this.setDirty()
 
             if (this.currentVitality < 0) {
                 this.currentVitality = 0;
-            } else {
-                didChange = true;
             }
         }
 
         return false;
     }
 
-    restoreVitality(amount: number) {
-        this.currentVitality = Math.min(this.currentVitality + amount, this.maxVitality);
-    }
 
-    public setState(state: WarmstoneState) {
-        this.currentVitality = state.currentVitality;
-        this.maxVitality = state.maxVitality;
-    }
-
-    public getState(): WarmstoneState {
+    protected computeSnapshot(): WarmstoneState {
         return {
             maxVitality: this.maxVitality,
             currentVitality: this.currentVitality,
         }
     }
+
 }
 
 export const warmstone = new Warmstone(200);

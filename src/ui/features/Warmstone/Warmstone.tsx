@@ -1,6 +1,11 @@
+import {useWarmstoneState} from "@/hooks/useWarmstoneState.ts";
+
 export default function Warmstone() {
 
-    const vitality = 50;
+    const state = useWarmstoneState();
+
+    const vitality = state.currentVitality;
+
     let progressbarText;
     if (vitality > 50) {
         progressbarText = "A defiant blaze against the gloom."

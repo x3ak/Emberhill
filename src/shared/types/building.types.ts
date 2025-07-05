@@ -18,3 +18,12 @@ export type BuildingData = {
     processes: {[key in ProcessId]?: ProcessData},
     levels: Record<number, BuildingLevelUp>,
 }
+
+export type BuildingState = {
+    id: BuildingId;
+    level: number;
+    xp: number;
+    wispAssigned: boolean;
+    canLevelUp: boolean;
+    currentProcessId: ProcessId | null;
+}

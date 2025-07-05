@@ -1,16 +1,18 @@
 import { EventBus } from './EventBus';
 
-import type {ProcessState} from "../core/Process.ts";
 import {workerAPI} from "../core/worker.api.ts";
-import type {BuildingState} from "../core/Building.ts";
-import type {ResourcesState} from "../core/resources.ts";
 import type {WorkerEvent} from "@/shared/types/worker.events.ts";
+import type {BuildingState} from "@/shared/types/building.types.ts";
+import type {ProcessState} from "@/shared/types/process.type.ts";
+import type {ResourcesState} from "@/shared/types/resource.types.ts";
+import type {WarmstoneState} from "@/shared/types/warmstone.types.ts";
 
 // Define the "map" of all possible events and their data types
 type GameEventMap = {
     [key: `building-${string}`]: BuildingState; // e.g., 'building-sawmill', 'building-woodcutter'
     [key: `process-${string}`]: ProcessState; // e.g., 'building-sawmill', 'building-woodcutter'
     resources: ResourcesState;
+    warmstone: WarmstoneState;
 };
 
 class StateManager {
@@ -49,6 +51,7 @@ class StateManager {
         switch (event.type) {
             case 'INITIAL_STATE': {
                 this.lastKnownState['resources'] = event.payload.resources;
+                this.lastKnownState['warmstone'] = event.payload.warmstone;
 
                 event.payload.buildings.forEach(buildingState => {
                     this.lastKnownState[`building-${buildingState.id}`] = buildingState;
@@ -76,6 +79,12 @@ class StateManager {
             }
             case 'RESOURCE_UPDATE': {
                 const topic = 'resources';
+                this.lastKnownState[topic] = event.payload;
+                this.eventBus.emit(topic, event.payload);
+                break;
+            }
+            case 'WARMSTONE_UPDATE': {
+                const topic = 'warmstone';
                 this.lastKnownState[topic] = event.payload;
                 this.eventBus.emit(topic, event.payload);
                 break;

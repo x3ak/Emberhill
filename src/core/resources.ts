@@ -1,11 +1,8 @@
-import {AllResourceIds, type ResourceId} from "@/shared/types/resource.types.ts";
+import {AllResourceIds, type ResourceId, type ResourcesState} from "@/shared/types/resource.types.ts";
 import type {ResourceAmount} from "@/shared/types/process.type.ts";
 import type {GameCommand} from "./commands.ts";
 import {EmptyBase, Subscribable} from "./mixins/Subscribable.mixin.ts";
 
-export type ResourcesState = {
-    resources: Map<ResourceId, number>
-}
 
 export class GameResources extends Subscribable<ResourcesState, typeof EmptyBase>(EmptyBase) {
     private resources: Map<ResourceId, number> = new Map<ResourceId, number>();

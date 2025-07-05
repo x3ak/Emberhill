@@ -19,3 +19,7 @@ export type ResourceData = {
     name: string;
     description: string;
 }
+
+export type ResourcesState = {
+    resources: Map<ResourceId, number>
+}

@@ -1,23 +1,10 @@
 import {EmptyBase, Subscribable} from "./mixins/Subscribable.mixin.ts";
 import type {GameCommand} from "./commands.ts";
 import type {Building} from "./Building.ts";
-import type {ProcessData, ProcessId} from "@/shared/types/process.type.ts";
+import type {ProcessData, ProcessId, ProcessState, ProcessStatus} from "@/shared/types/process.type.ts";
 import {gameInstance} from "./engine.ts";
 
-export type ProcessState = {
-    id: ProcessId;
-    processId: ProcessId;
-    secondsSpent: number;
-    duration: number;
-    timeLeft: number;
-    percentage: number;
-    isProcessing: boolean;
-    isActive: boolean;
-    isUnlocked: boolean;
-    status: ProcessStatus;
-}
 
-type ProcessStatus = 'STOPPED' | 'IDLE' | 'PAUSED' | 'RUNNING';
 
 export class Process extends Subscribable<ProcessState, typeof EmptyBase>(EmptyBase)  {
     private building: Building;

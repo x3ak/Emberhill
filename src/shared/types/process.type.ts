@@ -30,3 +30,18 @@ export type ProcessData = {
     outputs: ResourceAmount[];
     effects: ProcessEffect[];  // effects are applied while the process is active
 }
+
+export type ProcessStatus = 'STOPPED' | 'IDLE' | 'PAUSED' | 'RUNNING';
+
+export type ProcessState = {
+    id: ProcessId;
+    processId: ProcessId;
+    secondsSpent: number;
+    duration: number;
+    timeLeft: number;
+    percentage: number;
+    isProcessing: boolean;
+    isActive: boolean;
+    isUnlocked: boolean;
+    status: ProcessStatus;
+}

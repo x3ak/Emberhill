@@ -1,35 +1,17 @@
-import {Building, type BuildingState} from "./Building.ts";
+import {Building} from "./Building.ts";
 import {Wisp} from "./wisps.ts";
 import {BUILDINGS} from "./data/buildings-data.ts";
-import {warmstone, type WarmstoneState} from "./warmstone.ts";
-import {GameResources, type ResourcesState} from "./resources.ts";
+import {Warmstone, warmstone} from "./warmstone.ts";
+import {GameResources} from "./resources.ts";
 import {type BuildingId} from "@/shared/types/building.types.ts";
 import type {ProcessData} from "@/shared/types/process.type.ts";
 import type {GameCommand} from "./commands.ts";
 import {EmptyBase, Subscribable} from "./mixins/Subscribable.mixin.ts";
-import type {ProcessState} from "./Process.ts";
 import type {PlayerCommand} from "@/shared/types/player.commands.ts";
+import type {FullGameState, GameState} from "@/shared/types/game.types.ts";
 
 export const SIMULATION_SPEED: number = 1;
 
-export type GameState = {
-    warmstone: WarmstoneState;
-    wisps: {
-        freeWisps: number,
-        busyWisps: number,
-    }
-};
-
-export type FullGameState = {
-    resources: ResourcesState;
-    warmstone: WarmstoneState;
-    wisps: {
-        freeWisps: number,
-        busyWisps: number,
-    },
-    buildings: BuildingState[],
-    processes: ProcessState[],
-}
 
 class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
 
@@ -43,12 +25,16 @@ class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
 
     private wisps: Wisp[] = []
 
+    public readonly warmstone: Warmstone = new Warmstone(1000);
+
     constructor() {
 
         super();
         console.log("GameEngine instance created.");
 
         this.dispatch = this._dispatch.bind(this);
+
+
 
     }
 
@@ -67,6 +53,7 @@ class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
     }
 
     init() {
+
         // find a better way to handle
         const woodcutter = new Building(BUILDINGS.woodcutter);
         this.buildings.set('woodcutter', woodcutter);
@@ -97,7 +84,6 @@ class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
 
     computeSnapshot(): GameState {
         return {
-            warmstone: warmstone.getState(),
             wisps: {
                 freeWisps: this.wisps.filter(wisp => !wisp.isAssigned).length,
                 busyWisps: this.wisps.filter(wisp => wisp.isAssigned).length,
@@ -249,7 +235,8 @@ class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
         });
 
         return {
-            warmstone: warmstone.getState(),
+
+            warmstone: this.warmstone.getSnapshot(),
             resources: this.resources.getSnapshot(),
             wisps: {
                 freeWisps: this.wisps.filter(wisp => !wisp.isAssigned).length,
