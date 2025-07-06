@@ -1,6 +1,7 @@
 import type {ProcessId} from "@/shared/types/process.types.ts";
 import type {BuildingId} from "@/shared/types/building.types.ts";
 import {coreAPI} from "../../../core/core.api.ts";
+import ResourcePill from "@/components/ResourcePill/ResourcePill.tsx";
 
 type ProcessDetailsProps = {
     buildingId: BuildingId;
@@ -18,9 +19,11 @@ export default function ProcessDetails({buildingId, processId}: ProcessDetailsPr
     const outputs = processData.outputs.map((output, idx) => {
         const resourceData = coreAPI.getResourceData(output.id);
         return (
-            <p key={idx}><span className="font-bold"></span> <span
-                className="text-amber-200 font-bold"> {resourceData.name} : {output.amount}
-                </span></p>
+            <p key={idx}>
+                {output.chance && (<span><b>{output.chance * 100}%</b> chance to get <b>{output.amount}</b> of <ResourcePill resourceData={resourceData} /></span>)}
+                {output.chance === undefined && (<span><ResourcePill resourceData={resourceData} /> : {output.amount}</span>)}
+
+            </p>
         )
     })
 

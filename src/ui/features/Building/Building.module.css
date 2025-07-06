@@ -2,12 +2,12 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, 120px);
     grid-auto-rows: 120px;
-    gap: var(--size-md);
+    gap: var(--size-sm);
     align-content: start;
 
     justify-content: left;
 
-    padding:  var(--size-md);
+    padding:  var(--size-sm);
 }
 
 .processesList {
@@ -18,4 +18,24 @@
 
 .processDetails {
     padding: var(--size-sm);
+}
+
+.buildingNavigation {
+    margin: 0;
+    list-style: none;
+    padding: 0;
+
+    display: flex;
+    flex-direction: row;
+
+    li {
+        margin:  var(--size-sm);
+        padding:  var(--size-sm);
+        font-size: var(--font-size-md);
+        cursor: pointer;
+
+        &.active {
+            background-color: var(--color-interactive-primary-bg-active);
+        }
+    }
 }

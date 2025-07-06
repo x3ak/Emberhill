@@ -23,6 +23,8 @@ export const woodcutterProgression: ProgressionData = {
             {type: "resource", id: "LOG_OAK", amount: 100},
             {type: "resource", id: "LOG_BIRCH", amount: 100},
         ],
-        rewards: []
+        rewards: [
+            {type: 'unlock_process', processId: 'cut_tree_pine'}
+        ]
     },
 };

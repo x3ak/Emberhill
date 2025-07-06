@@ -54,18 +54,22 @@ class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
     init() {
 
         // find a better way to handle
-        const woodcutter = new Building(BUILDINGS.woodcutter);
-        this.buildings.set('woodcutter', woodcutter);
-
-        const campfire = new Building(BUILDINGS.campfire);
-        this.buildings.set('campfire', campfire);
-
-        const mine = new Building(BUILDINGS.mine);
-        this.buildings.set('mine', mine);
+        this.buildings.set('woodcutter', this.initBuilding('woodcutter'));
+        this.buildings.set('campfire', this.initBuilding('campfire'));
+        this.buildings.set('mine', this.initBuilding('mine'));
 
 
         this.wisps.push(new Wisp());
         this.wisps.push(new Wisp());
+    }
+
+    private initBuilding(buildingId:BuildingId): Building {
+        const buildingData = BUILDINGS[buildingId];
+        if (!buildingData) {
+            throw new Error(`Building DATA for ${buildingId} not found!`);
+        }
+
+        return new Building(buildingData);
     }
 
 
@@ -99,7 +103,6 @@ class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
                 busyWisps: this.wisps.filter(wisp => wisp.isAssigned).length,
             }
         };
-
     }
 
     private _dispatch(playerCommand: PlayerCommand) {
@@ -109,11 +112,17 @@ class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
         const deltaTime = (now - this.lastTickTime) / 1000;
         this.lastTickTime = now;
 
-        this.runUpdates(deltaTime * SIMULATION_SPEED, gameCommands);
+        // update all game objects
+        warmstone.update(deltaTime * SIMULATION_SPEED)
+        this.buildings.forEach((building) => building.update(deltaTime * SIMULATION_SPEED, gameCommands))
+        this.processes.forEach((process) => process.update(deltaTime * SIMULATION_SPEED, gameCommands))
 
+        // run inputs
         this.reducePlayerCommands(playerCommand);
         this.reduceGameCommands(gameCommands);
 
+        // run post updates
+        // here changes are pushed to UI for example
         this.buildings.forEach((building) => building.postUpdate())
         this.processes.forEach((process) => process.postUpdate())
         this.warmstone.postUpdate();
@@ -121,33 +130,8 @@ class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
         this.postUpdate();
     }
 
-    private runUpdates(deltaTime: number, gameCommands: GameCommand[]): void {
-        if (warmstone.update(deltaTime)) {
-            this.setDirty()
-        }
-
-        // expensive call, calls update on all buildings and all processes
-        this.buildings.forEach((building) => {
-            building.update(deltaTime, gameCommands)
-            building.getProcesses().forEach(process => process.update(deltaTime, gameCommands));
-        })
-
-        // this.wisps
-        //     .forEach(wisp => {
-        //         wisp.runForEveryAssignment((building) => {
-        //             building.update(deltaTime, gameCommands);
-        //             building.getCurrentProcess()?.update(deltaTime, gameCommands);
-        //         })
-        //     });
-    }
-
     private reducePlayerCommands(command: PlayerCommand) {
         switch (command.type) {
-            case 'TICK': {
-                // is handled before in runUpdates
-                break;
-            }
-
             case 'ASSIGN_WISP': {
                 const freeWisp = this.getUnassignedWisp();
                 if (!freeWisp) {
@@ -169,7 +153,7 @@ class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
 
             case 'SET_PROCESS': {
                 const {buildingId, processId} = command.payload;
-                const processData: ProcessData | null = BUILDINGS[buildingId].processes[processId] || null;
+                const processData: ProcessData | null = BUILDINGS[buildingId]?.processes[processId] || null;
                 if (!processData) {
                     break
                 }
