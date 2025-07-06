@@ -10,7 +10,8 @@ export const woodcutterProcesses: {[key in ProcessId]?: ProcessData} = {
         text: "The familiar scent of oak fills the air.",
         inputs: [],
         outputs: [
-            { type: "resource", id: "LOG_OAK", amount: 1 }
+            { type: "resource", id: "LOG_OAK", amount: 1 },
+            { type: "resource", id: "LOG_OAK", amount: 1, chance: 0.05 }
         ],
         effects: []
     },

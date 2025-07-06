@@ -1,10 +1,14 @@
 import {EmptyBase, Subscribable} from "./mixins/Subscribable.mixin.ts";
 import type {GameCommand} from "./commands.ts";
 import type {Building} from "./Building.ts";
-import type {ProcessData, ProcessId, ProcessState, ProcessStatus} from "@/shared/types/process.types.ts";
+import type {
+    ProcessData,
+    ProcessId,
+    ProcessState,
+    ProcessStatus,
+    ResourceAmount
+} from "@/shared/types/process.types.ts";
 import {gameInstance} from "./engine.ts";
-
-
 
 export class Process extends Subscribable<ProcessState, typeof EmptyBase>(EmptyBase)  {
     private building: Building;
@@ -91,7 +95,7 @@ export class Process extends Subscribable<ProcessState, typeof EmptyBase>(EmptyB
 
                 // --- Check for Completion ---
                 if (this.secondsSpentProcessing >= this.processData.duration) {
-                    commands.push({ type: 'ADD_RESOURCES', payload: { resources: this.processData.outputs } });
+                    commands.push({ type: 'ADD_RESOURCES', payload: { resources: this.handleOutputsChances(this.processData.outputs) } });
                     commands.push({ type: 'ADD_XP', payload: { buildingId: this.building.buildingData.id, amount: this.processData.xp } });
                     this.secondsSpentProcessing -= this.processData.duration;
                     this.setStatus('IDLE');
@@ -102,12 +106,14 @@ export class Process extends Subscribable<ProcessState, typeof EmptyBase>(EmptyB
                 break;
             }
         }
+    }
 
+    private handleOutputsChances(outputs: ResourceAmount[]): ResourceAmount[] {
+        return outputs
+            .filter(o => o.chance !== undefined && o.chance > Math.random() || o.chance === undefined)
     }
 
     protected computeSnapshot(): ProcessState {
-
-        // console.log(`computeSnapshot ${this.processData.id} ${this.secondsSpentProcessing}`)
 
         return {
             id: this.processData.id,
