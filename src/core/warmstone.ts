@@ -11,11 +11,17 @@ export class Warmstone extends Subscribable<WarmstoneState, typeof EmptyBase>(Em
     private vitalityDrainAmount: number = 10; // drain this amount of vitality
     private timeSinceLastDrain: number = 0;
     private essence: number = 0;
+    private currentLevel: number = 1;
+    private canLevelUp: boolean = false;
+
+    private maxEssenceMap: Map<number, number> = new Map<number, number>();
 
     constructor(vitality: number) {
         super()
         this.currentVitality = vitality;
         this.maxVitality = vitality;
+        this.maxEssenceMap.set(2, 100);
+        this.maxEssenceMap.set(3, 180);
 
     }
 
@@ -35,10 +41,35 @@ export class Warmstone extends Subscribable<WarmstoneState, typeof EmptyBase>(Em
         return false;
     }
 
+    public upgrade(): void {
+        if(!this.canLevelUp) {
+            return;
+        }
+        this.essence = 0;
+        this.currentLevel += 1;
+        this.canLevelUp = false;
+        this.setDirty();
+    }
+
     public onExperienceAdded(amountXP: number): void {
+        const nextLevelEssenceValue = this.getEssenceForLevel(this.currentLevel + 1);
+        if(nextLevelEssenceValue === 0) {
+            return;
+        }
+
         this.essence += amountXP * 0.2;
+        if(this.essence >= nextLevelEssenceValue) {
+            this.essence = nextLevelEssenceValue;
+            this.canLevelUp = true;
+
+        }
+
         this.setDirty();
         console.log(`onExperienceAdded ${amountXP} ${this.essence}`)
+    }
+
+    private getEssenceForLevel(level: number): number {
+        return this.maxEssenceMap.get(level) || 0;
     }
 
     protected computeSnapshot(): WarmstoneState {
