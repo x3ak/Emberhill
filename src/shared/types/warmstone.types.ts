@@ -1,4 +1,5 @@
 export type WarmstoneState = {
     currentVitality: number,
-    maxVitality: number
+    maxVitality: number,
+    essence: number,
 }

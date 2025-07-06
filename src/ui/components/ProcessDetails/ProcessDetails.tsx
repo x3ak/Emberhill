@@ -16,9 +16,10 @@ export default function ProcessDetails({buildingId, processId}: ProcessDetailsPr
     }
 
     const outputs = processData.outputs.map((output, idx) => {
+        const resourceData = coreAPI.getResourceData(output.id);
         return (
             <p key={idx}><span className="font-bold"></span> <span
-                className="text-amber-200 font-bold"> {output.id} : {output.amount}
+                className="text-amber-200 font-bold"> {resourceData.name} : {output.amount}
                 </span></p>
         )
     })

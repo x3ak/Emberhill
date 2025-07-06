@@ -45,3 +45,9 @@ gameInstance.resources.subscribe(() => {
     })
 })
 
+gameInstance.warmstone.subscribe(() => {
+    self.postMessage({
+        type: "WARMSTONE_UPDATE",
+        payload: gameInstance.warmstone.getSnapshot(),
+    })
+})

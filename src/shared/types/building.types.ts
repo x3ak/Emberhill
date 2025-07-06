@@ -3,6 +3,7 @@ import type {ProcessData, ProcessId, ResourceAmount} from "@/shared/types/proces
 export const AllBuildingIds = [
     'woodcutter',
     'campfire',
+    'mine',
 ] as const;
 
 export type BuildingId = typeof AllBuildingIds[number];

@@ -10,6 +10,7 @@ export const AllResourceIds = [
     'TOTEM_DECOY',
     'BLOSSOM_SUNPETAL',
     'TOOL_BUCKET', 'TOOL_STEEL_AXE', 'TOOL_BLESSED_SICKLE',
+    'STONE', 'ORE_COPPER',
 ] as const;
 
 export type ResourceId = typeof AllResourceIds[number];

@@ -10,11 +10,13 @@ export class Warmstone extends Subscribable<WarmstoneState, typeof EmptyBase>(Em
     private vitalityDrainInterval: number = 2; // every N seconds drain vitality
     private vitalityDrainAmount: number = 10; // drain this amount of vitality
     private timeSinceLastDrain: number = 0;
+    private essence: number = 0;
 
     constructor(vitality: number) {
         super()
         this.currentVitality = vitality;
         this.maxVitality = vitality;
+
     }
 
     public update(deltaTime: number): boolean {
@@ -33,11 +35,17 @@ export class Warmstone extends Subscribable<WarmstoneState, typeof EmptyBase>(Em
         return false;
     }
 
+    public onExperienceAdded(amountXP: number): void {
+        this.essence += amountXP * 0.2;
+        this.setDirty();
+        console.log(`onExperienceAdded ${amountXP} ${this.essence}`)
+    }
 
     protected computeSnapshot(): WarmstoneState {
         return {
             maxVitality: this.maxVitality,
             currentVitality: this.currentVitality,
+            essence: this.essence,
         }
     }
 

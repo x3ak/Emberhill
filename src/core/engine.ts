@@ -10,7 +10,7 @@ import {EmptyBase, Subscribable} from "./mixins/Subscribable.mixin.ts";
 import type {PlayerCommand} from "@/shared/types/player.commands.ts";
 import type {FullGameState, GameState} from "@/shared/types/game.types.ts";
 
-export const SIMULATION_SPEED: number = 1;
+export const SIMULATION_SPEED: number = 3;
 
 
 class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
@@ -61,6 +61,9 @@ class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
         const campfire = new Building(BUILDINGS.campfire);
         this.buildings.set('campfire', campfire);
 
+        const mine = new Building(BUILDINGS.mine);
+        this.buildings.set('mine', mine);
+
 
         this.wisps.push(new Wisp());
         this.wisps.push(new Wisp());
@@ -99,7 +102,7 @@ class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
         const deltaTime = (now - this.lastTickTime) / 1000;
         this.lastTickTime = now;
 
-        this.runUpdates(deltaTime, gameCommands);
+        this.runUpdates(deltaTime * SIMULATION_SPEED, gameCommands);
 
         this.reducePlayerCommands(playerCommand);
 
@@ -109,7 +112,7 @@ class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
             building.postUpdate()
             building.getProcesses().forEach(process => process.postUpdate());
         })
-
+        this.warmstone.postUpdate();
         this.resources.postUpdate();
         this.postUpdate();
     }
@@ -217,7 +220,8 @@ class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
                     this.resources.add(command.payload.resources)
                     break;
                 case 'ADD_XP':
-                    this.buildings.get(command.payload.buildingId)?.addXP(command.payload.amount)
+                    this.buildings.get(command.payload.buildingId)?.addXP(command.payload.amount);
+                    this.warmstone.onExperienceAdded(command.payload.amount);
                     break;
             }
         })

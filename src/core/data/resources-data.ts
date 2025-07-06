@@ -37,6 +37,17 @@ export const RESOURCES: Record<ResourceId, ResourceData> = {
         name: 'Whisperwood Log',
         description: 'An unnervingly light log that seems to hum with a faint, otherworldly energy.'
     },
+    // === MINING RESOURCES ===
+    STONE: {
+        id: 'STONE',
+        name: "Stone",
+        description: "Stone description",
+    },
+    ORE_COPPER: {
+        id: 'ORE_COPPER',
+        name: "Copper Ore",
+        description: "Copper Ore description",
+    },
 
     // === MAGICAL & ESSENCES ===
     ESSENCE_SHADOW: {

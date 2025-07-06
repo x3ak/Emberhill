@@ -5,6 +5,7 @@ export default function Warmstone() {
     const state = useWarmstoneState();
 
     const vitality = state.currentVitality;
+    const essence = state.essence;
 
     let progressbarText;
     if (vitality > 50) {
@@ -33,8 +34,9 @@ export default function Warmstone() {
                 <div className="w-full bg-gray-200 rounded-full h-3.5 dark:bg-gray-700">
                     <div
                         className="bg-purple-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full"
-                        style={{width: vitality.toString().concat("%")}}>{vitality}%
+                        style={{width: vitality.toString().concat("%")}}>Vitality: {vitality}%
                     </div>
+                    <div>Essence: {essence}</div>
                 </div>
                 <button>
                     Level Up
