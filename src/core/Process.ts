@@ -19,22 +19,9 @@ export class Process extends Subscribable<ProcessState, typeof EmptyBase>(EmptyB
         this.processData = processData;
     }
 
-    public checkIfUnlocked() {
-        if (this.isUnlocked) {
-            return;
-        }
-
-        this.processData.requirements.forEach(requirement => {
-            switch (requirement.type) {
-                case "min_building_level":
-                    const building = gameInstance.getBuilding(requirement.id);
-                    if (building.level >= requirement.amount) {
-                        this.isUnlocked = true;
-                        this.setDirty()
-                    }
-                    break;
-            }
-        })
+    public setLocked(locked: boolean): void {
+        this.isUnlocked = !locked;
+        this.setDirty()
     }
 
     public getId(): ProcessId {

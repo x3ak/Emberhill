@@ -39,14 +39,14 @@ export default function BuildingDetails({buildingId}: {
         coreAPI.building.upgrade(buildingId);
     }
 
-    const levelUpData = buildingData.levels[buildingState.level + 1] || null;
+    const levelUpData = buildingData.progression[buildingState.level + 1] || null;
 
     return (
         <div className={styles.buildingDetails}>
             <div>
                 <h3 className={styles.name}>{buildingData.name} (Lvl: {buildingState?.level})</h3>
                 {levelUpData && (<ul className={styles.properties}>
-                    <li className={styles.propertyLine}><label>XP:</label> <b>{buildingState?.xp} / {buildingData.levels[buildingState.level + 1]?.xp}</b></li>
+                    <li className={styles.propertyLine}><label>XP:</label> <b>{buildingState?.xp} / {buildingData.progression[buildingState.level + 1]?.xp}</b></li>
                 </ul>)}
 
                 <div>

@@ -1,10 +1,11 @@
 import type {Wisp} from "./wisps.ts";
 import type {ProcessData, ProcessId} from "@/shared/types/process.types.ts";
-import type {BuildingData, BuildingLevelUp, BuildingState} from "@/shared/types/building.types.ts";
+import type {BuildingData, BuildingState} from "@/shared/types/building.types.ts";
 import type {GameCommand} from "./commands.ts";
 import {EmptyBase, Subscribable} from "./mixins/Subscribable.mixin.ts";
 import {Process} from "./Process.ts";
 import {gameInstance} from "./engine.ts";
+import type {BuildingLevelUp, UnlockReward} from "@/shared/types/progression.types.ts";
 
 
 export class Building extends Subscribable<BuildingState, typeof EmptyBase>(EmptyBase)  {
@@ -29,10 +30,29 @@ export class Building extends Subscribable<BuildingState, typeof EmptyBase>(Empt
 
         this.buildingData = buildingData;
 
-        this.levelUpData = buildingData.levels[this.level + 1] || null;
+        this.levelUpData = buildingData.progression[this.level + 1] || null;
 
         this.initialiseProcessObjects();
 
+    }
+
+    private initialiseProgression(): void {
+        for (let i = 1; i <= this.level; i++) {
+            const levelProgressData = this.buildingData.progression[i] || null;
+            if (!levelProgressData) {
+                continue;
+            }
+
+            this.unlockRewards(levelProgressData.rewards);
+        }
+    }
+
+    private unlockRewards(rewards: UnlockReward[]): void {
+        rewards
+            .filter(reward => reward.type === 'unlock_process')
+            .forEach(reward => {
+                this.getProcess(reward.processId)?.setLocked(false);
+            });
     }
 
     private initialiseProcessObjects(): void {
@@ -46,7 +66,7 @@ export class Building extends Subscribable<BuildingState, typeof EmptyBase>(Empt
     }
 
     private checkIfProcessesUnlocked() {
-        this.processes.forEach(process => process.checkIfUnlocked());
+        // this.processes.forEach(process => process.checkIfUnlocked());
     }
 
     public getCurrentProcess(): Process | null {
@@ -99,7 +119,7 @@ export class Building extends Subscribable<BuildingState, typeof EmptyBase>(Empt
         }
 
         this.wisp.isAssigned = false;
-        this.wisp.currentAssignment = undefined;
+        this.wisp.currentAssignment = null;
         this.wisp = null;
 
         this.setDirty();
@@ -113,7 +133,6 @@ export class Building extends Subscribable<BuildingState, typeof EmptyBase>(Empt
         }
 
         this.setDirty();
-
     }
 
     upgrade() {
@@ -124,7 +143,10 @@ export class Building extends Subscribable<BuildingState, typeof EmptyBase>(Empt
         this.level += 1;
         this.xp = 0;
         gameInstance.resources.spend(this.levelUpData.resources);
-        this.levelUpData = this.buildingData.levels[this.level + 1] || null;
+
+        this.unlockRewards(this.levelUpData.rewards)
+
+        this.levelUpData = this.buildingData.progression[this.level + 1] || null;
         this.canLevelUp = false;
 
 
@@ -139,6 +161,8 @@ export class Building extends Subscribable<BuildingState, typeof EmptyBase>(Empt
 
     ready() {
         this.checkIfProcessesUnlocked();
+
+        this.initialiseProgression();
 
     }
 

@@ -26,7 +26,6 @@ export type ProcessData = {
     duration: number; // how much time it takes to perform the process/action
     text: string;
     xp: number;
-    requirements: ProcessRequirement[];
     inputs: ResourceAmount[];
     outputs: ResourceAmount[];
     effects: ProcessEffect[];  // effects are applied while the process is active

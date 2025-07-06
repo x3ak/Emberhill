@@ -3,7 +3,7 @@ import {useEffect, useRef, useState} from 'react';
 
 import styles from "./DynamicProgressBar.module.css";
 import {clamp} from "@/shared/Utils.ts";
-
+import {SIMULATION_SPEED} from "@/shared/Globals.ts";
 
 type ProgressBarProps = {
     totalDuration: number;
@@ -31,7 +31,7 @@ export default function DynamicProgressBar({
 
         const animate = () => {
             if (playing) {
-                const timeSinceAnimationStart = (performance.now() - animationStartTimeRef.current) / 1000; // in seconds
+                const timeSinceAnimationStart = ((performance.now() - animationStartTimeRef.current) / 1000) * SIMULATION_SPEED; // in seconds
 
                 const totalElapsedTime = elapsedTime + timeSinceAnimationStart;
 

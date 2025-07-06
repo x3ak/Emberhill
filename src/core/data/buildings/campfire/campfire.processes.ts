@@ -8,9 +8,6 @@ export const campfireProcesses: {[key in ProcessId]?: ProcessData} = {
         duration: 30,
         xp: 5,
         text: "Your spirit feels:",
-        requirements: [
-            {type: "min_building_level", id: "campfire", amount: 1},
-        ],
         inputs: [
             {type: "resource", id: "LOG_OAK", amount: 1}
         ],
@@ -26,9 +23,6 @@ export const campfireProcesses: {[key in ProcessId]?: ProcessData} = {
         duration: 20,
         xp: 20,
         text: "Your spirit feels:",
-        requirements: [
-            {type: "min_building_level", id: "campfire", amount: 2},
-        ],
         inputs: [
             {type: "resource", id: "LOG_BIRCH", amount: 1}
         ],

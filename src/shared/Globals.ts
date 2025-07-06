@@ -1,0 +1,1 @@
+export const SIMULATION_SPEED: number = 10;

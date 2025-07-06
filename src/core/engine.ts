@@ -4,13 +4,13 @@ import {BUILDINGS} from "./data/buildings-data.ts";
 import {Warmstone, warmstone} from "./warmstone.ts";
 import {GameResources} from "./resources.ts";
 import {type BuildingId} from "@/shared/types/building.types.ts";
-import type {ProcessData} from "@/shared/types/process.types.ts";
+import type {ProcessData, ProcessId} from "@/shared/types/process.types.ts";
 import type {GameCommand} from "./commands.ts";
 import {EmptyBase, Subscribable} from "./mixins/Subscribable.mixin.ts";
 import type {PlayerCommand} from "@/shared/types/player.commands.ts";
 import type {FullGameState, GameState} from "@/shared/types/game.types.ts";
-
-export const SIMULATION_SPEED: number = 10;
+import {SIMULATION_SPEED} from "@/shared/Globals.ts";
+import type {Process} from "./Process.ts";
 
 
 class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
@@ -22,6 +22,7 @@ class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
     public readonly resources: GameResources = new GameResources();
 
     private buildings: Map<BuildingId, Building> = new Map();
+    private processes: Map<ProcessId, Process> = new Map();
 
     private wisps: Wisp[] = []
 
@@ -33,8 +34,6 @@ class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
         console.log("GameEngine instance created.");
 
         this.dispatch = this._dispatch.bind(this);
-
-
 
     }
 
@@ -73,11 +72,19 @@ class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
     start() {
         this.init();
 
-        this.buildings.forEach((building) => building.init())
-        this.buildings.forEach((building) => building.getProcesses().forEach(process => process.init()))
+        this.buildings.forEach((building) => {
+            building.init();
+
+            building.getProcesses().forEach(process => {
+                this.processes.set(process.getId(), process);
+            })
+        });
+
+        this.processes.forEach((process) => process.init());
+
 
         this.buildings.forEach((building) => building.ready())
-        this.buildings.forEach((building) => building.getProcesses().forEach(process => process.ready()))
+        this.processes.forEach((process) => process.ready());
 
 
         setInterval(() => {
@@ -105,13 +112,10 @@ class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
         this.runUpdates(deltaTime * SIMULATION_SPEED, gameCommands);
 
         this.reducePlayerCommands(playerCommand);
-
         this.reduceGameCommands(gameCommands);
 
-        this.buildings.forEach((building) => {
-            building.postUpdate()
-            building.getProcesses().forEach(process => process.postUpdate());
-        })
+        this.buildings.forEach((building) => building.postUpdate())
+        this.processes.forEach((process) => process.postUpdate())
         this.warmstone.postUpdate();
         this.resources.postUpdate();
         this.postUpdate();
@@ -122,6 +126,7 @@ class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
             this.setDirty()
         }
 
+        // expensive call, calls update on all buildings and all processes
         this.buildings.forEach((building) => {
             building.update(deltaTime, gameCommands)
             building.getProcesses().forEach(process => process.update(deltaTime, gameCommands));

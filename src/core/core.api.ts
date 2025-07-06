@@ -6,14 +6,16 @@ import type {BuildingData, BuildingId} from "@/shared/types/building.types.ts";
 import {workerAPI} from "./worker.api.ts";
 
 function getResourceData(id: ResourceId): ResourceData {
+    // @ts-ignore
     return RESOURCES[id];
 }
 
 function getProcessData(buildingId: BuildingId, processId: ProcessId): ProcessData | null {
-    return BUILDINGS[buildingId].processes[processId] || null;
+    return BUILDINGS[buildingId]?.processes[processId] || null;
 }
 
 function getBuildingData(id: BuildingId): BuildingData {
+    // @ts-ignore
     return BUILDINGS[id];
 }
 

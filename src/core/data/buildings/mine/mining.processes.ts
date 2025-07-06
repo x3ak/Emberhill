@@ -8,9 +8,6 @@ export const miningProcesses: {[key in ProcessId]?: ProcessData} = {
         duration: 5,
         xp: 5,
         text: "The rhythmic chip-chip of the pickaxe echoes.",
-        requirements: [
-            { type: "min_building_level", id: "mine", amount: 1 }
-        ],
         inputs: [],
         outputs: [
             { type: "resource", id: "STONE", amount: 2 }
@@ -24,9 +21,6 @@ export const miningProcesses: {[key in ProcessId]?: ProcessData} = {
         duration: 15,
         xp: 15,
         text: "A glint of reddish-brown signals a successful find.",
-        requirements: [
-            { type: "min_building_level", id: "mine", amount: 2 }
-        ],
         inputs: [],
         outputs: [
             { type: "resource", id: "ORE_COPPER", amount: 1 }
