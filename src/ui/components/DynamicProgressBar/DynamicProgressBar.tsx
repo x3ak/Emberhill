@@ -1,7 +1,8 @@
-// src/components/ProgressBar.tsx
+// src/components/DynamicProgressBar.tsx
 import {useEffect, useRef, useState} from 'react';
 
-import styles from "./ProgressBar.module.css";
+import styles from "./DynamicProgressBar.module.css";
+import {clamp} from "@/shared/Utils.ts";
 
 
 type ProgressBarProps = {
@@ -11,11 +12,7 @@ type ProgressBarProps = {
     height?: string;
 }
 
-function clamp(number: number, min: number, max: number): number {
-    return Math.min(Math.max(number, min), max);
-}
-
-export default function ProgressBar({
+export default function DynamicProgressBar({
                                         totalDuration,
                                         elapsedTime,
                                         playing,

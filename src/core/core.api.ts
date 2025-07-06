@@ -37,6 +37,10 @@ const unsetProcess = (buildingId: BuildingId) => {
     workerAPI.dispatch({type: 'UNSET_PROCESS', payload: {buildingId: buildingId}});
 }
 
+const upgradeWarmstone = () => {
+    workerAPI.dispatch({type: 'UPGRADE_WARMSTONE'});
+}
+
 export const coreAPI = {
     getResourceData,
     getProcessData,
@@ -47,5 +51,6 @@ export const coreAPI = {
         unsetProcess,
         getData: getBuildingData,
         upgrade: buildingLevelUp,
-    }
+    },
+    upgradeWarmstone,
 }

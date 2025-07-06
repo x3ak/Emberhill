@@ -52,7 +52,7 @@ export class Warmstone extends Subscribable<WarmstoneState, typeof EmptyBase>(Em
     }
 
     public onExperienceAdded(amountXP: number): void {
-        const nextLevelEssenceValue = this.getEssenceForLevel(this.currentLevel + 1);
+        const nextLevelEssenceValue = this.getEssenceForNextLevel();
         if(nextLevelEssenceValue === 0) {
             return;
         }
@@ -68,15 +68,18 @@ export class Warmstone extends Subscribable<WarmstoneState, typeof EmptyBase>(Em
         console.log(`onExperienceAdded ${amountXP} ${this.essence}`)
     }
 
-    private getEssenceForLevel(level: number): number {
-        return this.maxEssenceMap.get(level) || 0;
+    private getEssenceForNextLevel(): number {
+        return this.maxEssenceMap.get(this.currentLevel + 1) || 0;
     }
 
     protected computeSnapshot(): WarmstoneState {
         return {
             maxVitality: this.maxVitality,
             currentVitality: this.currentVitality,
+            currentLevel: this.currentLevel,
             essence: this.essence,
+            essenceForNextLevel: this.getEssenceForNextLevel(),
+            canLevelUp: this.canLevelUp,
         }
     }
 

@@ -1,7 +1,7 @@
 import type { ProcessId} from "@/shared/types/process.types.ts";
 import styles from "./ProcessTile.module.css";
 import {coreAPI} from "../../../core/core.api.ts";
-import ProgressBar from "@/components/ProgressBar/ProgressBar.tsx";
+import DynamicProgressBar from "@/components/DynamicProgressBar/DynamicProgressBar.tsx";
 import type {BuildingState} from "../../../core/Building.ts";
 import {useProcessState} from "@/hooks/useProcessState.ts";
 
@@ -29,9 +29,9 @@ export default function ProcessTile({buildingState, processId, isActive, setSele
                     {processState?.secondsSpent.toFixed(2)}
                 </div>
                 <div>
-                    <ProgressBar playing={processState.isProcessing && processState.isActive}
-                                 totalDuration={processState?.duration}
-                                 elapsedTime={processState?.secondsSpent}/>
+                    <DynamicProgressBar playing={processState.isProcessing && processState.isActive}
+                                        totalDuration={processState?.duration}
+                                        elapsedTime={processState?.secondsSpent}/>
                 </div>
             </div>
         )

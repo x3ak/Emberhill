@@ -9,3 +9,4 @@ export type PlayerCommand =
     | { type: 'UPGRADE_BUILDING'; payload: { buildingId: BuildingId } }
     | { type: 'SET_PROCESS'; payload: { buildingId: BuildingId; processId: ProcessId } }
     | { type: 'UNSET_PROCESS'; payload: { buildingId: BuildingId; } }
+    | { type: 'UPGRADE_WARMSTONE'}

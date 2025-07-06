@@ -10,7 +10,7 @@ import {EmptyBase, Subscribable} from "./mixins/Subscribable.mixin.ts";
 import type {PlayerCommand} from "@/shared/types/player.commands.ts";
 import type {FullGameState, GameState} from "@/shared/types/game.types.ts";
 
-export const SIMULATION_SPEED: number = 3;
+export const SIMULATION_SPEED: number = 10;
 
 
 class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
@@ -200,6 +200,11 @@ class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
 
                 building.upgrade();
 
+                break;
+            }
+
+            case 'UPGRADE_WARMSTONE': {
+                this.warmstone.upgrade();
                 break;
             }
         }
