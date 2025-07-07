@@ -1,16 +1,14 @@
 import type {ProcessId} from "@/shared/types/process.types.ts";
-import type {BuildingId} from "@/shared/types/building.types.ts";
 import {coreAPI} from "../../../core/core.api.ts";
 import ResourcePill from "@/components/ResourcePill/ResourcePill.tsx";
 
 type ProcessDetailsProps = {
-    buildingId: BuildingId;
     processId: ProcessId;
 };
 
-export default function ProcessDetails({buildingId, processId}: ProcessDetailsProps) {
+export default function ProcessDetails({processId}: ProcessDetailsProps) {
 
-    const processData = coreAPI.getProcessData(buildingId, processId);
+    const processData = coreAPI.getProcessData(processId);
 
     if (!processData) {
         return (<b>no process data found</b>)

@@ -10,6 +10,7 @@ import {useBuildingState} from "@/hooks/useBuildingState.ts";
 import type {ResourcesState} from "@/shared/types/resource.types.ts";
 import ResourcePill from "@/components/ResourcePill/ResourcePill.tsx";
 import {useResourcesState} from "@/hooks/useResourcesState.ts";
+import type {UnlockReward} from "@/shared/types/progression.types.ts";
 
 type BuildingSubSection =
     | 'processes'
@@ -76,7 +77,7 @@ type BuildingProcessListProps = {
     selectedProcess: ProcessId | null
 };
 
-function BuildingProcessList({buildingId, processes, buildingState, setSelectedProcess, selectedProcess}: BuildingProcessListProps) {
+function BuildingProcessList({processes, buildingState, setSelectedProcess, selectedProcess}: BuildingProcessListProps) {
     return (
         <div>
             <div className={styles.processGrid}>
@@ -95,7 +96,6 @@ function BuildingProcessList({buildingId, processes, buildingState, setSelectedP
             <div className={styles.processDetails}>
                 {processes && selectedProcess ? (
                     <ProcessDetails
-                        buildingId={buildingId}
                         processId={selectedProcess}
                     />
                 ) : (
@@ -133,6 +133,17 @@ function ResourcesListDetails({resources, resourcesState}: {
     })
 }
 
+function RewardDisplay({reward}: {reward: UnlockReward}) {
+    switch (reward.type) {
+        case "unlock_process":
+            const processData = coreAPI.getProcessData(reward.processId)
+            return (<span>Unlocks the process: <b>{processData?.name}</b></span>)
+        default:
+            return (<span>{JSON.stringify(reward)}</span>)
+    }
+
+}
+
 function BuildingProgression ({buildingState}: {buildingState: BuildingState}) {
 
     const resourcesState = useResourcesState();
@@ -143,8 +154,30 @@ function BuildingProgression ({buildingState}: {buildingState: BuildingState}) {
         coreAPI.building.upgrade(buildingState.id);
     }
 
+    const progressionLevels = Object.keys(buildingData.progression)
+        .map(levelString => parseInt(levelString, 10))
+        .sort((a, b) => a - b) // sorting from lowest to highest
+        .map(level => {
+            const progression = buildingData.progression[level];
+
+            const isUnlocked = buildingState.level >= level;
+
+            return (
+                <div key={level} className={styles.progressionLine}>
+                    <span>{isUnlocked ? '[✅]' : '[❌]'}</span>
+                    <span>Level {level}</span>
+                    {progression.xp > 0 && (<span>XP Required: {progression.xp}</span>) }
+                    {progression.resources.length > 0 && (<span>requires: {JSON.stringify(progression.resources)}</span>)}
+                    <span>
+                        {progression.rewards.map(reward => (<RewardDisplay reward={reward} />))}
+                    </span>
+
+                </div>
+            )
+        })
+
+
     return (<div>
-        <div>
             To upgrade the building you need:
             <ul>
                 {levelUpData && (<ResourcesListDetails resources={levelUpData.resources}
@@ -154,7 +187,9 @@ function BuildingProgression ({buildingState}: {buildingState: BuildingState}) {
             {levelUpData && (
                 <button onClick={levelUpHandler} disabled={!buildingState.canLevelUp}>UPGRADE</button>)}
 
+            <div className={styles.progression}>
+                {progressionLevels}
+            </div>
 
-        </div>
-    </div>)
+        </div>)
 }

@@ -6,14 +6,14 @@ import {useProcessState} from "@/hooks/useProcessState.ts";
 import type {BuildingState} from "@/shared/types/building.types.ts";
 
 
-export default function ProcessTile({buildingState, processId, isActive, setSelectedProcess}: {
+export default function ProcessTile({processId, isActive, setSelectedProcess}: {
     buildingState: BuildingState,
     processId: ProcessId,
     isActive: boolean,
     setSelectedProcess: any
 }) {
     const processState = useProcessState(processId);
-    const processData = coreAPI.getProcessData(buildingState.id, processId);
+    const processData = coreAPI.getProcessData(processId);
 
     if (processState.isUnlocked) {
 

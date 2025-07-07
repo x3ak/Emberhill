@@ -39,3 +39,16 @@
         }
     }
 }
+
+.progression {
+
+}
+
+.progressionLine {
+    display: flex;
+    flex-direction: row;
+
+    span {
+        padding:  var(--size-sm);
+    }
+}

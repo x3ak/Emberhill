@@ -5,13 +5,33 @@ import {BUILDINGS} from "./data/buildings-data.ts";
 import type {BuildingData, BuildingId} from "@/shared/types/building.types.ts";
 import {workerAPI} from "./worker.api.ts";
 
+const cachedProcesses: Map<ProcessId, ProcessData> = new Map<ProcessId, ProcessData>();
+
 function getResourceData(id: ResourceId): ResourceData {
     // @ts-ignore
     return RESOURCES[id];
 }
 
-function getProcessData(buildingId: BuildingId, processId: ProcessId): ProcessData | null {
-    return BUILDINGS[buildingId]?.processes[processId] || null;
+function getProcessData(processId: ProcessId): ProcessData | null {
+    if (cachedProcesses.size === 0) {
+        Object.keys(BUILDINGS).forEach(buildingId => {
+            const buildingData = BUILDINGS[buildingId as BuildingId];
+            if (!buildingData) {
+                return;
+            }
+
+            Object.keys(buildingData.processes).forEach(processId => {
+                const processData = buildingData.processes[processId as ProcessId];
+                if (!processData) {
+                    return;
+                }
+
+                cachedProcesses.set(processId as ProcessId, processData);
+            })
+        })
+    }
+
+    return cachedProcesses.get(processId) || null;
 }
 
 function getBuildingData(id: BuildingId): BuildingData {
