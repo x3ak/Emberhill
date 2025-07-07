@@ -1,0 +1,13 @@
+
+.progression {
+
+}
+
+.progressionLine {
+    display: flex;
+    flex-direction: row;
+}
+
+.progressionLineItem {
+    padding:  var(--size-sm);
+}

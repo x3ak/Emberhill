@@ -45,8 +45,8 @@
 
     /* -- Backgrounds -- */
     --color-background:        var(--raw-color-neutral-900); /* The main page/app background */
-    --color-surface:           var(--raw-color-neutral-700); /* The background of cards, panels, modals */
     --color-surface-secondary: var(--raw-color-neutral-800); /* The background of cards, panels, modals */
+    --color-surface:           var(--raw-color-neutral-700); /* The background of cards, panels, modals */
     --color-surface-hover:     var(--raw-color-neutral-600); /* Hover state for interactive surfaces */
 
     /* -- Text -- */

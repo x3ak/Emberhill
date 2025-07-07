@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import type {ProcessData, ProcessId, ResourceAmount} from "@/shared/types/process.types.ts";
+import type {ProcessData, ProcessId} from "@/shared/types/process.types.ts";
 import type {BuildingId, BuildingState} from "@/shared/types/building.types.ts";
 import {coreAPI} from "../../../core/core.api.ts";
 import BuildingDetails from "../../components/BuildingDetails/BuildingDetails.tsx";
@@ -7,10 +7,7 @@ import styles from './Building.module.css';
 import ProcessTile from "@/components/ProcessTile/ProcessTile.tsx";
 import ProcessDetails from "@/components/ProcessDetails/ProcessDetails.tsx";
 import {useBuildingState} from "@/hooks/useBuildingState.ts";
-import type {ResourcesState} from "@/shared/types/resource.types.ts";
-import ResourcePill from "@/components/ResourcePill/ResourcePill.tsx";
-import {useResourcesState} from "@/hooks/useResourcesState.ts";
-import type {UnlockReward} from "@/shared/types/progression.types.ts";
+import {ProgressionList} from "@/components/ProgressionList/ProgressionList.tsx";
 
 type BuildingSubSection =
     | 'processes'
@@ -118,35 +115,9 @@ function BuildingNavigation({onNavigate, currentSection}: {onNavigate: (section:
     )
 }
 
-function ResourcesListDetails({resources, resourcesState}: {
-    resources: ResourceAmount[];
-    resourcesState: ResourcesState
-}) {
-    return resources.filter(resource => resource.type === 'resource').map((resource: ResourceAmount) => {
-        const resourceData = coreAPI.getResourceData(resource.id);
-        return (
-            <li key={resource.id}>
-                <ResourcePill resourceData={resourceData}/>
-                : {resource.amount}, you have: {resourcesState.resources.get(resource.id)}
-            </li>
-        )
-    })
-}
-
-function RewardDisplay({reward}: {reward: UnlockReward}) {
-    switch (reward.type) {
-        case "unlock_process":
-            const processData = coreAPI.getProcessData(reward.processId)
-            return (<span>Unlocks the process: <b>{processData?.name}</b></span>)
-        default:
-            return (<span>{JSON.stringify(reward)}</span>)
-    }
-
-}
 
 function BuildingProgression ({buildingState}: {buildingState: BuildingState}) {
 
-    const resourcesState = useResourcesState();
     const buildingData = coreAPI.building.getData(buildingState.id);
     const levelUpData = buildingData.progression[buildingState.level + 1] || null;
 
@@ -154,42 +125,12 @@ function BuildingProgression ({buildingState}: {buildingState: BuildingState}) {
         coreAPI.building.upgrade(buildingState.id);
     }
 
-    const progressionLevels = Object.keys(buildingData.progression)
-        .map(levelString => parseInt(levelString, 10))
-        .sort((a, b) => a - b) // sorting from lowest to highest
-        .map(level => {
-            const progression = buildingData.progression[level];
-
-            const isUnlocked = buildingState.level >= level;
-
-            return (
-                <div key={level} className={styles.progressionLine}>
-                    <span>{isUnlocked ? '[✅]' : '[❌]'}</span>
-                    <span>Level {level}</span>
-                    {progression.xp > 0 && (<span>XP Required: {progression.xp}</span>) }
-                    {progression.resources.length > 0 && (<span>requires: {JSON.stringify(progression.resources)}</span>)}
-                    <span>
-                        {progression.rewards.map(reward => (<RewardDisplay reward={reward} />))}
-                    </span>
-
-                </div>
-            )
-        })
-
-
     return (<div>
-            To upgrade the building you need:
-            <ul>
-                {levelUpData && (<ResourcesListDetails resources={levelUpData.resources}
-                                                       resourcesState={resourcesState}/>)}
-            </ul>
 
             {levelUpData && (
                 <button onClick={levelUpHandler} disabled={!buildingState.canLevelUp}>UPGRADE</button>)}
 
-            <div className={styles.progression}>
-                {progressionLevels}
-            </div>
+            <ProgressionList levelReached={buildingState.level} progression={buildingData.progression} />
 
         </div>)
 }
