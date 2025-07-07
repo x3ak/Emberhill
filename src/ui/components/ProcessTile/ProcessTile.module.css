@@ -1,6 +1,6 @@
 .tile {
     cursor: pointer;
-
+    background-size: cover;
     background-color: var(--color-surface-secondary);
 
     display: flex;

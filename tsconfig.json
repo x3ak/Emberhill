@@ -28,6 +28,8 @@
       "@/hooks/*": ["src/hooks/*"],
       "@/components/*": ["src/ui/components/*"],
       "@/features/*": ["src/ui/features/*"],
+      "@/resource-icon/*": ["src/assets/icons/resources/*"],
+      "@/process-icon/*": ["src/assets/icons/processes/*"],
     }
   },
   "include": ["src"]

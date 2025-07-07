@@ -1,9 +1,15 @@
 import type {ProcessData, ProcessId} from "@/shared/types/process.types.ts";
 
+import treeOak from '@/process-icon/tree_oak.png';
+import treeBirch from '@/process-icon/tree_birch.png';
+import treePine from '@/process-icon/tree_pine.png';
+import treeMaple from '@/process-icon/tree_maple.png';
+
 export const woodcutterProcesses: {[key in ProcessId]?: ProcessData} = {
     cut_tree_oak: {
         id: "cut_tree_oak",
         name: "Cut Oak Tree",
+        icon: treeOak,
         description: "A sturdy, common hardwood. The backbone of any new settlement, providing reliable logs for basic construction.",
         duration: 5,
         xp: 5,
@@ -18,6 +24,7 @@ export const woodcutterProcesses: {[key in ProcessId]?: ProcessData} = {
     cut_tree_birch: {
         id: "cut_tree_birch",
         name: "Cut Birch Tree",
+        icon: treeBirch,
         description: "Fell a slender birch. Its pale wood is light, and its bark has many uses.",
         duration: 15,
         xp: 15,
@@ -31,6 +38,7 @@ export const woodcutterProcesses: {[key in ProcessId]?: ProcessData} = {
     cut_tree_pine: {
         id: "cut_tree_pine",
         name: "Cut Pine Tree",
+        icon: treePine,
         description: "Harvest a fragrant pine. Its sticky resin is a valuable secondary resource.",
         duration: 25,
         xp: 25,
@@ -45,6 +53,7 @@ export const woodcutterProcesses: {[key in ProcessId]?: ProcessData} = {
     cut_tree_maple: {
         id: "cut_tree_maple",
         name: "Cut Maple Tree",
+        icon: treeMaple,
         description: "A dense, beautiful hardwood prized by carpenters. Takes longer to fell but yields sturdy timber.",
         duration: 50,
         xp: 55,

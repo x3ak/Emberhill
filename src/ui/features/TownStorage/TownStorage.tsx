@@ -11,7 +11,7 @@ export default function TownStorage() {
         const resourceData = coreAPI.getResourceData(resourceId);
 
         return (
-            <ResourceDisplay key={resourceId} name={resourceData.name}
+            <ResourceDisplay key={resourceId} resourceData={resourceData}
                              amount={amount}/>
         )
     })

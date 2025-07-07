@@ -21,7 +21,7 @@ export default function ProcessTile({buildingState, processId, isActive, setSele
             <div
                 className={`${styles.tile} ${isActive ? styles.active : ''}`}
                 onClick={() => setSelectedProcess(processId)}
-
+                style={{backgroundImage: `url(${processData?.icon})`}}
             >
                 <div className={styles.details}>
                     {processData?.name}<br />

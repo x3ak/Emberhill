@@ -1,14 +1,16 @@
 import styles from './ResourceDisplay.module.css'
+import type {ResourceData} from "@/shared/types/resource.types.ts";
 
 interface ResourceDisplayProps {
-    name: string;
+    resourceData: ResourceData;
     amount: number;
 }
 
-export default function ResourceDisplay({name, amount}: ResourceDisplayProps) {
+export default function ResourceDisplay({resourceData, amount}: ResourceDisplayProps) {
     return (
         <div className={styles.slot}>
-            <span className={styles.name}>{name}</span>
+            <span className={styles.name}>{resourceData.name}</span>
+            <img src={resourceData.icon} alt={resourceData.name} width="100%" />
             <span className={styles.amount}>{Math.floor(amount)}</span>
         </div>
     )

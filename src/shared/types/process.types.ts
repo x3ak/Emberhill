@@ -23,6 +23,7 @@ export type ProcessData = {
     id: ProcessId;
     name: string;
     description: string;
+    icon?: string;
     duration: number; // how much time it takes to perform the process/action
     text: string;
     xp: number;
