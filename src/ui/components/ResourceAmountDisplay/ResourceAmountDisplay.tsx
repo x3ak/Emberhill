@@ -9,16 +9,16 @@ export function ResourceAmountDisplay({resourceAmount}: {resourceAmount: Resourc
         case "resource":
             const resourceData = coreAPI.getResourceData(resourceAmount.id);
             return (
-
                 <span className={styles.amountNeededPill}>
                     {resourceData.icon && (
                         <img
                             src={resourceData.icon}
                             alt={resourceData.name}
+                            title={resourceData.name}
                             className={styles.icon}
                         />
                     )}
-                    <span>{resourceData.name} x {resourceAmount.amount}</span>
+                    <span>x {resourceAmount.amount}</span>
                 </span>
 
             );
