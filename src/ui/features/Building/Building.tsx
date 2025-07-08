@@ -7,7 +7,8 @@ import styles from './Building.module.css';
 import ProcessTile from "@/components/ProcessTile/ProcessTile.tsx";
 import ProcessDetails from "@/components/ProcessDetails/ProcessDetails.tsx";
 import {useBuildingState} from "@/hooks/useBuildingState.ts";
-import {ProgressionList} from "@/components/ProgressionList/ProgressionList.tsx";
+import BuildingProgression from "@/features/Building/BuildingProgression.tsx";
+
 
 type BuildingSubSection =
     | 'processes'
@@ -116,21 +117,4 @@ function BuildingNavigation({onNavigate, currentSection}: {onNavigate: (section:
 }
 
 
-function BuildingProgression ({buildingState}: {buildingState: BuildingState}) {
 
-    const buildingData = coreAPI.building.getData(buildingState.id);
-    const levelUpData = buildingData.progression[buildingState.level + 1] || null;
-
-    const levelUpHandler = () => {
-        coreAPI.building.upgrade(buildingState.id);
-    }
-
-    return (<div>
-
-            {levelUpData && (
-                <button onClick={levelUpHandler} disabled={!buildingState.canLevelUp}>UPGRADE</button>)}
-
-            <ProgressionList levelReached={buildingState.level} progression={buildingData.progression} />
-
-        </div>)
-}

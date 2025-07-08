@@ -1,7 +1,7 @@
 import {useWarmstoneState} from "@/hooks/useWarmstoneState.ts";
 import {coreAPI} from "../../../core/core.api.ts";
 import StaticProgressBar from "@/components/StaticProgressBar/StaticProgressBar.tsx";
-
+import styles from './Warmstone.module.css'
 export default function Warmstone() {
 
     const state = useWarmstoneState();
@@ -30,7 +30,8 @@ export default function Warmstone() {
 
 
     return (
-        <div className="bg-zinc-800 border-2 border-purple-500 rounded-lg p-6 w-72 text-center shadow-xl">
+        <div className={styles.body}>
+
             <h3 className="text-xl font-bold text-purple-400">The Warmstone</h3>
             <p className="text-sm text-gray-400 mt-2">Level {state.currentLevel}</p>
             <p>Till next level: {state.essenceForNextLevel} essence</p>
@@ -46,7 +47,7 @@ export default function Warmstone() {
                     </div>
                     <div>Essence: {essence}</div>
                 </div>
-                <button onClick={handleUpgrade} disabled={!state.canLevelUp}>
+                <button className={styles.button} onClick={handleUpgrade} disabled={!state.canLevelUp}>
                     Level Up
                 </button>
             </div>
