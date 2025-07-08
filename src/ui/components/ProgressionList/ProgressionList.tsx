@@ -2,11 +2,13 @@ import type {ProgressionData, UnlockReward} from "@/shared/types/progression.typ
 import styles from "./ProgressionList.module.css";
 import {RewardDisplay} from "@/components/RewardDisplay/RewardDisplay.tsx";
 import {ResourceAmountDisplay} from "@/components/ResourceAmountDisplay/ResourceAmountDisplay.tsx";
+import ExperiencePill from "@/components/Pills/ExperiencePill/ExperiencePill.tsx";
 
 type ProgressionListProps = {
     levelReached: number;
     progression: ProgressionData;
 };
+
 
 export function ProgressionList({progression, levelReached}: ProgressionListProps) {
     const progressionLevels = Object.keys(progression)
@@ -22,7 +24,7 @@ export function ProgressionList({progression, levelReached}: ProgressionListProp
                     <span className={styles.progressionLineItem}>{isUnlocked ? '[✅]' : '[❌]'}</span>
                     <span className={styles.progressionLineItem}>Level {level}</span>
                     <span className={styles.progressionLineItem}>
-                        {progressionData.xp > 0 && (<span >XP Required: {progressionData.xp}</span>) }
+                        {progressionData.xp > 0 && (<span> <ExperiencePill amount={progressionData.xp} /></span>) }
                     </span>
                     <span className={styles.progressionLineItem}>
                     {progressionData.resources.length > 0 && (

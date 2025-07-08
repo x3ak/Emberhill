@@ -1,0 +1,30 @@
+.pill {
+    display: inline-flex;
+    align-items: center;
+
+    background-color: var(--color-surface);
+    border-radius: var(--border-radius-sm);
+    padding: var(--size-xs) var(--size-xs);
+    border: 1px solid var(--color-border);
+
+    gap: var(--size-xs);
+
+    color: var(--color-text-secondary);
+
+    transition: background-color var(--transition-duration-fast);
+
+    &:hover {
+        background-color: var(--color-surface-hover);
+        border-color: var(--color-border-interactive);
+        color: var(--color-text-accent);
+    }
+}
+
+.icon {
+    /* Control the icon size explicitly */
+    width: 20px;
+    height: 20px;
+
+    /* This ensures the image doesn't distort if it's not a perfect square */
+    object-fit: contain;
+}
