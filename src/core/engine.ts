@@ -3,14 +3,15 @@ import {Wisp} from "./wisps.ts";
 import {BUILDINGS} from "./data/buildings-data.ts";
 import {Warmstone, warmstone} from "./warmstone.ts";
 import {GameResources} from "./resources.ts";
-import {type BuildingId} from "@/shared/types/building.types.ts";
+import type { BuildingId} from "@/shared/types/building.types.ts";
 import type {ProcessData, ProcessId} from "@/shared/types/process.types.ts";
 import type {GameCommand} from "./commands.ts";
 import {EmptyBase, Subscribable} from "./mixins/Subscribable.mixin.ts";
 import type {PlayerCommand} from "@/shared/types/player.commands.ts";
 import type {FullGameState, GameState} from "@/shared/types/game.types.ts";
-import {SIMULATION_SPEED} from "@/shared/Globals.ts";
+
 import type {Process} from "./Process.ts";
+import {SIMULATION_SPEED} from "@/shared/Globals.ts";
 
 
 class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {

@@ -1,5 +1,6 @@
 import type {ResourceId, ResourceData} from "@/shared/types/resource.types.ts";
 
+import placeholder from '@/icons/placeholder.png';
 import logOak from '@/resource-icon/log_oak.png';
 import logBirch from '@/resource-icon/log_birch.png';
 import logPine from '@/resource-icon/log_pine.png';
@@ -37,6 +38,7 @@ export const RESOURCES: {[key in ResourceId]?: ResourceData} = {
         id: 'RESIN',
         name: 'Tree Resin',
         description: 'A sticky, amber-colored sap from a pine tree. A natural adhesive and waterproofing agent.',
+        icon: placeholder,
     },
 
     // === MINING RESOURCES ===
@@ -44,11 +46,13 @@ export const RESOURCES: {[key in ResourceId]?: ResourceData} = {
         id: 'STONE',
         name: "Stone",
         description: "Stone description",
+        icon: placeholder,
     },
     ORE_COPPER: {
         id: 'ORE_COPPER',
         name: "Copper Ore",
         description: "Copper Ore description",
+        icon: placeholder,
     },
 
 } as const;
