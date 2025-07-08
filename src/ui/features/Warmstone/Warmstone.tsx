@@ -2,6 +2,7 @@ import {useWarmstoneState} from "@/hooks/useWarmstoneState.ts";
 import {coreAPI} from "../../../core/core.api.ts";
 import StaticProgressBar from "@/components/StaticProgressBar/StaticProgressBar.tsx";
 import styles from './Warmstone.module.css'
+import {ProgressionList} from "@/components/ProgressionList/ProgressionList.tsx";
 export default function Warmstone() {
 
     const state = useWarmstoneState();
@@ -51,6 +52,8 @@ export default function Warmstone() {
                     Level Up
                 </button>
             </div>
+
+            <ProgressionList levelReached={state.currentLevel} progression={coreAPI.getWarmstoneProgression()} />
         </div>
     )
 }

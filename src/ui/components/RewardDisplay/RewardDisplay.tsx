@@ -6,6 +6,9 @@ export function RewardDisplay({reward}: {reward: UnlockReward}) {
         case "unlock_process":
             const processData = coreAPI.getProcessData(reward.processId)
             return (<span>Unlocks the process: <b>{processData?.name}</b></span>)
+        case "unlock_building":
+            const buildingData = coreAPI.building.getData(reward.buildingId)
+            return (<span>Unlocks the building: <b>{buildingData?.name}</b></span>)
         default:
             return (<span>{JSON.stringify(reward)}</span>)
     }

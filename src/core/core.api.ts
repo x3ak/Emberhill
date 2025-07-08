@@ -4,8 +4,10 @@ import {RESOURCES} from "./data/resources-data.ts";
 import {BUILDINGS} from "./data/buildings-data.ts";
 import type {BuildingData, BuildingId} from "@/shared/types/building.types.ts";
 import {workerAPI} from "./worker.api.ts";
+import {warmstoneProgression} from "./data/warmstone/warmstone.data.ts";
 
 const cachedProcesses: Map<ProcessId, ProcessData> = new Map<ProcessId, ProcessData>();
+
 
 function getResourceData(id: ResourceId): ResourceData {
     // @ts-ignore
@@ -38,6 +40,11 @@ function getBuildingData(id: BuildingId): BuildingData {
     // @ts-ignore
     return BUILDINGS[id];
 }
+
+const getWarmstoneProgression = () => {
+    return warmstoneProgression
+}
+
 
 const buildingLevelUp = (buildingId: BuildingId) => {
     workerAPI.dispatch({type: 'UPGRADE_BUILDING', payload: {buildingId: buildingId}});
@@ -75,4 +82,5 @@ export const coreAPI = {
         upgrade: buildingLevelUp,
     },
     upgradeWarmstone,
+    getWarmstoneProgression,
 }

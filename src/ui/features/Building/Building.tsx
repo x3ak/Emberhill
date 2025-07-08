@@ -46,7 +46,10 @@ export function Building({buildingId}: { buildingId: BuildingId }) {
 
             <BuildingNavigation
                 currentSection={selectedSubSection}
-                onNavigate={setSelectedSubSection} />
+                onNavigate={setSelectedSubSection}
+                buildingState={buildingState}
+
+            />
 
             {selectedSubSection === 'progression' && <BuildingProgression buildingState={buildingState}/>}
 
