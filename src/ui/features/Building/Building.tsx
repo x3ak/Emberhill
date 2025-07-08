@@ -8,14 +8,9 @@ import ProcessTile from "@/components/ProcessTile/ProcessTile.tsx";
 import ProcessDetails from "@/components/ProcessDetails/ProcessDetails.tsx";
 import {useBuildingState} from "@/hooks/useBuildingState.ts";
 import BuildingProgression from "@/features/Building/BuildingProgression.tsx";
+import BuildingNavigation, {type BuildingSubSection} from "@/features/Building/BuildingNavigation.tsx";
 
-
-type BuildingSubSection =
-    | 'processes'
-    | 'progression'
-    | 'statistics';
-
-export default function Building({buildingId}: { buildingId: BuildingId }) {
+export function Building({buildingId}: { buildingId: BuildingId }) {
 
     const [selectedSubSection, setSelectedSubSection] = useState<BuildingSubSection>('processes');
 
@@ -47,23 +42,20 @@ export default function Building({buildingId}: { buildingId: BuildingId }) {
 
     return (
         <div>
-            <BuildingDetails buildingId={buildingId} />
+            <BuildingDetails buildingId={buildingId}/>
 
             <BuildingNavigation
                 currentSection={selectedSubSection}
-                onNavigate={setSelectedSubSection}
-                buildingState={buildingState}
+                onNavigate={setSelectedSubSection} />
 
-            />
-
-            {selectedSubSection === 'progression' && <BuildingProgression buildingState={buildingState} />}
+            {selectedSubSection === 'progression' && <BuildingProgression buildingState={buildingState}/>}
 
             {selectedSubSection === 'processes' && <BuildingProcessList
                 buildingId={buildingId}
                 processes={buildingProcesses}
                 buildingState={buildingState}
                 setSelectedProcess={setSelectedProcess}
-                selectedProcess={selectedProcess} />}
+                selectedProcess={selectedProcess}/>}
 
 
         </div>
@@ -106,22 +98,6 @@ function BuildingProcessList({processes, buildingState, setSelectedProcess, sele
                 )}
             </div>
         </div>
-    )
-}
-
-type BuildingNavigationProps = {
-    onNavigate: (section: BuildingSubSection) => void,
-    currentSection: BuildingSubSection,
-    buildingState: BuildingState,
-}
-
-function BuildingNavigation({onNavigate, currentSection, buildingState}: BuildingNavigationProps) {
-    return (
-        <ul className={styles.buildingNavigation}>
-            <li onClick={() => onNavigate('processes')} className={ currentSection === 'processes' ? styles.active : ''}>🔨 Tasks</li>
-            <li onClick={() => onNavigate('progression')} className={ currentSection === 'progression' ? styles.active : ''}>↑ Upgrade {buildingState.canLevelUp && (<b>🔴</b>)}</li>
-            <li onClick={() => onNavigate('statistics')} className={ currentSection === 'statistics' ? styles.active : ''}>📊 Statistics</li>
-        </ul>
     )
 }
 

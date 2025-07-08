@@ -1,6 +1,6 @@
 import TownStorage from "@/features/TownStorage/TownStorage.tsx";
 import Warmstone from "@/features/Warmstone/Warmstone.tsx";
-import Building from "@/features/Building/Building.tsx";
+import {Building} from "@/features/Building/Building.tsx";
 import type {BuildingId} from "@/shared/types/building.types.ts";
 
 
