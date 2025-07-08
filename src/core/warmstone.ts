@@ -65,7 +65,6 @@ export class Warmstone extends Subscribable<WarmstoneState, typeof EmptyBase>(Em
         }
 
         this.setDirty();
-        console.log(`onExperienceAdded ${amountXP} ${this.essence}`)
     }
 
     private getEssenceForNextLevel(): number {

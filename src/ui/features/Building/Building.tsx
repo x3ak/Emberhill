@@ -51,7 +51,10 @@ export default function Building({buildingId}: { buildingId: BuildingId }) {
 
             <BuildingNavigation
                 currentSection={selectedSubSection}
-                onNavigate={setSelectedSubSection} />
+                onNavigate={setSelectedSubSection}
+                buildingState={buildingState}
+
+            />
 
             {selectedSubSection === 'progression' && <BuildingProgression buildingState={buildingState} />}
 
@@ -106,11 +109,17 @@ function BuildingProcessList({processes, buildingState, setSelectedProcess, sele
     )
 }
 
-function BuildingNavigation({onNavigate, currentSection}: {onNavigate: (section: BuildingSubSection) => void, currentSection: BuildingSubSection}) {
+type BuildingNavigationProps = {
+    onNavigate: (section: BuildingSubSection) => void,
+    currentSection: BuildingSubSection,
+    buildingState: BuildingState,
+}
+
+function BuildingNavigation({onNavigate, currentSection, buildingState}: BuildingNavigationProps) {
     return (
         <ul className={styles.buildingNavigation}>
             <li onClick={() => onNavigate('processes')} className={ currentSection === 'processes' ? styles.active : ''}>🔨 Tasks</li>
-            <li onClick={() => onNavigate('progression')} className={ currentSection === 'progression' ? styles.active : ''}>↑ Upgrade</li>
+            <li onClick={() => onNavigate('progression')} className={ currentSection === 'progression' ? styles.active : ''}>↑ Upgrade {buildingState.canLevelUp && (<b>🔴</b>)}</li>
             <li onClick={() => onNavigate('statistics')} className={ currentSection === 'statistics' ? styles.active : ''}>📊 Statistics</li>
         </ul>
     )

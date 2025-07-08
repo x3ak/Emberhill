@@ -5,7 +5,7 @@ import type {GameCommand} from "./commands.ts";
 import {EmptyBase, Subscribable} from "./mixins/Subscribable.mixin.ts";
 import {Process} from "./Process.ts";
 import {gameInstance} from "./engine.ts";
-import type {BuildingLevelUp, UnlockReward} from "@/shared/types/progression.types.ts";
+import type {BuildingLevelUp} from "@/shared/types/progression.types.ts";
 
 
 export class Building extends Subscribable<BuildingState, typeof EmptyBase>(EmptyBase)  {
@@ -32,7 +32,6 @@ export class Building extends Subscribable<BuildingState, typeof EmptyBase>(Empt
 
         this.levelUpData = buildingData.progression[this.level + 1] || null;
 
-        this.initialiseProcessObjects();
 
     }
 
@@ -43,16 +42,8 @@ export class Building extends Subscribable<BuildingState, typeof EmptyBase>(Empt
                 continue;
             }
 
-            this.unlockRewards(levelProgressData.rewards);
+            gameInstance.progression.unlockRewards(levelProgressData.rewards);
         }
-    }
-
-    private unlockRewards(rewards: UnlockReward[]): void {
-        rewards
-            .filter(reward => reward.type === 'unlock_process')
-            .forEach(reward => {
-                this.getProcess(reward.processId)?.setLocked(false);
-            });
     }
 
     private initialiseProcessObjects(): void {
@@ -65,10 +56,6 @@ export class Building extends Subscribable<BuildingState, typeof EmptyBase>(Empt
         }
     }
 
-    private checkIfProcessesUnlocked() {
-        // this.processes.forEach(process => process.checkIfUnlocked());
-    }
-
     public getCurrentProcess(): Process | null {
 
         return this.currentProcess;
@@ -76,10 +63,6 @@ export class Building extends Subscribable<BuildingState, typeof EmptyBase>(Empt
 
     public getProcesses(): Map<ProcessId, Process> {
         return this.processes;
-    }
-
-    public getProcess(processId: ProcessId): Process | null {
-        return this.processes.get(processId) || null;
     }
 
     setProcess(process: ProcessData): void {
@@ -144,24 +127,20 @@ export class Building extends Subscribable<BuildingState, typeof EmptyBase>(Empt
         this.xp = 0;
         gameInstance.resources.spend(this.levelUpData.resources);
 
-        this.unlockRewards(this.levelUpData.rewards)
+        gameInstance.progression.unlockRewards(this.levelUpData.rewards);
 
         this.levelUpData = this.buildingData.progression[this.level + 1] || null;
         this.canLevelUp = false;
 
-
-
-        this.checkIfProcessesUnlocked();
         this.setDirty();
     }
 
     init() {
 
+        this.initialiseProcessObjects();
     }
 
     ready() {
-        this.checkIfProcessesUnlocked();
-
         this.initialiseProgression();
 
     }

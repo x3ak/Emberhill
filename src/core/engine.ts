@@ -12,6 +12,7 @@ import type {FullGameState, GameState} from "@/shared/types/game.types.ts";
 
 import type {Process} from "./Process.ts";
 import {SIMULATION_SPEED} from "@/shared/Globals.ts";
+import {Progression} from "./Progression.ts";
 
 
 class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
@@ -28,6 +29,7 @@ class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
     private wisps: Wisp[] = []
 
     public readonly warmstone: Warmstone = new Warmstone(1000);
+    public readonly progression: Progression = new Progression();
 
     constructor() {
 
@@ -52,6 +54,16 @@ class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
         return this.buildings.get(buildingId);
     }
 
+    public getProcess(processId:ProcessId): Process {
+
+        if (!this.processes.has(processId)) {
+            throw new Error(`Process ${processId} not found!`);
+        }
+
+        // @ts-ignore
+        return this.processes.get(processId);
+    }
+
     init() {
 
         // find a better way to handle
@@ -72,6 +84,9 @@ class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
 
         return new Building(buildingData);
     }
+
+    // in init() we handle all object initialisations (similar to constructor)
+    // in ready() we assume all objects are created, so we can now update their states
 
 
     start() {
@@ -120,6 +135,7 @@ class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
 
         // run inputs
         this.reducePlayerCommands(playerCommand);
+
         this.reduceGameCommands(gameCommands);
 
         // run post updates
@@ -206,7 +222,7 @@ class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
         }
 
         gameCommands.forEach(command => {
-            console.log("GAME_COMMAND", command);
+            // console.log("GAME_COMMAND", command);
             switch (command.type) {
                 case 'SPEND_RESOURCES':
                     this.resources.spend(command.payload.resources)

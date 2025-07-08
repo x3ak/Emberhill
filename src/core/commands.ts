@@ -7,3 +7,4 @@ export type GameCommand =
     | { type: "ADD_RESOURCES"; payload: { resources: ResourceAmount[] } }
     | { type: "ADD_XP"; payload: { buildingId: BuildingId; amount: number } }
     | { type: "RESTORE_VITALITY"; payload: { amount: number } }
+    | { type: "BUILDING_UPGRADED"; payload: { buildingId: BuildingId;  } }
