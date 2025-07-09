@@ -30,6 +30,7 @@
       "@/features/*": ["src/ui/features/*"],
       "@/resource-icon/*": ["src/assets/icons/resources/*"],
       "@/process-icon/*": ["src/assets/icons/processes/*"],
+      "@/icons/*": ["src/assets/icons/*"],
     }
   },
   "include": ["src"]

@@ -1,0 +1,10 @@
+.popup {
+    position: absolute;
+    background-color: var(--color-surface-hover);
+    box-shadow: var(--shadow-lg);
+    border-radius: var(--border-radius-sm);
+    padding: var(--size-sm);
+    z-index: 1000;
+    color: var(--color-text-accent);
+    max-width: 240px;
+}

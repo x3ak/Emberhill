@@ -1,6 +1,8 @@
 .amountNeededPill {
     display: inline-flex;
     align-items: center;
+    user-select: none;
+    cursor: pointer;
 
     background-color: var(--color-surface-secondary);
     border-radius: var(--border-radius-sm);
@@ -13,7 +15,7 @@
 
     transition: background-color var(--transition-duration-fast);
 
-    &:hover {
+    &:hover, &.active {
         background-color: var(--color-surface-hover);
         border-color: var(--color-border-interactive);
         color: var(--color-text-accent);
