@@ -7,4 +7,9 @@
     z-index: 1000;
     color: var(--color-text-accent);
     max-width: 240px;
+
+    .closeIcon {
+        float: right;
+        cursor: pointer;
+    }
 }
