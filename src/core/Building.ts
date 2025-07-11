@@ -5,8 +5,8 @@ import type {GameCommand} from "./commands.ts";
 import {GameObject, Subscribable} from "./mixins/Subscribable.mixin.ts";
 import {Process} from "./Process.ts";
 import {gameInstance} from "./engine.ts";
-import type {BuildingLevelUp, UnlockReward} from "@/shared/types/progression.types.ts";
-
+import {type BuildingLevelUp} from "@/shared/types/progression.types.ts";
+import {allToGameCommands} from "./helpers/UnlockRewardTransformer.ts";
 
 export class Building extends Subscribable<BuildingState, typeof GameObject>(GameObject)  {
 
@@ -122,25 +122,13 @@ export class Building extends Subscribable<BuildingState, typeof GameObject>(Gam
 
         gameCommands.push({type: 'SPEND_RESOURCES', payload: {resources: this.levelUpData.resources}});
 
-        this.transformRewardsToGameCommands(this.levelUpData.rewards, gameCommands);
+
+        gameCommands.push(... allToGameCommands(this.levelUpData.rewards));
 
         this.levelUpData = this.buildingData.progression[this.level + 1] || null;
         this.canLevelUp = false;
 
         this.setDirty();
-    }
-
-    private transformRewardsToGameCommands(rewards: UnlockReward[], gameCommands: GameCommand[]) {
-        rewards.forEach(reward => {
-            switch (reward.type) {
-                case "unlock_building":
-                    gameCommands.push({type: "UNLOCK_BUILDING", payload: {buildingId: reward.buildingId}})
-                    break;
-                case "unlock_process":
-                    gameCommands.push({type: "UNLOCK_PROCESS", payload: {processId: reward.processId}})
-                    break;
-            }
-        });
     }
 
     init() {
@@ -155,7 +143,7 @@ export class Building extends Subscribable<BuildingState, typeof GameObject>(Gam
                 continue;
             }
 
-            this.transformRewardsToGameCommands(levelProgressData.rewards, gameCommands);
+            gameCommands.push(... allToGameCommands(levelProgressData.rewards))
         }
     }
 

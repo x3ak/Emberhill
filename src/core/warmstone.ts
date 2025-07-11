@@ -2,8 +2,7 @@ import {GameObject, Subscribable} from "./mixins/Subscribable.mixin.ts";
 import type {WarmstoneState} from "@/shared/types/warmstone.types.ts";
 import type {GameCommand} from "./commands.ts";
 import {warmstoneProgression} from "./data/warmstone/warmstone.data.ts";
-import type {UnlockReward} from "@/shared/types/progression.types.ts";
-
+import {allToGameCommands} from "./helpers/UnlockRewardTransformer.ts";
 
 export class Warmstone extends Subscribable<WarmstoneState, typeof GameObject>(GameObject) {
 
@@ -52,23 +51,10 @@ export class Warmstone extends Subscribable<WarmstoneState, typeof GameObject>(G
                 continue;
             }
 
-            this.transformRewardsToGameCommands(levelProgressData.rewards, gameCommands);
+            gameCommands.push(... allToGameCommands(levelProgressData.rewards));
+
         }
     }
-
-    private transformRewardsToGameCommands(rewards: UnlockReward[], gameCommands: GameCommand[]) {
-        rewards.forEach(reward => {
-            switch (reward.type) {
-                case "unlock_building":
-                    gameCommands.push({type: "UNLOCK_BUILDING", payload: {buildingId: reward.buildingId}})
-                    break;
-                case "unlock_process":
-                    gameCommands.push({type: "UNLOCK_PROCESS", payload: {processId: reward.processId}})
-                    break;
-            }
-        });
-    }
-
 
     public upgrade(gameCommands: GameCommand[]): void {
         if(!this.canLevelUp) {
@@ -85,7 +71,7 @@ export class Warmstone extends Subscribable<WarmstoneState, typeof GameObject>(G
             return;
         }
 
-        this.transformRewardsToGameCommands(levelProgressData.rewards, gameCommands);
+        gameCommands.push(... allToGameCommands(levelProgressData.rewards));
     }
 
     public onExperienceAdded(amountXP: number): void {
