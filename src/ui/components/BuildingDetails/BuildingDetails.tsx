@@ -1,5 +1,5 @@
 import type {BuildingId} from "@/shared/types/building.types.ts";
-import {coreAPI} from "../../../core/core.api.ts";
+import {coreAPI} from "@/core/core.api.ts";
 import styles from './BuildingDetails.module.css'
 import {useBuildingState} from "@/hooks/useBuildingState.ts";
 import StaticProgressBar from "@/components/StaticProgressBar/StaticProgressBar.tsx";

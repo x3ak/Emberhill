@@ -1,7 +1,7 @@
 import React from 'react';
 import type { BuildingId } from '@/shared/types/building.types';
 import { useBuildingState } from '@/hooks/useBuildingState';
-import {coreAPI} from "../../../core/core.api.ts"; // Your granular hook
+import {coreAPI} from "@/core/core.api.ts"; // Your granular hook
 
 
 interface BuildingListItemProps {

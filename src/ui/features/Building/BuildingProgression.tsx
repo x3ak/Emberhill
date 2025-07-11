@@ -1,5 +1,5 @@
 import type {BuildingState} from "@/shared/types/building.types.ts";
-import {coreAPI} from "../../../core/core.api.ts";
+import {coreAPI} from "@/core/core.api.ts";
 import {ProgressionList} from "@/components/ProgressionList/ProgressionList.tsx";
 
 export default function BuildingProgression ({buildingState}:

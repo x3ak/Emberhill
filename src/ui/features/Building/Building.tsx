@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import type {ProcessData, ProcessId} from "@/shared/types/process.types.ts";
 import type {BuildingId, BuildingState} from "@/shared/types/building.types.ts";
-import {coreAPI} from "../../../core/core.api.ts";
+import {coreAPI} from "@/core/core.api.ts";
 import BuildingDetails from "../../components/BuildingDetails/BuildingDetails.tsx";
 import styles from './Building.module.css';
 import ProcessTile from "@/components/ProcessTile/ProcessTile.tsx";

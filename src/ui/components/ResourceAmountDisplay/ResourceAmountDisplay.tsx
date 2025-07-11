@@ -1,5 +1,5 @@
 import type {ResourceAmount} from "@/shared/types/process.types.ts";
-import {coreAPI} from "../../../core/core.api.ts";
+import {coreAPI} from "@/core/core.api.ts";
 
 import styles from './ResourceAmountDisplay.module.css'
 import {useRef, useState} from "react";

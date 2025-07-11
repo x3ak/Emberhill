@@ -24,6 +24,7 @@
 
     "baseUrl": ".",
     "paths": {
+      "@/core/*": ["src/core/*"],
       "@/shared/*": ["src/shared/*"],
       "@/hooks/*": ["src/hooks/*"],
       "@/components/*": ["src/ui/components/*"],

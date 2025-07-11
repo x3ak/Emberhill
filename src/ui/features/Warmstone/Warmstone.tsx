@@ -1,5 +1,5 @@
 import {useWarmstoneState} from "@/hooks/useWarmstoneState.ts";
-import {coreAPI} from "../../../core/core.api.ts";
+import {coreAPI} from "@/core/core.api.ts";
 import StaticProgressBar from "@/components/StaticProgressBar/StaticProgressBar.tsx";
 import styles from './Warmstone.module.css'
 import {ProgressionList} from "@/components/ProgressionList/ProgressionList.tsx";
