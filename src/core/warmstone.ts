@@ -1,8 +1,11 @@
-import {EmptyBase, Subscribable} from "./mixins/Subscribable.mixin.ts";
+import {GameObject, Subscribable} from "./mixins/Subscribable.mixin.ts";
 import type {WarmstoneState} from "@/shared/types/warmstone.types.ts";
+import type {GameCommand} from "./commands.ts";
+import {warmstoneProgression} from "./data/warmstone/warmstone.data.ts";
+import type {UnlockReward} from "@/shared/types/progression.types.ts";
 
 
-export class Warmstone extends Subscribable<WarmstoneState, typeof EmptyBase>(EmptyBase) {
+export class Warmstone extends Subscribable<WarmstoneState, typeof GameObject>(GameObject) {
 
     private currentVitality: number;
     private maxVitality: number;
@@ -41,14 +44,48 @@ export class Warmstone extends Subscribable<WarmstoneState, typeof EmptyBase>(Em
         return false;
     }
 
-    public upgrade(): void {
+
+    ready(gameCommands: GameCommand[]): void {
+        for (let i = 1; i <= this.currentLevel; i++) {
+            const levelProgressData = warmstoneProgression[i] || null;
+            if (!levelProgressData) {
+                continue;
+            }
+
+            this.transformRewardsToGameCommands(levelProgressData.rewards, gameCommands);
+        }
+    }
+
+    private transformRewardsToGameCommands(rewards: UnlockReward[], gameCommands: GameCommand[]) {
+        rewards.forEach(reward => {
+            switch (reward.type) {
+                case "unlock_building":
+                    gameCommands.push({type: "UNLOCK_BUILDING", payload: {buildingId: reward.buildingId}})
+                    break;
+                case "unlock_process":
+                    gameCommands.push({type: "UNLOCK_PROCESS", payload: {processId: reward.processId}})
+                    break;
+            }
+        });
+    }
+
+
+    public upgrade(gameCommands: GameCommand[]): void {
         if(!this.canLevelUp) {
             return;
         }
         this.essence = 0;
         this.currentLevel += 1;
         this.canLevelUp = false;
+
         this.setDirty();
+
+        const levelProgressData = warmstoneProgression[this.currentLevel] || null;
+        if (!levelProgressData) {
+            return;
+        }
+
+        this.transformRewardsToGameCommands(levelProgressData.rewards, gameCommands);
     }
 
     public onExperienceAdded(amountXP: number): void {

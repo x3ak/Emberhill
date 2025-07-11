@@ -2,13 +2,13 @@ import type {Wisp} from "./wisps.ts";
 import type {ProcessData, ProcessId} from "@/shared/types/process.types.ts";
 import type {BuildingData, BuildingState} from "@/shared/types/building.types.ts";
 import type {GameCommand} from "./commands.ts";
-import {EmptyBase, Subscribable} from "./mixins/Subscribable.mixin.ts";
+import {GameObject, Subscribable} from "./mixins/Subscribable.mixin.ts";
 import {Process} from "./Process.ts";
 import {gameInstance} from "./engine.ts";
-import type {BuildingLevelUp} from "@/shared/types/progression.types.ts";
+import type {BuildingLevelUp, UnlockReward} from "@/shared/types/progression.types.ts";
 
 
-export class Building extends Subscribable<BuildingState, typeof EmptyBase>(EmptyBase)  {
+export class Building extends Subscribable<BuildingState, typeof GameObject>(GameObject)  {
 
     public level: number = 1;
     private xp: number = 0;
@@ -23,6 +23,8 @@ export class Building extends Subscribable<BuildingState, typeof EmptyBase>(Empt
 
     public processes: Map<ProcessId, Process> = new Map<ProcessId, Process>()
 
+    private isUnlocked: boolean = false;
+
     private currentProcess: Process | null = null;
 
     constructor(buildingData: BuildingData) {
@@ -31,19 +33,11 @@ export class Building extends Subscribable<BuildingState, typeof EmptyBase>(Empt
         this.buildingData = buildingData;
 
         this.levelUpData = buildingData.progression[this.level + 1] || null;
-
-
     }
 
-    private initialiseProgression(): void {
-        for (let i = 1; i <= this.level; i++) {
-            const levelProgressData = this.buildingData.progression[i] || null;
-            if (!levelProgressData) {
-                continue;
-            }
-
-            gameInstance.progression.unlockRewards(levelProgressData.rewards);
-        }
+    public setLocked(locked: boolean): void {
+        this.isUnlocked = !locked;
+        this.setDirty()
     }
 
     private initialiseProcessObjects(): void {
@@ -118,16 +112,17 @@ export class Building extends Subscribable<BuildingState, typeof EmptyBase>(Empt
         this.setDirty();
     }
 
-    upgrade() {
+    upgrade(gameCommands: GameCommand[]): void {
         if (!this.levelUpData || !this.canLevelUp) {
             return;
         }
 
         this.level += 1;
         this.xp = 0;
-        gameInstance.resources.spend(this.levelUpData.resources);
 
-        gameInstance.progression.unlockRewards(this.levelUpData.rewards);
+        gameCommands.push({type: 'SPEND_RESOURCES', payload: {resources: this.levelUpData.resources}});
+
+        this.transformRewardsToGameCommands(this.levelUpData.rewards, gameCommands);
 
         this.levelUpData = this.buildingData.progression[this.level + 1] || null;
         this.canLevelUp = false;
@@ -135,17 +130,40 @@ export class Building extends Subscribable<BuildingState, typeof EmptyBase>(Empt
         this.setDirty();
     }
 
+    private transformRewardsToGameCommands(rewards: UnlockReward[], gameCommands: GameCommand[]) {
+        rewards.forEach(reward => {
+            switch (reward.type) {
+                case "unlock_building":
+                    gameCommands.push({type: "UNLOCK_BUILDING", payload: {buildingId: reward.buildingId}})
+                    break;
+                case "unlock_process":
+                    gameCommands.push({type: "UNLOCK_PROCESS", payload: {processId: reward.processId}})
+                    break;
+            }
+        });
+    }
+
     init() {
 
         this.initialiseProcessObjects();
     }
 
-    ready() {
-        this.initialiseProgression();
+    ready(gameCommands: GameCommand[]) {
+        for (let i = 1; i <= this.level; i++) {
+            const levelProgressData = this.buildingData.progression[i] || null;
+            if (!levelProgressData) {
+                continue;
+            }
 
+            this.transformRewardsToGameCommands(levelProgressData.rewards, gameCommands);
+        }
     }
 
     update(_deltaTime: number, commands: GameCommand[]) {
+        if (!this.isUnlocked) {
+            return;
+        }
+
         const wasAbleToLevelUp = this.canLevelUp;
         if (this.levelUpData) {
             const hasEnoughResources = gameInstance.resources.hasEnoughAfterPlanned( this.levelUpData.resources, commands)
@@ -167,6 +185,7 @@ export class Building extends Subscribable<BuildingState, typeof EmptyBase>(Empt
             id: this.buildingData.id,
             level: this.level,
             xp: this.xp,
+            isUnlocked: this.isUnlocked,
             wispAssigned: !!this.wisp,
             canLevelUp: this.canLevelUp,
             currentProcessId: this.currentProcess?.getId() || null,

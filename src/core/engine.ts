@@ -6,16 +6,16 @@ import {GameResources} from "./resources.ts";
 import type { BuildingId} from "@/shared/types/building.types.ts";
 import type {ProcessData, ProcessId} from "@/shared/types/process.types.ts";
 import type {GameCommand} from "./commands.ts";
-import {EmptyBase, Subscribable} from "./mixins/Subscribable.mixin.ts";
+import {GameObject, Subscribable} from "./mixins/Subscribable.mixin.ts";
 import type {PlayerCommand} from "@/shared/types/player.commands.ts";
 import type {FullGameState, GameState} from "@/shared/types/game.types.ts";
 
-import type {Process} from "./Process.ts";
+import {Process} from "./Process.ts";
 import {SIMULATION_SPEED} from "@/shared/Globals.ts";
 import {Progression} from "./Progression.ts";
 
 
-class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
+class GameEngine extends Subscribable<GameState, typeof GameObject>(GameObject) {
 
     private lastTickTime: number = performance.now();
 
@@ -31,6 +31,8 @@ class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
     public readonly warmstone: Warmstone = new Warmstone(1000);
     public readonly progression: Progression = new Progression();
 
+    private isStarted: boolean = false;
+
     constructor() {
 
         super();
@@ -39,6 +41,7 @@ class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
         this.dispatch = this._dispatch.bind(this);
 
     }
+
 
     public getBuildings(): Map<BuildingId, Building> {
         return this.buildings;
@@ -66,6 +69,9 @@ class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
 
     init() {
 
+
+
+
         // find a better way to handle
         this.buildings.set('woodcutter', this.initBuilding('woodcutter'));
         this.buildings.set('campfire', this.initBuilding('campfire'));
@@ -89,9 +95,19 @@ class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
     // in ready() we assume all objects are created, so we can now update their states
 
 
+
     start() {
+        if (this.isStarted) {
+            return;
+        }
+
+        console.info("Starting game...");
+
         this.init();
 
+        const gameCommands: GameCommand[] = [];
+
+        this.warmstone.init();
         this.buildings.forEach((building) => {
             building.init();
 
@@ -102,10 +118,11 @@ class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
 
         this.processes.forEach((process) => process.init());
 
+        this.warmstone.ready(gameCommands);
+        this.buildings.forEach((building) => building.ready(gameCommands))
+        this.processes.forEach((process) => process.ready(gameCommands));
 
-        this.buildings.forEach((building) => building.ready())
-        this.processes.forEach((process) => process.ready());
-
+        this._dispatch({type: "TICK"}, gameCommands);
 
         setInterval(() => {
             this._dispatch({type: "TICK"});
@@ -121,8 +138,11 @@ class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
         };
     }
 
-    private _dispatch(playerCommand: PlayerCommand) {
-        const gameCommands: GameCommand[] = [];
+    private _dispatch(playerCommand: PlayerCommand, gameCommands?: GameCommand[]) {
+
+        if (!gameCommands) {
+            gameCommands = [];
+        }
 
         const now = performance.now();
         const deltaTime = (now - this.lastTickTime) / 1000;
@@ -134,7 +154,7 @@ class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
         this.processes.forEach((process) => process.update(deltaTime * SIMULATION_SPEED, gameCommands))
 
         // run inputs
-        this.reducePlayerCommands(playerCommand);
+        this.reducePlayerCommands(playerCommand, gameCommands);
 
         this.reduceGameCommands(gameCommands);
 
@@ -147,7 +167,7 @@ class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
         this.postUpdate();
     }
 
-    private reducePlayerCommands(command: PlayerCommand) {
+    private reducePlayerCommands(command: PlayerCommand, gameCommands: GameCommand[]) {
         switch (command.type) {
             case 'ASSIGN_WISP': {
                 const freeWisp = this.getUnassignedWisp();
@@ -204,13 +224,13 @@ class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
                     break
                 }
 
-                building.upgrade();
+                building.upgrade(gameCommands);
 
                 break;
             }
 
             case 'UPGRADE_WARMSTONE': {
-                this.warmstone.upgrade();
+                this.warmstone.upgrade(gameCommands);
                 break;
             }
         }
@@ -234,6 +254,12 @@ class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
                     this.buildings.get(command.payload.buildingId)?.addXP(command.payload.amount);
                     this.warmstone.onExperienceAdded(command.payload.amount);
                     break;
+                case 'UNLOCK_PROCESS':
+                    gameInstance.getProcess(command.payload.processId)?.setLocked(false)
+                    break;
+                case 'UNLOCK_BUILDING':
+                    gameInstance.getBuilding(command.payload.buildingId)?.setLocked(false)
+                    break;
             }
         })
 
@@ -241,6 +267,8 @@ class GameEngine extends Subscribable<GameState, typeof EmptyBase>(EmptyBase) {
     }
 
     public computeFullGameSnapshot(): FullGameState {
+        console.log("compute fullgame snapshot for " + this.lastTickTime);
+        // this.start();
 
         const buildingsState = [... this.buildings]
             .map(([_buildingId, building]) => building.getSnapshot());

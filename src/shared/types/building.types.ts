@@ -21,6 +21,7 @@ export type BuildingState = {
     id: BuildingId;
     level: number;
     xp: number;
+    isUnlocked: boolean;
     wispAssigned: boolean;
     canLevelUp: boolean;
     currentProcessId: ProcessId | null;

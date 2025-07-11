@@ -1,4 +1,4 @@
-import {EmptyBase, Subscribable} from "./mixins/Subscribable.mixin.ts";
+import {GameObject, Subscribable} from "./mixins/Subscribable.mixin.ts";
 import type {GameCommand} from "./commands.ts";
 import type {Building} from "./Building.ts";
 import type {
@@ -10,7 +10,7 @@ import type {
 } from "@/shared/types/process.types.ts";
 import {gameInstance} from "./engine.ts";
 
-export class Process extends Subscribable<ProcessState, typeof EmptyBase>(EmptyBase)  {
+export class Process extends Subscribable<ProcessState, typeof GameObject>(GameObject)  {
     private building: Building;
     private secondsSpentProcessing: number = 0;
     private processData: ProcessData;
@@ -30,14 +30,6 @@ export class Process extends Subscribable<ProcessState, typeof EmptyBase>(EmptyB
 
     public getId(): ProcessId {
         return this.processData.id;
-    }
-
-    public init() {
-
-    }
-
-    public ready() {
-
     }
 
     private setStatus(newStatus: ProcessStatus) {

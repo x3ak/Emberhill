@@ -1,3 +1,5 @@
+import type {GameCommand} from "../commands.ts";
+
 type Constructor<T = {}> = new (...args: any[]) => T;
 
 export function Subscribable<TState, TBase extends Constructor>(Base: TBase) {
@@ -52,4 +54,17 @@ export function Subscribable<TState, TBase extends Constructor>(Base: TBase) {
     return Subscribable;
 }
 
-export class EmptyBase {}
+export class GameObject {
+
+
+    init(): void {
+    }
+
+    ready(_gameCommands: GameCommand[]): void {
+
+    }
+
+    update(_deltaTime: number, _gameCommands: GameCommand[]): void {
+
+    }
+}

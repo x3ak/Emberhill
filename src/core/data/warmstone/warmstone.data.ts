@@ -4,7 +4,10 @@ export const warmstoneProgression: ProgressionData = {
     1: {
         xp: 0,
         resources: [],
-        rewards: []
+        rewards: [
+            {type: 'unlock_building', buildingId: 'woodcutter'},
+            {type: 'unlock_building', buildingId: 'campfire'}
+        ]
     },
     2: {
         xp: 100,
