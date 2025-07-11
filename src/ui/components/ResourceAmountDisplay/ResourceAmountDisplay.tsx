@@ -7,8 +7,6 @@ import Popup from "@/components/Popup/Popup.tsx";
 import {createPortal} from "react-dom";
 import {useResourcesState} from "@/hooks/useResourcesState.ts";
 
-import foldUpIcon from '@/icons/fold-up.png'
-
 export function ResourceAmountDisplay({resourceAmount}: {resourceAmount: ResourceAmount}) {
     const [popupPos, setPopupPos] = useState<{x: number, y: number}| null>(null);
     const buttonRef = useRef<HTMLButtonElement>(null);
@@ -44,9 +42,7 @@ export function ResourceAmountDisplay({resourceAmount}: {resourceAmount: Resourc
                                 className={styles.icon}
                             />
                         )}
-                        {!popupPos && (<span>x {resourceAmount.amount}</span>)}
-                        {popupPos && (<span><img src={foldUpIcon} alt="hide details" width="16px" /></span>)}
-
+                        <span>x {resourceAmount.amount}</span>
 
                     </span>
                     {popupPos && createPortal(
