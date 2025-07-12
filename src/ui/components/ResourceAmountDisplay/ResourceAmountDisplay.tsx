@@ -7,33 +7,40 @@ import Popup from "@/components/Popup/Popup.tsx";
 import {createPortal} from "react-dom";
 import {useResourcesState} from "@/hooks/useResourcesState.ts";
 
-export function ResourceAmountDisplay({resourceAmount}: {resourceAmount: ResourceAmount}) {
-    const [popupPos, setPopupPos] = useState<{x: number, y: number}| null>(null);
-    const buttonRef = useRef<HTMLButtonElement>(null);
+type ResourceAmountDisplayProps = {
+    resourceAmount: ResourceAmount,
+    showTownAmount?: boolean,
+}
+
+export function ResourceAmountDisplay({resourceAmount, showTownAmount}: ResourceAmountDisplayProps) {
+    const [isPopupVisible, setIsPopupVisible] = useState<boolean>(false);
+    const openerRef = useRef<HTMLElement>(null);
 
     const resourcesState = useResourcesState();
 
     const handleClick = () => {
-        if (popupPos) {
-            setPopupPos(null);
+        if (isPopupVisible) {
+            setIsPopupVisible(false);
             return;
         }
 
-        const rect = buttonRef.current?.getBoundingClientRect();
+        const rect = openerRef.current?.getBoundingClientRect();
         if (rect) {
-            setPopupPos({x: rect.left, y: rect.bottom + 8});
+            setIsPopupVisible(true);
         }
     }
 
-    const closePopup = () => setPopupPos(null)
+    const closePopup = () => setIsPopupVisible(false)
 
     switch (resourceAmount.type) {
         case "resource":
             const resourceData = coreAPI.getResourceData(resourceAmount.id);
 
+            const inTownAmount: number = resourcesState.resources.get(resourceData.id) || 0;
+
             return (
                 <span>
-                    <span className={`${styles.amountNeededPill} ${popupPos ? styles.active : ''}`} ref={buttonRef} onClick={handleClick}>
+                    <span className={`${styles.amountNeededPill} ${isPopupVisible ? styles.active : ''}`} ref={openerRef} onClick={handleClick}>
                         {resourceData.icon && (
                             <img
                                 src={resourceData.icon}
@@ -44,9 +51,11 @@ export function ResourceAmountDisplay({resourceAmount}: {resourceAmount: Resourc
                         )}
                         <span>x {resourceAmount.amount}</span>
 
+                        {showTownAmount && (<span>({inTownAmount})</span>)}
+
                     </span>
-                    {popupPos && createPortal(
-                        <Popup x={popupPos.x} y={popupPos.y} onClose={closePopup}>
+                    {isPopupVisible && createPortal(
+                        <Popup onClose={closePopup} openerRef={openerRef}>
                             <div>
                                 <ul>
                                     <li>Required: {resourceAmount.amount}</li>

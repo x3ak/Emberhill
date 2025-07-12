@@ -28,7 +28,7 @@ export function ProgressionList({progression, levelReached}: ProgressionListProp
                     </span>
                     <span className={styles.progressionLineItem}>
                     {progressionData.resources.length > 0 && (
-                        progressionData.resources.map((resource, index) => (<ResourceAmountDisplay key={index} resourceAmount={resource} />)))}
+                        progressionData.resources.map((resource, index) => (<ResourceAmountDisplay key={index} resourceAmount={resource} showTownAmount={true} />)))}
                     </span>
                     <span className={styles.progressionLineItem}>
                         {progressionData.rewards.map((reward: UnlockReward, index) => (<RewardDisplay key={index} reward={reward} />))}
