@@ -41,7 +41,7 @@ export function Building({buildingId}: { buildingId: BuildingId }) {
     }, [selectedProcess]);
 
     return (
-        <div>
+        <div className={styles.buildingScreen}>
             <BuildingDetails buildingId={buildingId}/>
 
             <BuildingNavigation

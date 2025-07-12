@@ -3,11 +3,11 @@
     grid-template-columns: 1fr 136px;
     background-color: var(--color-surface-secondary);
     padding: var(--size-sm);
-    /*border-radius: var(--border-radius-sm);*/
+    border-radius: var(--border-radius-sm);
 }
 
 .name {
-
+    margin: 0;
 }
 
 .properties {

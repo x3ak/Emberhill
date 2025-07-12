@@ -1,5 +1,9 @@
 @import "./variables.css";
 
+* {
+    box-sizing: border-box;
+}
+
 body {
     background-color: var(--color-background);
     color: var(--color-text-primary);
@@ -13,19 +17,30 @@ body {
 }
 
 .nav-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 1fr);
+    grid-auto-flow: row;
+    grid-gap: var(--size-sm);
+    flex-direction: column;
     list-style: none;
     padding: 0;
-    margin: var(--size-md) 0;
+    margin: 0;
+
+    &.row-nav {
+        grid-auto-flow: column;
+        grid-auto-columns: max-content;
+    }
 }
 
 .nav-item {
-    display: block;
     padding: var(--size-sm) var(--size-md);
+    border-radius: var(--border-radius-sm);
+    /*margin: var(--size-xs);*/
     color: var(--color-text-primary);
     text-decoration: none;
     transition: background-color var(--transition-duration-fast);
     cursor: pointer;
-
+    user-select: none;
 
     &:hover {
         background-color: var(--color-interactive-primary-bg-hover);
@@ -33,11 +48,22 @@ body {
 
     &.active {
         background-color: var(--color-interactive-primary-bg-active);
+        border-right: var(--border-active-item);
+    }
+}
+
+.row-nav {
+    .nav-item {
+        &.active {
+            border-right: 0;
+            border-bottom: var(--border-active-item);
+            padding-bottom: var(--size-xs);
+        }
     }
 }
 
 .main-content-area {
-    /*padding: var(--size-md);*/
+
 }
 
 .game-layout {
@@ -45,12 +71,16 @@ body {
 
     grid-template-columns: 250px 1fr;
     height: 100vh;
+    gap: var(--size-sm);
+    padding: var(--size-sm);
 }
 
 .sidebar-nav {
     background-color: var(--color-surface);
     display: flex;
-    flex-direction: column; /* Stack logo and nav list vertically */
+    flex-direction: column;
+    border-radius: var(--border-radius-sm);
+    padding: var(--size-sm);
 
     .section-heading {
         padding: var(--size-sm) var(--size-md);

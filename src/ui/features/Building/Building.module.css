@@ -7,7 +7,6 @@
 
     justify-content: left;
 
-    padding:  var(--size-sm);
 }
 
 .processesList {
@@ -16,26 +15,11 @@
     padding: 0;
 }
 
-.processDetails {
-    padding: var(--size-sm);
+.buildingScreen {
+    display: grid;
+    gap: var(--size-sm);
 }
 
-.buildingNavigation {
-    margin: 0;
-    list-style: none;
-    padding: 0;
+.processDetails {
 
-    display: flex;
-    flex-direction: row;
-
-    li {
-        margin:  var(--size-sm);
-        padding:  var(--size-sm);
-        font-size: var(--font-size-md);
-        cursor: pointer;
-
-        &.active {
-            background-color: var(--color-interactive-primary-bg-active);
-        }
-    }
 }

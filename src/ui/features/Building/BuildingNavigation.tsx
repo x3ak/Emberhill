@@ -1,4 +1,3 @@
-import styles from "@/features/Building/Building.module.css";
 import type {BuildingState} from "@/shared/types/building.types.ts";
 
 export type BuildingSubSection =
@@ -14,10 +13,10 @@ type BuildingNavigationProps = {
 
 export default function BuildingNavigation({onNavigate, currentSection, buildingState}: BuildingNavigationProps) {
     return (
-        <ul className={styles.buildingNavigation}>
-            <li onClick={() => onNavigate('processes')} className={ currentSection === 'processes' ? styles.active : ''}>🔨 Tasks</li>
-            <li onClick={() => onNavigate('progression')} className={ currentSection === 'progression' ? styles.active : ''}>↑ Upgrade {buildingState.canLevelUp ? '🔴': ''}</li>
-            <li onClick={() => onNavigate('statistics')} className={ currentSection === 'statistics' ? styles.active : ''}>📊 Statistics</li>
+        <ul className='nav-list row-nav'>
+            <li onClick={() => onNavigate('processes')} className={`nav-item ${ currentSection === 'processes' ? 'active' : ''}`}>🔨 Tasks</li>
+            <li onClick={() => onNavigate('progression')} className={`nav-item ${ currentSection === 'progression' ? 'active' : ''}`}>↑ Upgrade {buildingState.canLevelUp ? '🔴': ''}</li>
+            <li onClick={() => onNavigate('statistics')} className={`nav-item ${ currentSection === 'statistics' ? 'active' : ''}`}>📊 Statistics</li>
         </ul>
     )
 }

@@ -118,6 +118,7 @@
     --border-width-lg: 4px;
     --border-width-xl: 8px;
 
+    --border-active-item: var(--size-xs) solid var(--color-interactive-primary-bg);
 
     /* ----------------------------------------- */
     /*          SHADOWS & EFFECTS                */
