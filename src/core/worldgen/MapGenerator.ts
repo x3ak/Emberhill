@@ -122,6 +122,7 @@ export class MapGenerator {
                     elevation: 0,
                     temperature: 0,
                     moisture: 0,
+                    isRoad: false,
                     riverId: null,
                     isRiver: false,
                     isLake: false,

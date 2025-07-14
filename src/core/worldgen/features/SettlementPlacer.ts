@@ -74,6 +74,7 @@ export class SettlementPlacer {
                     id: `settlement_${this.settlements.length}`,
                     name: "Unnamed Settlement", // Naming comes later
                     tile: candidateTile,
+                    connections: [],
                 };
 
                 this.settlements.push(newSettlement);

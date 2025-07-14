@@ -29,7 +29,7 @@ const TERRAIN_COLORS: Record<TerrainType, string> = {
     SNOWY_MOUNTAIN:'#e0e0e0', // A bright, almost white gray for snow-capped peaks
 };
 
-const TILE_SIZE = 4; // The size of each tile in pixels. 4px is good for a 100x100 map.
+export const TILE_SIZE = 4; // The size of each tile in pixels. 4px is good for a 100x100 map.
 
 
 // --- Configuration for Contour Lines ---
@@ -56,6 +56,7 @@ export class MapRenderer {
         this.renderAndSave(`${basePath}_biome.png`, [
             this.drawBiomeMap,
             this.drawContourLines,
+            this.drawRoads,
             this.drawSettlements,
         ]);
 
@@ -124,13 +125,21 @@ export class MapRenderer {
 
         for (let tile of this.mapData.grid.allTiles()) {
             if (tile.settlement) {
-
                 context.fillStyle = '#ffdd00';
-                context.fillRect(tile.x * TILE_SIZE, tile.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                context.fillRect(tile.x * TILE_SIZE, tile.y * TILE_SIZE, TILE_SIZE * 2, TILE_SIZE * 2);
             }
-            else if (tile.territoryOf) {
+            // else if (tile.territoryOf) {
+            //
+            //     context.fillStyle = settlementColors.get(tile.territoryOf.id) || 'pink';
+            //     context.fillRect(tile.x * TILE_SIZE, tile.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+            // }
+        }
+    }
 
-                context.fillStyle = settlementColors.get(tile.territoryOf.id) || 'pink';
+    private drawRoads(context: CanvasRenderingContext2D): void {
+        for (let tile of this.mapData.grid.allTiles()) {
+            if (tile.isRoad) {
+                context.fillStyle = '#555555';
                 context.fillRect(tile.x * TILE_SIZE, tile.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
             }
         }

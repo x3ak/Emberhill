@@ -10,6 +10,7 @@ export type TerrainType =
 export interface Tile {
     x: number;
     y: number;
+    isRoad: boolean;
     isRiver: boolean;
     riverId: number | null;
     isLake: boolean;
@@ -20,11 +21,17 @@ export interface Tile {
     settlement: Settlement | null;
     territoryOf: Settlement | null
 }
+export interface SettlementConnection {
+    from: Settlement;
+    to: Settlement;
+    travelCost: number;
+}
 
 export interface Settlement {
     id: string;
     name: string;
     tile: Tile;
+    connections: SettlementConnection[];
 }
 
 // Represents the entire generated map

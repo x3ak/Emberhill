@@ -2,6 +2,7 @@ import {MapGenerator} from "@/core/worldgen/MapGenerator.ts";
 import {MapRenderer} from "@/core/worldgen/map_renderer.ts";
 import {SettlementPlacer} from "@/core/worldgen/features/SettlementPlacer.ts";
 import {TerritoryExpander} from "@/core/worldgen/features/TerritoryExpander.ts";
+import {RoadBuilder} from "@/core/worldgen/features/RoadBuilder.ts";
 
 export function generateWorld(seed: string, outputPath: string = 'world_map.png') {
     const mapGenerator = new MapGenerator(seed);
@@ -12,6 +13,9 @@ export function generateWorld(seed: string, outputPath: string = 'world_map.png'
 
     const territoryExpander = new TerritoryExpander(worldMap, settlements);
     territoryExpander.expandTerritories();
+
+    const roadBuilder = new RoadBuilder(worldMap, settlements);
+    roadBuilder.buildHighwayNetwork();
 
     const mapRenderer = new MapRenderer(worldMap);
     mapRenderer.renderAllMaps(outputPath);
