@@ -16,6 +16,7 @@ const ROAD_CONFIG = {
     // For the simple connection algorithm, how many neighbors should each capital connect to?
     // 2 is a good value to ensure connectivity without too much redundancy.
     CONNECTIONS_PER_CAPITAL: 2,
+    SLOPE_PENALTY_MULTIPLIER: 250,
 };
 
 export class RoadBuilder {
@@ -146,6 +147,8 @@ export class RoadBuilder {
                     travelCost: path.length,
                 }
 
+                console.log(path.length)
+
                 from.connections.push(connection);
                 to.connections.push(connection);
 
@@ -167,7 +170,7 @@ export class RoadBuilder {
                 return false;
 
             case "COASTAL_WATER":
-                return tile.isRiver;
+                return !tile.isLake;
 
             default:
                 return true
@@ -186,7 +189,9 @@ export class RoadBuilder {
                     matrix[y][x] = ROAD_CONFIG.ROAD_MOVEMENT_COST;
                 } else {
                     // Otherwise, get the cost from the terrain.
-                    matrix[y][x] = this.map.grid.getTileMovementCost(tile);
+                    const tileMovementCost = this.map.grid.getTileMovementCost(tile);
+                    matrix[y][x] = tileMovementCost + (tile.slope) * ROAD_CONFIG.SLOPE_PENALTY_MULTIPLIER;
+                    // console.log(tile.slope)
                 }
             }
         }

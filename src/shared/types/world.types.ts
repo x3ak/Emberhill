@@ -10,6 +10,7 @@ export type TerrainType =
 export interface Tile {
     x: number;
     y: number;
+    slope: number;
     isRoad: boolean;
     isRiver: boolean;
     riverId: number | null;

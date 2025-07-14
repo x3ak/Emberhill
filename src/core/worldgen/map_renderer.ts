@@ -60,20 +60,20 @@ export class MapRenderer {
             this.drawSettlements,
         ]);
 
-        console.log('Rendering elevation map...');
-        this.renderAndSave(`${basePath}_elevation.png`, [this.drawElevationMap]);
-
-        console.log('Rendering temperature map...');
-        this.renderAndSave(`${basePath}_temperature.png`, [this.drawTemperatureMap]);
-
-        console.log('Rendering moisture map...');
-        this.renderAndSave(`${basePath}_moisture.png`, [this.drawMoistureMap]);
+        // console.log('Rendering elevation map...');
+        // this.renderAndSave(`${basePath}_elevation.png`, [this.drawElevationMap]);
+        //
+        // console.log('Rendering temperature map...');
+        // this.renderAndSave(`${basePath}_temperature.png`, [this.drawTemperatureMap]);
+        //
+        // console.log('Rendering moisture map...');
+        // this.renderAndSave(`${basePath}_moisture.png`, [this.drawMoistureMap]);
 
         console.log('Rendering river map...');
         this.renderAndSave(`${basePath}_rivers.png`, [this.drawRiversMap]);
-
-        console.log('Rendering contours map...');
-        this.renderAndSave(`${basePath}_contours.png`, [this.drawContourLines]);
+        //
+        // console.log('Rendering contours map...');
+        // this.renderAndSave(`${basePath}_contours.png`, [this.drawContourLines]);
 
         console.log(`All maps rendered with base path: ${basePath}`);
     }

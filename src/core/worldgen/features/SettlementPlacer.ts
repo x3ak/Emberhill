@@ -3,8 +3,8 @@
 import type {Settlement, Tile, WorldMap} from "@/shared/types/world.types.ts";
 
 const PLACEMENT_CONFIG = {
-    NUM_FOUNDING_SETTLEMENTS: 10,
-    MIN_DISTANCE_BETWEEN_SETTLEMENTS: 50, // Tiles
+    NUM_FOUNDING_SETTLEMENTS: 7,
+    MIN_DISTANCE_BETWEEN_SETTLEMENTS: 150, // Tiles
 };
 
 // A simple type for our scored tiles

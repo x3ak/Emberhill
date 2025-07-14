@@ -98,6 +98,8 @@ export class MapGenerator {
         this.applyRainShadows(grid);
 
 
+        this.calculateSlopes(gridObj);
+
 
         // this.assignElevationBiomes(gridObj);
 
@@ -117,6 +119,7 @@ export class MapGenerator {
             grid[y] = [];
             for (let x = 0; x < MAP_CONFIG.WIDTH; x++) {
                 grid[y][x] = {
+                    slope: 0,
                     x, y,
                     terrain: 'DEEP_OCEAN', // Default
                     elevation: 0,
@@ -127,7 +130,7 @@ export class MapGenerator {
                     isRiver: false,
                     isLake: false,
                     settlement: null,
-                    territoryOf: null,
+                    territoryOf: null
                 };
             }
         }
@@ -333,6 +336,26 @@ export class MapGenerator {
 
     }
 
+    private calculateSlopes(grid: Grid): void {
+        console.log("Calculating terrain slopes...");
+
+        for (let currentTile of grid.allTiles()) {
+            let maxElevationDifference = 0;
+
+            // Check all 8 neighbors to find the steepest drop or climb.
+            for (const neighbor of grid.getTilesInRadius(currentTile, 1)) {
+                const difference = Math.abs(currentTile.elevation - neighbor.elevation);
+                if (difference > maxElevationDifference) {
+                    maxElevationDifference = difference;
+                }
+            }
+
+            // Assign the calculated slope to the tile.
+            currentTile.slope = maxElevationDifference;
+
+        }
+
+    }
 
 
 
