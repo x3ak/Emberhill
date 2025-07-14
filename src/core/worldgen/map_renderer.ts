@@ -125,8 +125,14 @@ export class MapRenderer {
 
         for (let tile of this.mapData.grid.allTiles()) {
             if (tile.settlement) {
-                context.fillStyle = '#ffdd00';
-                context.fillRect(tile.x * TILE_SIZE, tile.y * TILE_SIZE, TILE_SIZE * 2, TILE_SIZE * 2);
+                context.beginPath();
+                context.arc(tile.x * TILE_SIZE, tile.y * TILE_SIZE, 10, 0, 2 * Math.PI);
+                context.fillStyle = "red";
+                context.fill();
+
+                context.lineWidth = 4;
+                context.strokeStyle = '#ff0000';
+                context.stroke();
             }
             // else if (tile.territoryOf) {
             //
