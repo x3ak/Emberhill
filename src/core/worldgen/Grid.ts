@@ -2,7 +2,7 @@ import type {Tile} from "@/shared/types/world.types.ts";
 import {MAP_CONFIG} from "@/core/worldgen/MapGenerator.ts";
 
 export default class Grid {
-    private tiles: Tile[][] = [];
+    private readonly tiles: Tile[][] = [];
 
     constructor(tiles: Tile[][]) {
         this.tiles = tiles;
@@ -15,10 +15,6 @@ export default class Grid {
                 yield this.tiles[y][x];
             }
         }
-    }
-
-    public getRawTiles(): Tile[][] {
-        return this.tiles;
     }
 
     public hasNeighbouringRiver(tile: Tile, radius: number): boolean {

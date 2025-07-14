@@ -9,7 +9,7 @@ type QueueItem = {
 
 export class TerritoryExpander {
     private map: WorldMap;
-    private foundingSettlements: Settlement[];
+    private readonly foundingSettlements: Settlement[];
 
     private costSoFar: Map<Tile, number> = new Map();
 

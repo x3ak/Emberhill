@@ -6,7 +6,7 @@ import type {Tile} from "@/shared/types/world.types.ts";
 
 export default class RiverPlacer {
     private grid: Grid;
-    private rng: RandomFn;
+    private readonly rng: RandomFn;
 
     constructor(grid: Grid, seed: string) {
         this.rng = createSeededRNG(seed + '_rivers')

@@ -1,10 +1,7 @@
-// src/core/worldgen/map_generator.ts
-
 import {createNoise2D, type NoiseFunction2D} from 'simplex-noise';
 import {createSeededRNG} from './utils/rng'; // Assuming you have this utility
 import type {TerrainType, Tile, WorldMap} from '@/shared/types/world.types.ts'
 
-import {getTilesInRadius} from "@/core/worldgen/utils/grid.ts";
 import Grid from "@/core/worldgen/Grid.ts";
 import RiverPlacer from "@/core/worldgen/features/RiverPlacer.ts";
 
@@ -49,7 +46,7 @@ const TERRAIN_THRESHOLDS = {
     // Water is now only in the bottom 25% of the elevation range
     DEEP_OCEAN: 0.08,
     COASTAL_WATER: 0.11,
-    // Beach is a very narrow band
+    // Beach is a very narrowband
     BEACH: 0.14,
     // Mountains are pushed to the very top
     MOUNTAIN: 0.785,
@@ -57,11 +54,11 @@ const TERRAIN_THRESHOLDS = {
 };
 
 export class MapGenerator {
-    private seed: string
-    private elevationNoise: NoiseFunction2D;
-    private detailNoise: NoiseFunction2D;
-    private temperatureNoise: NoiseFunction2D;
-    private moistureNoise: NoiseFunction2D;
+    private readonly seed: string
+    private readonly elevationNoise: NoiseFunction2D;
+    private readonly detailNoise: NoiseFunction2D;
+    private readonly temperatureNoise: NoiseFunction2D;
+    private readonly moistureNoise: NoiseFunction2D;
 
 
     constructor(seed: string) {
@@ -89,8 +86,6 @@ export class MapGenerator {
 
         // Layer 2: Interdependent Modifications
         this.applyContinentMask(gridObj);
-        this.finalizeElevation(gridObj);
-
 
         this.assignElevationBiomes(gridObj);
 
@@ -256,7 +251,7 @@ export class MapGenerator {
         for (const tile of grid.allTiles()) {
             if (tile.terrain !== 'COASTAL_WATER') continue;
 
-            for (const neighbor of getTilesInRadius(tile, grid.getRawTiles(), 2)) {
+            for (const neighbor of grid.getTilesInRadius(tile, 2)) {
                 neighbor.moisture += MOISTURE_SPREAD_FACTOR;
                 neighbor.moisture = Math.min(1, neighbor.moisture);
             }
@@ -303,7 +298,7 @@ export class MapGenerator {
             }
 
             if (tile.elevation <= TERRAIN_THRESHOLDS.MOUNTAIN) {
-                tile.terrain = this.getTerrainBasedOnWeater(tile);
+                tile.terrain = this.getTerrainBasedOnWeather(tile);
                 continue;
             }
 
@@ -316,7 +311,7 @@ export class MapGenerator {
         }
     }
 
-    private getTerrainBasedOnWeater(tile: Tile): TerrainType {
+    private getTerrainBasedOnWeather(tile: Tile): TerrainType {
         if (tile.temperature > 0.75) { // Hot
             if (tile.moisture > 0.66) return 'JUNGLE';
             if (tile.moisture > 0.33) return 'SAVANNA';
@@ -338,23 +333,6 @@ export class MapGenerator {
     }
 
 
-
-
-    /**
-     * Globally adjusts the elevation to control the final land-to-water ratio.
-     * @param grid The map grid to modify.
-     */
-    private finalizeElevation(grid: Grid): void {
-        return;
-        const RAISE_LAND_FACTOR = 0.15; // Add this value to all elevations
-
-        for (const tile of grid.allTiles()) {
-            // Globally raise the land level
-            tile.elevation += RAISE_LAND_FACTOR;
-            // Clamp the max elevation to 1.0
-            tile.elevation = Math.min(1.0, tile.elevation);
-        }
-    }
 
 
 }
