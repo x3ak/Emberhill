@@ -1,10 +1,14 @@
 import type {ProcessData, ProcessId} from "@/shared/types/process.types.ts";
+import collect_berries from '@/process-icon/pick_berries.png';
+import kindling from '@/process-icon/kingling.png';
+import fibers from '@/process-icon/vine.png';
 
 export const foragingProcesses: {[key in ProcessId]?: ProcessData} = {
     //forage for edibles( different items can fall randomly)
     collect_berries: {
         id: "collect_berries",
         name: "Collect Berries",
+        icon: collect_berries,
         description: "Assign a Wisp to search the nearby thickets and undergrowth. A basic but necessary act of survival. Primarily yields berries, but occasionally, something more interesting might be found among the roots and leaves.",
         duration: 30,
         xp: 6,
@@ -20,6 +24,7 @@ export const foragingProcesses: {[key in ProcessId]?: ProcessData} = {
     gather_kindling: {
         id: "gather_kindling",
         name: "Gather Kindling",
+        icon: kindling,
         description: "A bundle of dry, brittle twigs, bark, and pinecones. Catches fire far more readily than a whole log. An essential component for starting and maintaining a reliable flame.",
         duration: 40,
         xp: 8,
@@ -34,6 +39,7 @@ export const foragingProcesses: {[key in ProcessId]?: ProcessData} = {
         //forage for materials (fibers, twigs ... etc)
         id: "collect_fibers",
         name: "Gather Plant fibers",
+        icon: fibers,
         description: "A bundle of dry, brittle twigs, bark, and pinecones. Catches fire far more readily than a whole log. An essential component for starting and maintaining a reliable flame.",
         duration: 35,
         xp: 6,

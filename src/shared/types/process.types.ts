@@ -7,6 +7,7 @@ export const AllProcessIds = [
     'mine_stone', 'mine_copper_ore',
     'collect_berries', 'gather_kindling', 'collect_fibers',
     'grow_blackberries',
+    'create_crude_hoe', "till_soil",
 ] as const;
 
 export type ProcessId = typeof AllProcessIds[number];

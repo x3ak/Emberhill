@@ -79,6 +79,7 @@ class GameEngine extends Subscribable<GameState, typeof GameObject>(GameObject) 
         this.buildings.set('mine', this.initBuilding('mine'));
         this.buildings.set('foragers_hut', this.initBuilding('foragers_hut'));
         this.buildings.set('farm', this.initBuilding('farm'));
+        this.buildings.set('workshop', this.initBuilding('workshop'));
 
 
         this.wisps.push(new Wisp());
