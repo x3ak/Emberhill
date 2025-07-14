@@ -1,9 +1,5 @@
 import type {Settlement, Tile, WorldMap} from "@/shared/types/world.types.ts";
 import TinyQueue from "tinyqueue";
-type ScoredTile = {
-    tile: Tile;
-    score: number;
-};
 
 type QueueItem = {
     tile: Tile;
@@ -44,10 +40,6 @@ export class TerritoryExpander {
 
             // --- Step 3: Check Neighbors ---
             for (const neighbor of this.map.grid.getTilesInRadius(current.tile , 1)) {
-                if (!this.isClaimable(neighbor, current.settlement)) {
-                    continue;
-                }
-
                 // Calculate the new cost to reach this neighbor.
                 const movementCost = this.map.grid.getTileMovementCost(neighbor); // Your existing cost function
                 const newCost = current.cost + movementCost;
@@ -65,65 +57,5 @@ export class TerritoryExpander {
                 }
             }
         }
-    }
-
-    private isClaimable(tile: Tile, settlement: Settlement): boolean {
-
-        if (tile.territoryOf) {
-            return false;
-        }
-
-        if (tile.terrain == 'DEEP_OCEAN') {
-            return false;
-        }
-
-        if (tile.terrain == 'COASTAL_WATER') {
-            return false;
-        }
-
-        if (tile.terrain == 'SNOWY_MOUNTAIN') {
-            return false;
-        }
-
-        // if (this.distance(tile, settlement.tile) > 30) {
-        //     return false;
-        // }
-
-        return true;
-
-
-    }
-
-    private distance(a: Tile, b: Tile): number  {
-        const dx = Math.abs(a.x - b.x);
-        const dy = Math.abs(a.y - b.y);
-        return  Math.sqrt(dx*dx + dy*dy); // Euclidean distance
-    }
-
-    // --- Private Helper Methods ---
-
-    /**
-     * Initializes the expansion process by setting the starting tiles' territory
-     * and adding them to the processing queue.
-     * @returns The initialized queue of tiles.
-     */
-    private initializeQueue(): Tile[] {
-        const queue: Tile[] = [];
-
-        for (const settlement of this.foundingSettlements) {
-            const startTile = settlement.tile;
-
-            if (startTile) {
-                // This is the first step: claim the tile the settlement is on.
-                startTile.territoryOf = settlement;
-                queue.push(startTile);
-            }
-        }
-
-        // It's a good idea to shuffle the initial queue to make the borders
-        // look slightly more random and less "grid-like".
-        // shuffle(queue); // You would need a shuffle utility function
-
-        return queue;
     }
 }
