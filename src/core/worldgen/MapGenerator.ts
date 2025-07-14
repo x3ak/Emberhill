@@ -1,11 +1,12 @@
 // src/core/worldgen/map_generator.ts
 
 import {createNoise2D, type NoiseFunction2D} from 'simplex-noise';
-import { createSeededRNG } from './utils/rng'; // Assuming you have this utility
+import {createSeededRNG} from './utils/rng'; // Assuming you have this utility
 import type {TerrainType, Tile, WorldMap} from '@/shared/types/world.types.ts'
 
 import {apply as applyRiversFeature} from "@/core/worldgen/features/rivers.feature.ts";
 import {getTilesInRadius} from "@/core/worldgen/utils/grid.ts";
+import Grid from "@/core/worldgen/Grid.ts";
 
 const TEMP_CONFIG = {
     NOISE_SCALE: 0.01, // Low frequency for large, smooth climate bands
@@ -44,13 +45,13 @@ const NOISE_CONFIG = {
 
 const TERRAIN_THRESHOLDS = {
     // Water is now only in the bottom 25% of the elevation range
-    DEEP_OCEAN: 0.1,
-    COASTAL_WATER: 0.2,
+    DEEP_OCEAN: 0.08,
+    COASTAL_WATER: 0.10,
     // Beach is a very narrow band
-    BEACH: 0.23,
+    BEACH: 0.13,
     // Mountains are pushed to the very top
-    MOUNTAIN: 0.80,
-    SNOWY_MOUNTAIN: 0.95,
+    MOUNTAIN: 0.75,
+    SNOWY_MOUNTAIN: 0.90,
 };
 
 export class MapGenerator {
@@ -58,8 +59,6 @@ export class MapGenerator {
     private elevationNoise: NoiseFunction2D;
     private temperatureNoise: NoiseFunction2D;
     private moistureNoise: NoiseFunction2D;
-    private seaCarvingNoise: NoiseFunction2D;
-
 
 
     constructor(seed: string) {
@@ -69,8 +68,6 @@ export class MapGenerator {
         this.temperatureNoise = createNoise2D(createSeededRNG(this.seed + '_temperature'));
         this.moistureNoise = createNoise2D(createSeededRNG(this.seed + '_moisture'));
 
-        this.seaCarvingNoise = createNoise2D(createSeededRNG(seed + '_seas'));
-
     }
 
     /**
@@ -79,26 +76,26 @@ export class MapGenerator {
     public generateMap(): WorldMap {
         const grid = this.createInitialGrid();
 
+        const gridObj = new Grid(grid);
+
         // Layer 1: Base Data Generation
-        this.applyBaseNoise(grid);
-        this.applyBaseTemperatureNoise(grid);
+        this.createBaseElevation(gridObj);
+        this.createBaseMoisture(gridObj);
+        this.createBaseTemperature(gridObj);
 
         // Layer 2: Interdependent Modifications
-        this.applyContinentMask(grid);
-        this.applyCoastalGradient(grid);
-        this.finalizeElevation(grid);
+        this.applyContinentMask(gridObj);
+        this.finalizeElevation(gridObj);
 
 
-        this.assignElevationBiomes(grid);
-        applyRiversFeature(this.seed, grid);
+        this.assignElevationBiomes(gridObj);
+        applyRiversFeature(this.seed, gridObj);
 
-        this.modifyTemperatureByElevation(grid);
-        this.modifyMoistureByProximityToWater(grid);
+        this.modifyTemperatureByElevation(gridObj);
+        this.modifyMoistureByProximityToWater(gridObj);
         this.applyRainShadows(grid);
 
-        this.assignElevationBiomes(grid);
-
-
+        // this.assignElevationBiomes(gridObj);
 
 
         return {
@@ -114,131 +111,142 @@ export class MapGenerator {
             grid[y] = [];
             for (let x = 0; x < MAP_CONFIG.WIDTH; x++) {
                 grid[y][x] = {
-                    riverId: 0,
                     x, y,
                     terrain: 'DEEP_OCEAN', // Default
                     elevation: 0,
                     temperature: 0,
                     moisture: 0,
+                    riverId: null,
                     isRiver: false,
                     isLake: false,
-                    isLakeEdge: false
                 };
             }
         }
         return grid;
     }
 
-    private applyBaseNoise(grid: Tile[][]): void {
-        for (let y = 0; y < MAP_CONFIG.HEIGHT; y++) {
-            for (let x = 0; x < MAP_CONFIG.WIDTH; x++) {
-                // Generate noise values from -1 to 1
-                const elevNoise = this.elevationNoise(x * NOISE_CONFIG.ELEVATION_SCALE, y * NOISE_CONFIG.ELEVATION_SCALE);
-                const moistNoise = this.moistureNoise(x * NOISE_CONFIG.MOISTURE_SCALE, y * NOISE_CONFIG.MOISTURE_SCALE);
 
-                // Normalize to 0-1 range
-                grid[y][x].elevation = (elevNoise + 1) / 2;
-                grid[y][x].moisture = (moistNoise + 1) / 2;
+    private createBaseElevation(grid: Grid): void {
+
+        const MAP_WIDTH = MAP_CONFIG.WIDTH;
+        // How far inland the coastal effect should reach.
+        const BORDER_INFLUENCE = MAP_WIDTH * 0.2; // 20% of the map width
+
+
+        for (const tile of grid.allTiles()) {
+            const elevNoise = this.elevationNoise(tile.x * NOISE_CONFIG.ELEVATION_SCALE, tile.y * NOISE_CONFIG.ELEVATION_SCALE);
+            const normalizedElevation = (elevNoise + 1) / 2;
+
+            const distFromLeft = tile.x;
+
+            let multiplier = 1.0;
+
+            // Apply a gradient only within the border influence zone
+            if (distFromLeft < BORDER_INFLUENCE) {
+                // Creates a smooth gradient from 0.0 at the edge to 1.0 at the influence boundary
+                multiplier = distFromLeft / BORDER_INFLUENCE;
             }
+
+            // You could add logic for other edges too:
+            // const distFromRight = MAP_WIDTH - 1 - x;
+            // if (distFromRight < BORDER_INFLUENCE) {
+            //     multiplier = Math.min(multiplier, distFromRight / BORDER_INFLUENCE);
+            // }
+
+            // Apply the multiplier. Using Math.pow makes the coastline sharper.
+            tile.elevation = normalizedElevation * Math.pow(multiplier, 1.5);
+
         }
     }
 
-    private applyContinentMask(grid: Tile[][]): void {
+    private createBaseMoisture(grid: Grid): void {
+        for (const tile of grid.allTiles()) {
+            const moistNoise = this.moistureNoise(tile.x * NOISE_CONFIG.ELEVATION_SCALE, tile.y * NOISE_CONFIG.ELEVATION_SCALE);
+            tile.moisture = (moistNoise + 1) / 2;
+        }
+    }
+
+
+    private applyContinentMask(grid: Grid): void {
         const centerX = MAP_CONFIG.WIDTH / 2;
         const centerY = MAP_CONFIG.HEIGHT / 2;
         const maxDist = Math.sqrt(centerX * centerX + centerY * centerY);
 
-        for (let y = 0; y < MAP_CONFIG.HEIGHT; y++) {
-            for (let x = 0; x < MAP_CONFIG.WIDTH; x++) {
-                const dx = centerX - x;
-                const dy = centerY - y;
-                const dist = Math.sqrt(dx * dx + dy * dy);
+        for (const tile of grid.allTiles()) {
+            const dx = centerX - tile.x;
+            const dy = centerY - tile.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
 
-                const normalizedDist = dist / maxDist;
-                const mask = 1 - Math.pow(normalizedDist, 2.2);
+            const normalizedDist = dist / maxDist;
+            const mask = 1 - Math.pow(normalizedDist, 2.2);
 
-                // Creates a smooth gradient from 1.0 at center to 0.0 at corners
-                // const mask = Math.pow(1 - (dist / maxDist), 0.5);
-
-
-                grid[y][x].elevation *= mask;
-            }
+            tile.elevation *= mask;
         }
-    }
-    private applyBaseTemperatureNoise(grid: Tile[][]): void {
-        for (let y = 0; y < MAP_CONFIG.HEIGHT; y++) {
-            for (let x = 0; x < MAP_CONFIG.WIDTH; x++) {
-                // 1. Get a base noise value from -1 to 1
-                const noiseValue = this.temperatureNoise(x * TEMP_CONFIG.NOISE_SCALE, y * TEMP_CONFIG.NOISE_SCALE);
 
-                // 2. Normalize to a 0-1 range
-                let normalizedTemp = (noiseValue + 1) / 2;
-
-                // 3. "Clamp and Bias": Squeeze the 0-1 range into our desired temperate range.
-                // For example, if MIN_TEMP is 0.25 and MAX_TEMP is 0.75, the range is 0.5 wide.
-                // A normalizedTemp of 0.5 becomes: 0.25 + 0.5 * (0.75 - 0.25) = 0.5
-                // A normalizedTemp of 1.0 becomes: 0.25 + 1.0 * (0.5) = 0.75
-                normalizedTemp = TEMP_CONFIG.MIN_TEMP + normalizedTemp * (TEMP_CONFIG.MAX_TEMP - TEMP_CONFIG.MIN_TEMP);
-
-                // 4. Apply a gentle vertical gradient (Equator-to-Poles effect)
-                // `y / MAP_CONFIG.HEIGHT` gives a value from 0.0 (top/north) to 1.0 (bottom/south).
-                const gradientValue = y / MAP_CONFIG.HEIGHT;
-                // We shift the gradient so it ranges from -0.5 to +0.5, then scale it by our strength factor.
-                const gradientEffect = (gradientValue - 0.5) * TEMP_CONFIG.GRADIENT_STRENGTH;
-
-                let finalTemp = normalizedTemp + gradientEffect;
-
-                // 5. Final clamp to ensure values stay within the 0-1 bounds after the gradient is applied.
-                grid[y][x].temperature = Math.max(0, Math.min(1, finalTemp));
-            }
-        }
-    }
-    private modifyTemperatureByElevation(grid: Tile[][]): void {
-
-
-
-        for (let y = 0; y < MAP_CONFIG.HEIGHT; y++) {
-            for (let x = 0; x < MAP_CONFIG.WIDTH; x++) {
-                const tile = grid[y][x];
-
-                if (tile.elevation <= TERRAIN_THRESHOLDS.BEACH) {
-                    continue;
-                }
-
-                if (tile.elevation > TERRAIN_THRESHOLDS.SNOWY_MOUNTAIN) {
-                    tile.temperature = TEMP_CONFIG.MIN_TEMP;
-                }
-
-                const elevationFactor = Math.pow(tile.elevation, ELEVATION_EFFECTS.TEMP_DROP_POWER);
-
-                // Subtract the temperature drop from the current temperature.
-                tile.temperature -= elevationFactor * ELEVATION_EFFECTS.TEMP_DROP_FACTOR;
-
-                // Clamp the result to ensure temperature doesn't go below 0.
-                tile.temperature = Math.max(TEMP_CONFIG.MIN_TEMP, tile.temperature);
-
-            }
-        }
     }
 
-    private modifyMoistureByProximityToWater(grid: Tile[][]): void {
+    private createBaseTemperature(grid: Grid): void {
+        for (const tile of grid.allTiles()) {
+            // 1. Get a base noise value from -1 to 1
+            const noiseValue = this.temperatureNoise(tile.x * TEMP_CONFIG.NOISE_SCALE, tile.y * TEMP_CONFIG.NOISE_SCALE);
+
+            // 2. Normalize to a 0-1 range
+            let normalizedTemp = (noiseValue + 1) / 2;
+
+            // 3. "Clamp and Bias": Squeeze the 0-1 range into our desired temperate range.
+            // For example, if MIN_TEMP is 0.25 and MAX_TEMP is 0.75, the range is 0.5 wide.
+            // A normalizedTemp of 0.5 becomes: 0.25 + 0.5 * (0.75 - 0.25) = 0.5
+            // A normalizedTemp of 1.0 becomes: 0.25 + 1.0 * (0.5) = 0.75
+            normalizedTemp = TEMP_CONFIG.MIN_TEMP + normalizedTemp * (TEMP_CONFIG.MAX_TEMP - TEMP_CONFIG.MIN_TEMP);
+
+            // 4. Apply a gentle vertical gradient (Equator-to-Poles effect)
+            // `y / MAP_CONFIG.HEIGHT` gives a value from 0.0 (top/north) to 1.0 (bottom/south).
+            const gradientValue = tile.y / MAP_CONFIG.HEIGHT;
+            // We shift the gradient so it ranges from -0.5 to +0.5, then scale it by our strength factor.
+            const gradientEffect = (gradientValue - 0.5) * TEMP_CONFIG.GRADIENT_STRENGTH;
+
+            let finalTemp = normalizedTemp + gradientEffect;
+
+            // 5. Final clamp to ensure values stay within the 0-1 bounds after the gradient is applied.
+            tile.temperature = Math.max(0, Math.min(1, finalTemp));
+        }
+
+    }
+
+    private modifyTemperatureByElevation(grid: Grid): void {
+
+        for (const tile of grid.allTiles()) {
+            if (tile.elevation <= TERRAIN_THRESHOLDS.BEACH) {
+                continue;
+            }
+
+            if (tile.elevation > TERRAIN_THRESHOLDS.SNOWY_MOUNTAIN) {
+                tile.temperature = TEMP_CONFIG.MIN_TEMP;
+            }
+
+            const elevationFactor = Math.pow(tile.elevation, ELEVATION_EFFECTS.TEMP_DROP_POWER);
+
+            // Subtract the temperature drop from the current temperature.
+            tile.temperature -= elevationFactor * ELEVATION_EFFECTS.TEMP_DROP_FACTOR;
+
+            // Clamp the result to ensure temperature doesn't go below 0.
+            tile.temperature = Math.max(TEMP_CONFIG.MIN_TEMP, tile.temperature);
+        }
+
+    }
+
+    private modifyMoistureByProximityToWater(grid: Grid): void {
         const MOISTURE_SPREAD_FACTOR = 0.15;
-        // This is a simplified diffusion. A real one would be multi-pass.
-        for (let y = 0; y < MAP_CONFIG.HEIGHT; y++) {
-            for (let x = 0; x < MAP_CONFIG.WIDTH; x++) {
-                const tile = grid[y][x];
-                if (tile.terrain !== 'COASTAL_WATER') continue;
-                if (tile.isRiver)  {
-                    console.log('moisture', x, y, tile);
-                }
 
-                for (const neighbor of getTilesInRadius(grid[y][x], grid, 2)) {
-                    neighbor.moisture += MOISTURE_SPREAD_FACTOR;
-                    neighbor.moisture = Math.min(1, neighbor.moisture);
-                }
+        for (const tile of grid.allTiles()) {
+            if (tile.terrain !== 'COASTAL_WATER') continue;
 
+            for (const neighbor of getTilesInRadius(tile, grid.getRawTiles(), 2)) {
+                neighbor.moisture += MOISTURE_SPREAD_FACTOR;
+                neighbor.moisture = Math.min(1, neighbor.moisture);
             }
         }
+
     }
 
     private applyRainShadows(grid: Tile[][]): void {
@@ -262,38 +270,34 @@ export class MapGenerator {
         }
     }
 
-    private assignElevationBiomes(grid: Tile[][]): void {
-        for (let y = 0; y < MAP_CONFIG.HEIGHT; y++) {
-            for (let x = 0; x < MAP_CONFIG.WIDTH; x++) {
-                const tile = grid[y][x];
-
-                if (tile.elevation <= TERRAIN_THRESHOLDS.DEEP_OCEAN) {
-                    tile.terrain = 'DEEP_OCEAN';
-                    continue;
-                }
-
-                if (tile.elevation <= TERRAIN_THRESHOLDS.COASTAL_WATER) {
-                    tile.terrain = 'COASTAL_WATER';
-                    continue;
-                }
-
-                if (tile.elevation <= TERRAIN_THRESHOLDS.BEACH) {
-                    tile.terrain = 'BEACH';
-                    continue;
-                }
-
-                if (tile.elevation <= TERRAIN_THRESHOLDS.MOUNTAIN) {
-                    tile.terrain = this.getTerrainBasedOnWeater(tile);
-                    continue;
-                }
-
-                if (tile.elevation <= TERRAIN_THRESHOLDS.SNOWY_MOUNTAIN) {
-                    tile.terrain = 'MOUNTAIN';
-                    continue;
-                }
-
-                tile.terrain = 'SNOWY_MOUNTAIN'
+    private assignElevationBiomes(grid: Grid): void {
+        for (const tile of grid.allTiles()) {
+            if (tile.elevation <= TERRAIN_THRESHOLDS.DEEP_OCEAN) {
+                tile.terrain = 'DEEP_OCEAN';
+                continue;
             }
+
+            if (tile.elevation <= TERRAIN_THRESHOLDS.COASTAL_WATER) {
+                tile.terrain = 'COASTAL_WATER';
+                continue;
+            }
+
+            if (tile.elevation <= TERRAIN_THRESHOLDS.BEACH) {
+                tile.terrain = 'BEACH';
+                continue;
+            }
+
+            if (tile.elevation <= TERRAIN_THRESHOLDS.MOUNTAIN) {
+                tile.terrain = this.getTerrainBasedOnWeater(tile);
+                continue;
+            }
+
+            if (tile.elevation <= TERRAIN_THRESHOLDS.SNOWY_MOUNTAIN) {
+                tile.terrain = 'MOUNTAIN';
+                continue;
+            }
+
+            tile.terrain = 'SNOWY_MOUNTAIN'
         }
     }
 
@@ -322,59 +326,20 @@ export class MapGenerator {
 
 
     /**
-     * Pushes elevation down along the map edges to create oceans and coastlines.
-     * @param grid The map grid to modify.
-     */
-    private applyCoastalGradient(grid: Tile[][]): void {
-        const MAP_WIDTH = MAP_CONFIG.WIDTH;
-        const MAP_HEIGHT = MAP_CONFIG.HEIGHT;
-        // How far inland the coastal effect should reach.
-        const BORDER_INFLUENCE = MAP_WIDTH * 0.2; // 20% of the map width
-
-
-        for (let y = 0; y < MAP_HEIGHT; y++) {
-            for (let x = 0; x < MAP_WIDTH; x++) {
-                // Calculate distance from the left edge (or any edge you choose)
-                const distFromLeft = x;
-
-                let multiplier = 1.0;
-
-                // Apply a gradient only within the border influence zone
-                if (distFromLeft < BORDER_INFLUENCE) {
-                    // Creates a smooth gradient from 0.0 at the edge to 1.0 at the influence boundary
-                    multiplier = distFromLeft / BORDER_INFLUENCE;
-                }
-
-                // You could add logic for other edges too:
-                // const distFromRight = MAP_WIDTH - 1 - x;
-                // if (distFromRight < BORDER_INFLUENCE) {
-                //     multiplier = Math.min(multiplier, distFromRight / BORDER_INFLUENCE);
-                // }
-
-                // Apply the multiplier. Using Math.pow makes the coastline sharper.
-                grid[y][x].elevation *= Math.pow(multiplier, 1.5);
-            }
-        }
-    }
-
-
-    /**
      * Globally adjusts the elevation to control the final land-to-water ratio.
      * @param grid The map grid to modify.
      */
-    private finalizeElevation(grid: Tile[][]): void {
+    private finalizeElevation(grid: Grid): void {
+        return;
         const RAISE_LAND_FACTOR = 0.15; // Add this value to all elevations
 
-        for (let y = 0; y < MAP_CONFIG.HEIGHT; y++) {
-            for (let x = 0; x < MAP_CONFIG.WIDTH; x++) {
-                // Globally raise the land level
-                grid[y][x].elevation += RAISE_LAND_FACTOR;
-                // Clamp the max elevation to 1.0
-                grid[y][x].elevation = Math.min(1.0, grid[y][x].elevation);
-            }
+        for (const tile of grid.allTiles()) {
+            // Globally raise the land level
+            tile.elevation += RAISE_LAND_FACTOR;
+            // Clamp the max elevation to 1.0
+            tile.elevation = Math.min(1.0, tile.elevation);
         }
     }
-
 
 
 }

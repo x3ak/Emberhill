@@ -1,13 +1,13 @@
 import type {Tile} from "@/shared/types/world.types.ts";
 import {createSeededRNG} from "@/core/worldgen/utils/rng.ts";
-import {getTilesInRadius, hasNeighbouringRiver} from "@/core/worldgen/utils/grid.ts";
 import {MAP_CONFIG} from "@/core/worldgen/MapGenerator.ts";
 import type {RandomFn} from "simplex-noise";
+import type Grid from "@/core/worldgen/Grid.ts";
 
-export function apply(seed: string, grid: Tile[][]): void {
+export function apply(seed: string, grid: Grid): void {
     const rng = createSeededRNG(seed + '_rivers')
 
-    const RIVER_COUNT = Math.floor((MAP_CONFIG.WIDTH * MAP_CONFIG.HEIGHT) / 2000);
+    const RIVER_COUNT = Math.floor((MAP_CONFIG.WIDTH * MAP_CONFIG.HEIGHT) / 1000);
     const RIVER_SPACING_RADIUS = 5;
 
     for (let riverId = 0; riverId < RIVER_COUNT; riverId++) {
@@ -19,10 +19,10 @@ export function apply(seed: string, grid: Tile[][]): void {
 
             const randomX = Math.floor(rng() * MAP_CONFIG.WIDTH);
             const randomY = Math.floor(rng() * MAP_CONFIG.HEIGHT);
-            const potentialStart = grid[randomY][randomX];
+            const potentialStart = grid.getTile(randomY, randomX);
 
             const isOnMountain = potentialStart.terrain === 'MOUNTAIN' || potentialStart.terrain === 'SNOWY_MOUNTAIN';
-            const isIsolated = !hasNeighbouringRiver(potentialStart, grid, RIVER_SPACING_RADIUS);
+            const isIsolated = !grid.hasNeighbouringRiver(potentialStart, RIVER_SPACING_RADIUS);
 
             if (isOnMountain && isIsolated) {
                 riverStart = potentialStart;
@@ -40,7 +40,7 @@ export function apply(seed: string, grid: Tile[][]): void {
     }
 }
 
-function carveRiverFrom(rng: RandomFn, riverId: number, riverStart: Tile, grid: Tile[][]): void {
+function carveRiverFrom(rng: RandomFn, riverId: number, riverStart: Tile, grid: Grid): void {
     const maxRiverLength = 100;
 
     let currentTile = riverStart;
@@ -89,7 +89,7 @@ function carveRiverFrom(rng: RandomFn, riverId: number, riverStart: Tile, grid: 
 }
 
 
-function findRiverBedNextStep(rng: RandomFn, tile: Tile, grid: Tile[][]): Tile | null {
+function findRiverBedNextStep(rng: RandomFn, tile: Tile, grid: Grid): Tile | null {
     const FLOW_CONFIG = {
         // If multiple paths are available, how close does a path's elevation need to be
         // to the absolute best path to be considered a "good" option? (e.g., within 1%)
@@ -101,7 +101,7 @@ function findRiverBedNextStep(rng: RandomFn, tile: Tile, grid: Tile[][]): Tile |
     };
 
     const downhillNeighbors: Tile[] = [];
-    for (const neighbor of getTilesInRadius(tile, grid, 1)) {
+    for (const neighbor of grid.getTilesInRadius(tile, 1)) {
         // We no longer filter by `isRiver` here. That check happens in the main carving loop.
         if (neighbor.elevation < tile.elevation) {
             downhillNeighbors.push(neighbor);
@@ -137,7 +137,7 @@ function findRiverBedNextStep(rng: RandomFn, tile: Tile, grid: Tile[][]): Tile |
 
 }
 
-function floodFillLake(riverId: number, startTile: Tile, grid: Tile[][]): Tile | null {
+function floodFillLake(riverId: number, startTile: Tile, grid: Grid): Tile | null {
     const MAX_LAKE_SIZE = 50; // Prevents excessively large lakes
 
     // The set of tiles that are part of the lake. Using a Set is efficient for `has()` checks.
@@ -164,7 +164,7 @@ function floodFillLake(riverId: number, startTile: Tile, grid: Tile[][]): Tile |
         currentTile.riverId = riverId;
 
         // Check all 8 neighbors
-        for (const neighbor of getTilesInRadius(currentTile, grid, 1)) {
+        for (const neighbor of grid.getTilesInRadius(currentTile, 1)) {
             // If we have already processed this neighbor, skip it.
             if (processed.has(neighbor)) {
                 continue;

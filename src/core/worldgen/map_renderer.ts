@@ -31,19 +31,20 @@ const TERRAIN_COLORS: Record<TerrainType, string> = {
 
 const TILE_SIZE = 4; // The size of each tile in pixels. 4px is good for a 100x100 map.
 
+
+// --- Configuration for Contour Lines ---
+const CONTOUR_CONFIG = {
+    LINE_INTERVAL: 0.1, // Draw a line every 0.1 elevation increment
+    LINE_COLOR: 'rgba(0, 0, 0, 0.15)', // A semi-transparent black looks great
+    LINE_WIDTH: 1, // Keep it subtle
+};
+
 export class MapRenderer {
     private mapData: WorldMap;
-    private canvas;
-    private context;
 
     constructor(mapData: WorldMap) {
         this.mapData = mapData;
 
-        // Create a virtual canvas in memory.
-        const canvasWidth = this.mapData.width * TILE_SIZE;
-        const canvasHeight = this.mapData.height * TILE_SIZE;
-        this.canvas = createCanvas(canvasWidth, canvasHeight);
-        this.context = this.canvas.getContext('2d');
     }
 
     /**
@@ -52,37 +53,42 @@ export class MapRenderer {
      */
     public renderAllMaps(basePath: string): void {
         console.log('Rendering final biome map...');
-        this.renderAndSave(`${basePath}_biome.png`, this.drawBiomeMap);
+        this.renderAndSave(`${basePath}_biome.png`, [
+            this.drawBiomeMap,
+            this.drawContourLines,
+        ]);
 
         console.log('Rendering elevation map...');
-        this.renderAndSave(`${basePath}_elevation.png`, this.drawElevationMap);
+        this.renderAndSave(`${basePath}_elevation.png`, [this.drawElevationMap]);
 
         console.log('Rendering temperature map...');
-        this.renderAndSave(`${basePath}_temperature.png`, this.drawTemperatureMap);
+        this.renderAndSave(`${basePath}_temperature.png`, [this.drawTemperatureMap]);
 
         console.log('Rendering moisture map...');
-        this.renderAndSave(`${basePath}_moisture.png`, this.drawMoistureMap);
+        this.renderAndSave(`${basePath}_moisture.png`, [this.drawMoistureMap]);
 
         console.log('Rendering river map...');
-        this.renderAndSave(`${basePath}_rivers.png`, this.drawRiversMap);
+        this.renderAndSave(`${basePath}_rivers.png`, [this.drawRiversMap]);
+
+        console.log('Rendering contours map...');
+        this.renderAndSave(`${basePath}_contours.png`, [this.drawContourLines]);
 
         console.log(`All maps rendered with base path: ${basePath}`);
     }
 
 
-    /**
-     * A generic helper method to handle the canvas creation, drawing, and saving.
-     * @param outputPath The full path for the output PNG file.
-     * @param drawFunction The specific drawing function to execute on the canvas context.
-     */
-    private renderAndSave(outputPath: string, drawFunction: (context: CanvasRenderingContext2D) => void): void {
+    private renderAndSave(outputPath: string, drawFunctions: ((context: CanvasRenderingContext2D) => void)[]): void {
         const canvasWidth = this.mapData.width * TILE_SIZE;
         const canvasHeight = this.mapData.height * TILE_SIZE;
         const canvas = createCanvas(canvasWidth, canvasHeight);
-        const context = canvas.getContext('2d');
+        const context: CanvasRenderingContext2D = canvas.getContext('2d');
 
         // Bind the drawFunction to this instance to ensure it can access `this.mapData`
-        drawFunction.bind(this)(context);
+        for (const drawFunction of drawFunctions) {
+            // We no longer need .bind() because all our methods are arrow functions.
+            // The `this` context is already correctly captured.
+            drawFunction.bind(this)(context);
+        }
 
         const buffer = canvas.toBuffer('image/png');
         fs.writeFileSync(outputPath, buffer);
@@ -108,6 +114,8 @@ export class MapRenderer {
             }
         }
     }
+
+
 
     /**
      * Draws a grayscale representation of the elevation data.
@@ -139,7 +147,7 @@ export class MapRenderer {
                 const tile = this.mapData.grid[y][x];
 
                 if (tile.isRiver) {
-                    context.fillStyle = this.getColorForId(tile.riverId, 1000)
+                    context.fillStyle = this.getColorForId(tile.riverId || 0, 1000)
                     context.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
                 }
             }
@@ -190,6 +198,73 @@ export class MapRenderer {
                 context.fillStyle = `rgb(${colorValue}, ${colorValue}, ${colorValue})`;
 
                 context.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+            }
+        }
+    }
+
+
+    /**
+     * Draws contour lines on the map to show the topology.
+     * This should be called AFTER drawing the base terrain.
+     * @param context The canvas context to draw on.
+     */
+    private drawContourLines(context: CanvasRenderingContext2D): void {
+        const thresholds: number[] = [];
+        for (let i = CONTOUR_CONFIG.LINE_INTERVAL; i < 1.0; i += CONTOUR_CONFIG.LINE_INTERVAL) {
+            thresholds.push(i);
+        }
+
+        context.strokeStyle = CONTOUR_CONFIG.LINE_COLOR;
+        context.lineWidth = CONTOUR_CONFIG.LINE_WIDTH;
+
+        for (let y = 0; y < this.mapData.height; y++) {
+            for (let x = 0; x < this.mapData.width; x++) {
+                const currentTile = this.mapData.grid[y][x];
+
+                // --- Check Neighbor to the RIGHT ---
+                const rightNeighbor = this.mapData.grid[y]?.[x + 1];
+                if (rightNeighbor) {
+                    // Check if any threshold is crossed between these two tiles
+                    for (const threshold of thresholds) {
+                        if ((currentTile.elevation > threshold && rightNeighbor.elevation <= threshold) ||
+                            (currentTile.elevation <= threshold && rightNeighbor.elevation > threshold))
+                        {
+                            // A line needs to be drawn on the vertical edge between them
+                            const lineX = (x + 1) * TILE_SIZE;
+                            const lineY = y * TILE_SIZE;
+
+                            context.beginPath();
+                            context.moveTo(lineX, lineY);
+                            context.lineTo(lineX, lineY + TILE_SIZE);
+                            context.stroke();
+
+                            // We only need to draw one line per edge, even if multiple thresholds are crossed
+                            break;
+                        }
+                    }
+                }
+
+                // --- Check Neighbor BELOW ---
+                const bottomNeighbor = this.mapData.grid[y + 1]?.[x];
+                if (bottomNeighbor) {
+                    // Check if any threshold is crossed between these two tiles
+                    for (const threshold of thresholds) {
+                        if ((currentTile.elevation > threshold && bottomNeighbor.elevation <= threshold) ||
+                            (currentTile.elevation <= threshold && bottomNeighbor.elevation > threshold))
+                        {
+                            // A line needs to be drawn on the horizontal edge between them
+                            const lineX = x * TILE_SIZE;
+                            const lineY = (y + 1) * TILE_SIZE;
+
+                            context.beginPath();
+                            context.moveTo(lineX, lineY);
+                            context.lineTo(lineX + TILE_SIZE, lineY);
+                            context.stroke();
+
+                            break;
+                        }
+                    }
+                }
             }
         }
     }

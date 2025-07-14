@@ -9,15 +9,12 @@ export interface Tile {
     x: number;
     y: number;
     isRiver: boolean;
-    riverId: number;
-    // tile: Tile;
+    riverId: number | null;
     isLake: boolean;
-    isLakeEdge: boolean;
     terrain: TerrainType;
     elevation: number;   // 0.0 (low) to 1.0 (high)
     temperature: number; // 0.0 (cold) to 1.0 (hot)
     moisture: number;    // 0.0 (dry) to 1.0 (wet)
-    // We will add more properties here later, like `river: boolean` or `settlementId: string | null`
 }
 
 // Represents the entire generated map
