@@ -36,12 +36,12 @@ export function apply(seed: string, grid: Grid): void {
             continue;
         }
 
-        carveRiverFrom(rng, riverId * 100, riverStart, grid);
+        carveRiverFrom(rng, riverId, riverStart, grid);
     }
 }
 
 function carveRiverFrom(rng: RandomFn, riverId: number, riverStart: Tile, grid: Grid): void {
-    const maxRiverLength = 100;
+    const maxRiverLength = riverId == 1 ? 1000 : 100 ;
 
     let currentTile = riverStart;
     // Carve path downhill
@@ -75,8 +75,10 @@ function carveRiverFrom(rng: RandomFn, riverId: number, riverStart: Tile, grid: 
 
             const spillway = floodFillLake(riverId, currentTile, grid);
             if (spillway) {
-                carveRiverFrom(rng, riverId + 1, spillway, grid);
+                carveRiverFrom(rng, riverId, spillway, grid);
             }
+
+            break;
 
         } else {
             currentTile = lowestNeighbor;
@@ -173,7 +175,7 @@ function floodFillLake(riverId: number, startTile: Tile, grid: Grid): Tile | nul
 
             // If the neighbor is lower than or at the same elevation as the starting tile,
             // it's part of the same basin and should also be filled with water.
-            if (neighbor.elevation <= startTile.elevation + 0.006) {
+            if (neighbor.elevation <= startTile.elevation + 0.015) {
                 queue.push(neighbor);
             } else {
                 // Otherwise, this neighbor is higher and part of the "rim" of the lake.

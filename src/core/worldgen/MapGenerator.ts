@@ -29,6 +29,8 @@ export const MAP_CONFIG = {
 
 const NOISE_CONFIG = {
     ELEVATION_SCALE: 0.024,
+    DETAIL_SCALE: 0.06,
+    DETAIL_AMPLITUDE: 0.2, // How much impact the detail noise has. Should be less than 1.0
     TEMPERATURE_SCALE: 0.02,
     MOISTURE_SCALE: 0.05,
     SEA_NOISE_SCALE: 0.01, // VERY low frequency for large, smooth shapes
@@ -46,17 +48,18 @@ const NOISE_CONFIG = {
 const TERRAIN_THRESHOLDS = {
     // Water is now only in the bottom 25% of the elevation range
     DEEP_OCEAN: 0.08,
-    COASTAL_WATER: 0.10,
+    COASTAL_WATER: 0.11,
     // Beach is a very narrow band
-    BEACH: 0.13,
+    BEACH: 0.14,
     // Mountains are pushed to the very top
-    MOUNTAIN: 0.75,
+    MOUNTAIN: 0.785,
     SNOWY_MOUNTAIN: 0.90,
 };
 
 export class MapGenerator {
     private seed: string
     private elevationNoise: NoiseFunction2D;
+    private detailNoise: NoiseFunction2D;
     private temperatureNoise: NoiseFunction2D;
     private moistureNoise: NoiseFunction2D;
 
@@ -65,6 +68,7 @@ export class MapGenerator {
         this.seed = seed;
 
         this.elevationNoise = createNoise2D(createSeededRNG(this.seed + '_elevation'));
+        this.detailNoise = createNoise2D(createSeededRNG(this.seed + '_detail_elevation'));
         this.temperatureNoise = createNoise2D(createSeededRNG(this.seed + '_temperature'));
         this.moistureNoise = createNoise2D(createSeededRNG(this.seed + '_moisture'));
 
@@ -101,9 +105,10 @@ export class MapGenerator {
         return {
             width: MAP_CONFIG.WIDTH,
             height: MAP_CONFIG.HEIGHT,
-            grid,
+            grid: gridObj,
         };
     }
+
 
     private createInitialGrid(): Tile[][] {
         const grid: Tile[][] = [];
@@ -119,6 +124,8 @@ export class MapGenerator {
                     riverId: null,
                     isRiver: false,
                     isLake: false,
+                    settlement: null,
+                    territoryOf: null,
                 };
             }
         }
@@ -134,27 +141,29 @@ export class MapGenerator {
 
 
         for (const tile of grid.allTiles()) {
-            const elevNoise = this.elevationNoise(tile.x * NOISE_CONFIG.ELEVATION_SCALE, tile.y * NOISE_CONFIG.ELEVATION_SCALE);
-            const normalizedElevation = (elevNoise + 1) / 2;
+            const baseElevNoise = this.elevationNoise(
+                tile.x * NOISE_CONFIG.ELEVATION_SCALE,
+                tile.y * NOISE_CONFIG.ELEVATION_SCALE
+            );
+
+            let elevation  = (baseElevNoise + 1) / 2;
+            const detailElevNoise = this.detailNoise(
+                tile.x * NOISE_CONFIG.DETAIL_SCALE, // Use the smaller scale
+                tile.y * NOISE_CONFIG.DETAIL_SCALE
+            );
+
+            elevation += detailElevNoise * NOISE_CONFIG.DETAIL_AMPLITUDE;
+
+            elevation = Math.max(0, Math.min(1, elevation));
 
             const distFromLeft = tile.x;
-
             let multiplier = 1.0;
-
-            // Apply a gradient only within the border influence zone
             if (distFromLeft < BORDER_INFLUENCE) {
-                // Creates a smooth gradient from 0.0 at the edge to 1.0 at the influence boundary
                 multiplier = distFromLeft / BORDER_INFLUENCE;
             }
 
-            // You could add logic for other edges too:
-            // const distFromRight = MAP_WIDTH - 1 - x;
-            // if (distFromRight < BORDER_INFLUENCE) {
-            //     multiplier = Math.min(multiplier, distFromRight / BORDER_INFLUENCE);
-            // }
-
             // Apply the multiplier. Using Math.pow makes the coastline sharper.
-            tile.elevation = normalizedElevation * Math.pow(multiplier, 1.5);
+            tile.elevation = elevation * Math.pow(multiplier, 1.5);
 
         }
     }
@@ -178,7 +187,7 @@ export class MapGenerator {
             const dist = Math.sqrt(dx * dx + dy * dy);
 
             const normalizedDist = dist / maxDist;
-            const mask = 1 - Math.pow(normalizedDist, 2.2);
+            const mask = 1 - Math.pow(normalizedDist, 3);
 
             tile.elevation *= mask;
         }

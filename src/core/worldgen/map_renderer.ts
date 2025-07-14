@@ -1,6 +1,6 @@
 import { createCanvas } from 'canvas';
 import * as fs from 'fs';
-import type { WorldMap, TerrainType } from '@/shared/types/world.types.ts'
+import type {WorldMap, TerrainType, Tile, Settlement} from '@/shared/types/world.types.ts'
 
 // Define a color palette for our terrain types.
 const TERRAIN_COLORS: Record<TerrainType, string> = {
@@ -56,6 +56,7 @@ export class MapRenderer {
         this.renderAndSave(`${basePath}_biome.png`, [
             this.drawBiomeMap,
             this.drawContourLines,
+            this.drawSettlements,
         ]);
 
         console.log('Rendering elevation map...');
@@ -99,22 +100,41 @@ export class MapRenderer {
      * Draws the final, colored biome map.
      */
     private drawBiomeMap(context: CanvasRenderingContext2D): void {
-        for (let y = 0; y < this.mapData.height; y++) {
-            for (let x = 0; x < this.mapData.width; x++) {
-                const tile = this.mapData.grid[y][x];
+        for (let tile of this.mapData.grid.allTiles()) {
+            if (tile.isRiver) {
+                context.fillStyle = '#4a90e2'; // A distinct river blue
+                context.fillRect(tile.x * TILE_SIZE, tile.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+            } else {
 
-                if (tile.isRiver) {
-                    context.fillStyle = '#4a90e2'; // A distinct river blue
-                    context.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-                } else {
+                context.fillStyle = TERRAIN_COLORS[tile.terrain];
+                context.fillRect(tile.x * TILE_SIZE, tile.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+            }
+        }
 
-                    context.fillStyle = TERRAIN_COLORS[tile.terrain];
-                    context.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-                }
+    }
+
+    private drawSettlements(context: CanvasRenderingContext2D): void {
+        let id = 0;
+        const settlementColors = new Map<string, string>();
+        for (let tile of this.mapData.grid.allTiles()) {
+            if (tile.settlement) {
+                settlementColors.set(tile.settlement.id, this.getColorForId(id++, 100, 0.4));
+            }
+        }
+
+        for (let tile of this.mapData.grid.allTiles()) {
+            if (tile.settlement) {
+
+                context.fillStyle = '#ffdd00';
+                context.fillRect(tile.x * TILE_SIZE, tile.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+            }
+            else if (tile.territoryOf) {
+
+                context.fillStyle = settlementColors.get(tile.territoryOf.id) || 'pink';
+                context.fillRect(tile.x * TILE_SIZE, tile.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
             }
         }
     }
-
 
 
     /**
@@ -142,32 +162,26 @@ export class MapRenderer {
     }
 
     private drawRiversMap(context: CanvasRenderingContext2D): void {
-        for (let y = 0; y < this.mapData.height; y++) {
-            for (let x = 0; x < this.mapData.width; x++) {
-                const tile = this.mapData.grid[y][x];
-
-                if (tile.isRiver) {
-                    context.fillStyle = this.getColorForId(tile.riverId || 0, 1000)
-                    context.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-                }
+        for (let tile of this.mapData.grid.allTiles()) {
+            if (tile.isRiver) {
+                context.fillStyle = this.getColorForId(tile.riverId || 0, 100)
+                context.fillRect(tile.x * TILE_SIZE, tile.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
             }
         }
 
-        for (let y = 0; y < this.mapData.height; y++) {
-            for (let x = 0; x < this.mapData.width; x++) {
-                const tile = this.mapData.grid[y][x];
-                if (tile.isLake) {
-                    context.fillStyle = 'rgba(255,255,255, 0.5)';
-                    context.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-                }
+        for (let tile of this.mapData.grid.allTiles()) {
+            if (tile.isLake) {
+                context.fillStyle = 'rgba(255,255,255, 0.5)';
+                context.fillRect(tile.x * TILE_SIZE, tile.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
             }
         }
+
 
 
 
     }
 
-    private getColorForId(id: number, maxId: number): string {
+    private getColorForId(id: number, maxId: number, alpha: number = 1): string {
         // 1. Calculate the hue.
         // We divide the 360 degrees of the color wheel by the total number of rivers
         // and multiply by the current river's ID to get an evenly spaced color.
@@ -180,7 +194,7 @@ export class MapRenderer {
         const lightness = 50;  // in percent
 
         // 3. Return the formatted CSS color string.
-        return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+        return `hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha})`;
     }
 
     /**
@@ -189,17 +203,17 @@ export class MapRenderer {
      * @param dataType The key of the data to render ('elevation', 'temperature', or 'moisture').
      */
     private drawGrayscaleMap(context: CanvasRenderingContext2D, dataType: 'elevation' | 'temperature' | 'moisture'): void {
-        for (let y = 0; y < this.mapData.height; y++) {
-            for (let x = 0; x < this.mapData.width; x++) {
-                const value = this.mapData.grid[y][x][dataType]; // e.g., tile.elevation
+        for (let tile of this.mapData.grid.allTiles()) {
 
-                // Convert the 0-1 value to a 0-255 grayscale color component.
-                const colorValue = Math.floor(value * 255);
-                context.fillStyle = `rgb(${colorValue}, ${colorValue}, ${colorValue})`;
+            const value = tile[dataType]; // e.g., tile.elevation
 
-                context.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-            }
+            // Convert the 0-1 value to a 0-255 grayscale color component.
+            const colorValue = Math.floor(value * 255);
+            context.fillStyle = `rgb(${colorValue}, ${colorValue}, ${colorValue})`;
+            context.fillRect(tile.x * TILE_SIZE, tile.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+
         }
+
     }
 
 
@@ -217,55 +231,52 @@ export class MapRenderer {
         context.strokeStyle = CONTOUR_CONFIG.LINE_COLOR;
         context.lineWidth = CONTOUR_CONFIG.LINE_WIDTH;
 
-        for (let y = 0; y < this.mapData.height; y++) {
-            for (let x = 0; x < this.mapData.width; x++) {
-                const currentTile = this.mapData.grid[y][x];
+        for (let currentTile of this.mapData.grid.allTiles()) {
+            // --- Check Neighbor to the RIGHT ---
+            const rightNeighbor = this.mapData.grid.getTile(currentTile.y, currentTile.x + 1);
+            if (rightNeighbor) {
+                // Check if any threshold is crossed between these two tiles
+                for (const threshold of thresholds) {
+                    if ((currentTile.elevation > threshold && rightNeighbor.elevation <= threshold) ||
+                        (currentTile.elevation <= threshold && rightNeighbor.elevation > threshold))
+                    {
+                        // A line needs to be drawn on the vertical edge between them
+                        const lineX = (currentTile.x + 1) * TILE_SIZE;
+                        const lineY = currentTile.y * TILE_SIZE;
 
-                // --- Check Neighbor to the RIGHT ---
-                const rightNeighbor = this.mapData.grid[y]?.[x + 1];
-                if (rightNeighbor) {
-                    // Check if any threshold is crossed between these two tiles
-                    for (const threshold of thresholds) {
-                        if ((currentTile.elevation > threshold && rightNeighbor.elevation <= threshold) ||
-                            (currentTile.elevation <= threshold && rightNeighbor.elevation > threshold))
-                        {
-                            // A line needs to be drawn on the vertical edge between them
-                            const lineX = (x + 1) * TILE_SIZE;
-                            const lineY = y * TILE_SIZE;
+                        context.beginPath();
+                        context.moveTo(lineX, lineY);
+                        context.lineTo(lineX, lineY + TILE_SIZE);
+                        context.stroke();
 
-                            context.beginPath();
-                            context.moveTo(lineX, lineY);
-                            context.lineTo(lineX, lineY + TILE_SIZE);
-                            context.stroke();
-
-                            // We only need to draw one line per edge, even if multiple thresholds are crossed
-                            break;
-                        }
+                        // We only need to draw one line per edge, even if multiple thresholds are crossed
+                        break;
                     }
                 }
+            }
 
-                // --- Check Neighbor BELOW ---
-                const bottomNeighbor = this.mapData.grid[y + 1]?.[x];
-                if (bottomNeighbor) {
-                    // Check if any threshold is crossed between these two tiles
-                    for (const threshold of thresholds) {
-                        if ((currentTile.elevation > threshold && bottomNeighbor.elevation <= threshold) ||
-                            (currentTile.elevation <= threshold && bottomNeighbor.elevation > threshold))
-                        {
-                            // A line needs to be drawn on the horizontal edge between them
-                            const lineX = x * TILE_SIZE;
-                            const lineY = (y + 1) * TILE_SIZE;
+            // --- Check Neighbor BELOW ---
+            const bottomNeighbor = this.mapData.grid.getTile(currentTile.y + 1, currentTile.x);
+            if (bottomNeighbor) {
+                // Check if any threshold is crossed between these two tiles
+                for (const threshold of thresholds) {
+                    if ((currentTile.elevation > threshold && bottomNeighbor.elevation <= threshold) ||
+                        (currentTile.elevation <= threshold && bottomNeighbor.elevation > threshold))
+                    {
+                        // A line needs to be drawn on the horizontal edge between them
+                        const lineX = currentTile.x * TILE_SIZE;
+                        const lineY = (currentTile.y + 1) * TILE_SIZE;
 
-                            context.beginPath();
-                            context.moveTo(lineX, lineY);
-                            context.lineTo(lineX + TILE_SIZE, lineY);
-                            context.stroke();
+                        context.beginPath();
+                        context.moveTo(lineX, lineY);
+                        context.lineTo(lineX + TILE_SIZE, lineY);
+                        context.stroke();
 
-                            break;
-                        }
+                        break;
                     }
                 }
             }
         }
+
     }
 }

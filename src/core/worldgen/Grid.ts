@@ -51,8 +51,46 @@ export default class Grid {
         return neighbors;
     }
 
+    public calculateTileScore(tile: Tile): number {
+        let score = 0;
+
+        // Bonus for being near fresh water (river/lake)
+        if (this.isNeighboring(tile, t => t.isRiver || t.isLake)) {
+            score += 20;
+        }
+
+        // Bonus for being on the coast
+        if (this.isNeighboring(tile, t => t.terrain === 'COASTAL_WATER')) {
+            score += 15;
+        }
+
+        // Bonus for fertile land
+        if (tile.terrain === 'PLAINS') score += 10;
+
+        // Small bonus for access to wood
+        if (this.isNeighboring(tile, t => t.terrain === 'FOREST')) {
+            score += 5;
+        }
+
+        // Small bonus for access to stone/ore
+        if (this.isNeighboring(tile, t => t.terrain === 'MOUNTAIN')) {
+            score += 5;
+        }
+
+        return score;
+    }
+
+    public isNeighboring(tile: Tile, condition: (neighbor: Tile) => boolean): boolean {
+        for (const neighbor of this.getTilesInRadius(tile, 2)) {
+            if (condition(neighbor)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public getTile(y: number, x: number): Tile {
-        return this.tiles[y][x];
+        return this.tiles[y]?.[x];
     }
 
 }
