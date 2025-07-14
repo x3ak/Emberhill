@@ -77,6 +77,7 @@ class GameEngine extends Subscribable<GameState, typeof GameObject>(GameObject) 
         this.buildings.set('woodcutter', this.initBuilding('woodcutter'));
         this.buildings.set('campfire', this.initBuilding('campfire'));
         this.buildings.set('mine', this.initBuilding('mine'));
+        this.buildings.set('foragers_hut', this.initBuilding('foragers_hut'));
 
 
         this.wisps.push(new Wisp());
@@ -104,7 +105,7 @@ class GameEngine extends Subscribable<GameState, typeof GameObject>(GameObject) 
 
         console.info("Starting game...");
 
-        generateWorld('14121987')
+        // generateWorld('14121987')
 
 
         this.init();

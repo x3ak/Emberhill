@@ -2,6 +2,7 @@ export const AllResourceIds = [
     'LOG_BIRCH', 'LOG_OAK', 'LOG_PINE', 'LOG_MAPLE',
     'RESIN',
     'STONE', 'ORE_COPPER',
+    'BERRIES', 'TWIGS', 'FIBER', 'WEED_SEED', 'GRAIN_SEED', "BLACKBERRY_SEED",
 ] as const;
 
 export type ResourceId = typeof AllResourceIds[number];

@@ -5,6 +5,8 @@ export const AllBuildingIds = [
     'woodcutter',
     'campfire',
     'mine',
+    'foragers_hut',
+    'farm',
 ] as const;
 
 export type BuildingId = typeof AllBuildingIds[number];

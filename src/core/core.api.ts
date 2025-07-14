@@ -10,6 +10,9 @@ const cachedProcesses: Map<ProcessId, ProcessData> = new Map<ProcessId, ProcessD
 
 
 function getResourceData(id: ResourceId): ResourceData {
+    if (!RESOURCES[id]) {
+        throw new Error(`Resource ${id} not found!`);
+    }
     // @ts-ignore
     return RESOURCES[id];
 }

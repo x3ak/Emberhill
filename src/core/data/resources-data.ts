@@ -55,6 +55,44 @@ export const RESOURCES: {[key in ResourceId]?: ResourceData} = {
         icon: placeholder,
     },
 
+    // === FORAGING RESOURCES ===
+    BERRIES: {
+        id: 'BERRIES',
+        name: "Berries",
+        description: "A common fruit found throughout the region. While not particularly nourishing, they provide a quick source of energy to stave off the worst of the Hearthstone's decay in the early days.",
+        icon: placeholder,
+    },
+    TWIGS: {
+        id: 'TWIGS',
+        name: "Twigs",
+        description: "A bundle of dry, brittle twigs, bark, and pinecones. Catches fire far more readily than a whole log. An essential component for starting and maintaining a reliable flame.",
+        icon: placeholder,
+    },
+    FIBER: {
+        id: 'FIBER',
+        name: "Fiber",
+        description: "Surprisingly strong for a glorified weed",
+        icon: placeholder,
+    },
+    WEED_SEED: {
+        id: 'WEED_SEED',
+        name: 'Weed Seed',
+        description: "An unidentifiable seed, gathered from the untamed parts of the world. Planting it is an act of faith. It could yield anything from tough, edible roots and fibrous stalks to, on rare occasions, the ancestors of true grain.",
+        icon: placeholder,
+    },
+    BLACKBERRY_SEED: {
+        id: 'BLACKBERRY_SEED',
+        name: 'Blackberry Seed',
+        description: "Domesticate the same thorny bushes you find in the wild. Each seed will grow into a familiar plant that yields a predictable and steady supply of blackberries, removing the uncertainty of foraging.",
+        icon: placeholder,
+    },
+    GRAIN_SEED: {
+        id: 'GRAIN_SEED',
+        name: 'Grain Seed',
+        description: "A significant agricultural breakthrough. Unlike berries or roots, grain is highly storable and incredibly versatile. Cultivating a steady supply of grain is the first step towards creating a stable food source, brewing valuable ales, and truly domesticating livestock.",
+        icon: placeholder,
+    }
+
 } as const;
 
 
