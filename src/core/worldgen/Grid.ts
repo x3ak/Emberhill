@@ -49,9 +49,6 @@ export default class Grid {
 
     // 1 to 10 where 1 is easy 10 is impossible
     public getTileMovementCost(tile: Tile): number {
-        // if (tile.terrain == 'COASTAL_WATER' || tile.terrain == 'DEEP_OCEAN' || tile.terrain == 'SNOWY_MOUNTAIN') {
-        //     return 10;
-        // }
 
         switch (tile.terrain) {
 
