@@ -51,6 +51,47 @@ export default class Grid {
         return neighbors;
     }
 
+    // 1 to 10 where 1 is easy 10 is impossible
+    public getTileMovementCost(tile: Tile): number {
+        // if (tile.terrain == 'COASTAL_WATER' || tile.terrain == 'DEEP_OCEAN' || tile.terrain == 'SNOWY_MOUNTAIN') {
+        //     return 10;
+        // }
+
+        switch (tile.terrain) {
+
+            case "SNOWY_MOUNTAIN":
+            case "DEEP_OCEAN":
+                return 10;
+
+            case "MOUNTAIN":
+                return 8;
+
+            case "DESERT":
+            case "TUNDRA":
+                return 4;
+
+            case "COASTAL_WATER":
+                if (tile.isRiver) {
+                    return 2;
+                }
+
+                return 10;
+
+
+            case "TAIGA":
+            case "JUNGLE":
+                return 3;
+
+            case "SAVANNA":
+            case "FOREST":
+            case "BEACH":
+                return 2;
+
+            case "PLAINS":
+                return 1;
+        }
+    }
+
     public calculateTileScore(tile: Tile): number {
         let score = 0;
 

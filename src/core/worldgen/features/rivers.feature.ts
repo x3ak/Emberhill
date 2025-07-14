@@ -8,7 +8,7 @@ export function apply(seed: string, grid: Grid): void {
     const rng = createSeededRNG(seed + '_rivers')
 
     const RIVER_COUNT = Math.floor((MAP_CONFIG.WIDTH * MAP_CONFIG.HEIGHT) / 1000);
-    const RIVER_SPACING_RADIUS = 5;
+    const RIVER_SPACING_RADIUS = 15;
 
     for (let riverId = 0; riverId < RIVER_COUNT; riverId++) {
         let riverStart: Tile | null = null;

@@ -24,6 +24,7 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "simplex-noise": "^4.0.3",
+    "tinyqueue": "^3.0.0",
     "vite-tsconfig-paths": "^5.1.4"
   }
 }

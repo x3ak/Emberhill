@@ -12,7 +12,7 @@ const TEMP_CONFIG = {
     NOISE_SCALE: 0.01, // Low frequency for large, smooth climate bands
     MIN_TEMP: 0.25,    // The coldest a lowland area can be (prevents Tundra)
     MAX_TEMP: 0.75,    // The hottest a lowland area can be (prevents Desert)
-    GRADIENT_STRENGTH: 0.2, // How much the north-south gradient affects temp (e.g., 20%)
+    GRADIENT_STRENGTH: 0.25, // How much the north-south gradient affects temp (e.g., 20%)
 };
 
 const ELEVATION_EFFECTS = {
@@ -23,13 +23,13 @@ const ELEVATION_EFFECTS = {
 
 // --- CONFIGURATION ---
 export const MAP_CONFIG = {
-    WIDTH: 200,
-    HEIGHT: 200,
+    WIDTH: 400,
+    HEIGHT: 400,
 };
 
 const NOISE_CONFIG = {
-    ELEVATION_SCALE: 0.024,
-    DETAIL_SCALE: 0.06,
+    ELEVATION_SCALE: 0.014,
+    DETAIL_SCALE: 0.03,
     DETAIL_AMPLITUDE: 0.2, // How much impact the detail noise has. Should be less than 1.0
     TEMPERATURE_SCALE: 0.02,
     MOISTURE_SCALE: 0.05,
@@ -99,6 +99,8 @@ export class MapGenerator {
         this.modifyMoistureByProximityToWater(gridObj);
         this.applyRainShadows(grid);
 
+
+
         // this.assignElevationBiomes(gridObj);
 
 
@@ -108,6 +110,7 @@ export class MapGenerator {
             grid: gridObj,
         };
     }
+
 
 
     private createInitialGrid(): Tile[][] {
