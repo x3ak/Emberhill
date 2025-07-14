@@ -1,6 +1,6 @@
-import { createCanvas } from 'canvas';
+import { createCanvas, CanvasRenderingContext2D } from 'canvas';
 import * as fs from 'fs';
-import type {WorldMap, TerrainType, Tile, Settlement} from '@/shared/types/world.types.ts'
+import type {WorldMap, TerrainType} from '@/shared/types/world.types.ts'
 
 // Define a color palette for our terrain types.
 const TERRAIN_COLORS: Record<TerrainType, string> = {
@@ -185,7 +185,7 @@ export class MapRenderer {
         // 1. Calculate the hue.
         // We divide the 360 degrees of the color wheel by the total number of rivers
         // and multiply by the current river's ID to get an evenly spaced color.
-        const hue = Math.floor(Math.random() * 360);
+        const hue = Math.floor((id / maxId) * 360);
 
         // 2. Keep saturation and lightness constant for a consistent look.
         // 80% saturation is vibrant but not neon.
