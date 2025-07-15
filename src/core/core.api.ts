@@ -4,7 +4,7 @@ import {RESOURCES} from "./data/resources-data.ts";
 import {BUILDINGS} from "./data/buildings-data.ts";
 import type {BuildingData, BuildingId} from "@/shared/types/building.types.ts";
 import {workerAPI} from "./worker.api.ts";
-import {warmstoneProgression} from "./data/warmstone/warmstone.data.ts";
+import {warmstoneProgression} from "./data/warmstone/warmstone.progression.ts";
 
 const cachedProcesses: Map<ProcessId, ProcessData> = new Map<ProcessId, ProcessData>();
 

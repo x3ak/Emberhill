@@ -1,6 +1,5 @@
 import type {Settlement, Tile, WorldMap} from "@/shared/types/world.types.ts";
 import {WorldGenerationFeature} from "@/core/worldgen/WorldGenerationFeature.ts";
-import {MAP_CONFIG} from "@/core/worldgen/config.ts";
 
 const PLACEMENT_CONFIG = {
     NUM_FOUNDING_SETTLEMENTS: 7,
