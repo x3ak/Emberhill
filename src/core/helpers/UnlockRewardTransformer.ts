@@ -1,5 +1,6 @@
 import type {GameCommand} from "../commands.ts";
-import type {UnlockReward} from "@/shared/types/progression.types.ts";
+
+import type {UnlockReward} from "@/shared/types/game.types.ts";
 
 
 export function toGameCommands(reward: UnlockReward): GameCommand[] {

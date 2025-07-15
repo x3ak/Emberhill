@@ -1,5 +1,5 @@
-import type {UnlockReward} from "@/shared/types/progression.types.ts";
 import {coreAPI} from "@/core/core.api.ts";
+import type {UnlockReward} from "@/shared/types/game.types.ts";
 
 export function RewardDisplay({reward}: {reward: UnlockReward}) {
     switch (reward.type) {

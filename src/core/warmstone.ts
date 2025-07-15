@@ -1,8 +1,8 @@
 import {GameObject, Subscribable} from "./mixins/Subscribable.mixin.ts";
-import type {WarmstoneState} from "@/shared/types/warmstone.types.ts";
 import type {GameCommand} from "./commands.ts";
 import {warmstoneProgression} from "./data/warmstone/warmstone.progression.ts";
 import {allToGameCommands} from "./helpers/UnlockRewardTransformer.ts";
+import type {WarmstoneState} from "@/shared/types/game.types.ts";
 
 export class Warmstone extends Subscribable<WarmstoneState, typeof GameObject>(GameObject) {
 

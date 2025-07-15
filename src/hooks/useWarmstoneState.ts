@@ -1,6 +1,7 @@
 import {uiStateManager} from "../ui/UIStateManager.ts";
 import {useSyncExternalStore} from "react";
-import type {WarmstoneState} from "@/shared/types/warmstone.types.ts";
+
+import type {WarmstoneState} from "@/shared/types/game.types.ts";
 
 export function useWarmstoneState(): WarmstoneState {
     const topic = `warmstone` as const;

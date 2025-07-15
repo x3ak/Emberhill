@@ -1,5 +1,5 @@
-import type {UnlockReward} from "@/shared/types/progression.types.ts";
 import {gameInstance} from "./engine.ts";
+import type {UnlockReward} from "@/shared/types/game.types.ts";
 
 export class Progression {
 

@@ -1,8 +1,8 @@
-import type {ProgressionData, UnlockReward} from "@/shared/types/progression.types.ts";
 import styles from "./ProgressionList.module.css";
 import {RewardDisplay} from "@/components/RewardDisplay/RewardDisplay.tsx";
 import {ResourceAmountDisplay} from "@/components/ResourceAmountDisplay/ResourceAmountDisplay.tsx";
 import ExperiencePill from "@/components/Pills/ExperiencePill/ExperiencePill.tsx";
+import type {ProgressionData, UnlockReward} from "@/shared/types/game.types.ts";
 
 type ProgressionListProps = {
     levelReached: number;

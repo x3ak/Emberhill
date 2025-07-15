@@ -4,9 +4,8 @@ import type {GameCommand} from "./commands.ts";
 import {GameObject, Subscribable} from "./mixins/Subscribable.mixin.ts";
 import {Process} from "./Process.ts";
 import {gameInstance} from "./engine.ts";
-import {type BuildingLevelUp} from "@/shared/types/progression.types.ts";
 import {allToGameCommands} from "./helpers/UnlockRewardTransformer.ts";
-import type {BuildingData, BuildingState, ProcessData} from "@/shared/types/game.types.ts";
+import type {BuildingData, BuildingLevelUp, BuildingState, ProcessData} from "@/shared/types/game.types.ts";
 
 export class Building extends Subscribable<BuildingState, typeof GameObject>(GameObject)  {
 

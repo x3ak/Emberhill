@@ -1,4 +1,4 @@
-import type {ProgressionData} from "@/shared/types/progression.types.ts";
+import type {ProgressionData} from "@/shared/types/game.types.ts";
 
 export const warmstoneProgression: ProgressionData = {
     1: {

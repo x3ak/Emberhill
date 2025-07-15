@@ -1,8 +1,5 @@
-import type {WarmstoneState} from "@/shared/types/warmstone.types.ts";
-
 import type {ResourceId} from "@/shared/types/resources.types.ts";
 import type {ProcessId} from "@/shared/types/processes.types.ts";
-import type {ProgressionData} from "@/shared/types/progression.types.ts";
 import type {BuildingId} from "@/shared/types/building.types.ts";
 
 export type GameState = {
@@ -49,6 +46,19 @@ export type ProcessState = {
     isUnlocked: boolean;
     status: ProcessStatus;
 }
+export type UnlockReward =
+    | { type: "unlock_process"; processId: ProcessId; }
+    | { type: "unlock_building"; buildingId: BuildingId }
+    | { type: "grant_wisp"; amount: number }
+    | { type: "global_modifier"; modifier: string; value: number };
+export type BuildingLevelUp = {
+    xp: number;
+    resources: ResourceAmount[];
+    rewards: UnlockReward[];
+}
+export type ProgressionData = {
+    [level: number]: BuildingLevelUp
+}
 export type BuildingData = {
     id: BuildingId;
     name: string;
@@ -63,6 +73,14 @@ export type BuildingState = {
     wispAssigned: boolean;
     canLevelUp: boolean;
     currentProcessId: ProcessId | null;
+}
+export type WarmstoneState = {
+    currentVitality: number,
+    maxVitality: number,
+    currentLevel: number,
+    essence: number,
+    essenceForNextLevel: number,
+    canLevelUp: boolean,
 }
 export type FullGameState = {
     resources: ResourcesState;

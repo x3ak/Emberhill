@@ -1,4 +1,4 @@
-import type { ProgressionData } from "@/shared/types/progression.types";
+import type {ProgressionData} from "@/shared/types/game.types.ts";
 
 export const workshopProgression: ProgressionData = {
     1: {

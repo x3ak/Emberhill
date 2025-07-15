@@ -1,5 +1,10 @@
-import type {BuildingState, FullGameState, ProcessState, ResourcesState} from "@/shared/types/game.types.ts";
-import type {WarmstoneState} from "@/shared/types/warmstone.types.ts";
+import type {
+    BuildingState,
+    FullGameState,
+    ProcessState,
+    ResourcesState,
+    WarmstoneState
+} from "@/shared/types/game.types.ts";
 
 export type WorkerEvent =
     | { type: "INITIAL_STATE"; payload: FullGameState}
