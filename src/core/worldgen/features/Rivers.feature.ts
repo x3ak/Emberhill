@@ -1,19 +1,18 @@
-import type Grid from "@/core/worldgen/Grid.ts";
 import type {RandomFn} from "simplex-noise";
-import {createSeededRNG} from "@/core/worldgen/utils/rng.ts";
-import {MAP_CONFIG} from "@/core/worldgen/MapGenerator.ts";
-import type {Tile} from "@/shared/types/world.types.ts";
+import {createSeededRNG} from "@/core/worldgen/utils/rng";
+import {MAP_CONFIG} from "@/core/worldgen/MapGenerator";
+import type {Tile, WorldMap} from "@/shared/types/world.types";
+import {WorldGenerationFeature} from "@/core/worldgen/WorldGenerationFeature";
 
-export default class RiverPlacer {
-    private grid: Grid;
+export class Rivers extends WorldGenerationFeature {
     private readonly rng: RandomFn;
 
-    constructor(grid: Grid, seed: string) {
-        this.rng = createSeededRNG(seed + '_rivers')
-        this.grid = grid;
+    constructor(worldMap: WorldMap, seed: string) {
+        super(worldMap, seed);
+        this.rng = createSeededRNG(this.seed + '_rivers')
     }
 
-    public placeRivers() {
+    public execute() {
         const RIVER_COUNT = Math.floor((MAP_CONFIG.WIDTH * MAP_CONFIG.HEIGHT) / 1000);
         const RIVER_SPACING_RADIUS = 15;
 
@@ -26,10 +25,10 @@ export default class RiverPlacer {
 
                 const randomX = Math.floor(this.rng() * MAP_CONFIG.WIDTH);
                 const randomY = Math.floor(this.rng() * MAP_CONFIG.HEIGHT);
-                const potentialStart = this.grid.getTile(randomY, randomX);
+                const potentialStart = this.worldMap.grid.getTile(randomY, randomX);
 
                 const isOnMountain = potentialStart.terrain === 'MOUNTAIN' || potentialStart.terrain === 'SNOWY_MOUNTAIN';
-                const isIsolated = !this.grid.hasNeighbouringRiver(potentialStart, RIVER_SPACING_RADIUS);
+                const isIsolated = !this.worldMap.grid.hasNeighbouringRiver(potentialStart, RIVER_SPACING_RADIUS);
 
                 if (isOnMountain && isIsolated) {
                     riverStart = potentialStart;
@@ -110,7 +109,7 @@ export default class RiverPlacer {
         };
 
         const downhillNeighbors: Tile[] = [];
-        for (const neighbor of this.grid.getTilesInRadius(tile, 1)) {
+        for (const neighbor of this.worldMap.grid.getTilesInRadius(tile, 1)) {
             // We no longer filter by `isRiver` here. That check happens in the main carving loop.
             if (neighbor.elevation < tile.elevation) {
                 downhillNeighbors.push(neighbor);
@@ -173,7 +172,7 @@ export default class RiverPlacer {
             currentTile.riverId = riverId;
 
             // Check all 8 neighbors
-            for (const neighbor of this.grid.getTilesInRadius(currentTile, 1)) {
+            for (const neighbor of this.worldMap.grid.getTilesInRadius(currentTile, 1)) {
                 // If we have already processed this neighbor, skip it.
                 if (processed.has(neighbor)) {
                     continue;

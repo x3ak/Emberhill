@@ -1,25 +1,27 @@
 import {MapGenerator} from "@/core/worldgen/MapGenerator.ts";
 import {MapRenderer} from "@/core/worldgen/map_renderer.ts";
-import {SettlementPlacer} from "@/core/worldgen/features/SettlementPlacer.ts";
-import {TerritoryExpander} from "@/core/worldgen/features/TerritoryExpander.ts";
-import {RoadBuilder} from "@/core/worldgen/features/RoadBuilder.ts";
+import {Rivers} from "@/core/worldgen/features/Rivers.feature.ts";
+import {Settlements} from "@/core/worldgen/features/Settlements.feature.ts";
+import {Territories} from "@/core/worldgen/features/Territories.feature.ts";
+import {Roads} from "@/core/worldgen/features/Roads.feature.ts";
+import {WorldGenerationFeature} from "@/core/worldgen/WorldGenerationFeature.ts";
 
 export function generateWorld(seed: string, outputPath: string = 'world_map.png') {
     const mapGenerator = new MapGenerator(seed);
     const worldMap = mapGenerator.generateMap();
 
-    const settlementPlacer = new SettlementPlacer(worldMap);
-    const settlements = settlementPlacer.placeFoundingSettlements();
+    const features: WorldGenerationFeature[] = [
+        new Rivers(worldMap, seed),
+        new Settlements(worldMap, seed),
+        new Territories(worldMap, seed),
+        new Roads(worldMap, seed),
+    ];
 
-    const territoryExpander = new TerritoryExpander(worldMap, settlements);
-    territoryExpander.expandTerritories();
-
-    const roadBuilder = new RoadBuilder(worldMap, settlements);
-    roadBuilder.buildHighwayNetwork();
+    for (const feature of features) {
+        feature.execute();
+    }
 
     const mapRenderer = new MapRenderer(worldMap);
     mapRenderer.renderAllMaps(outputPath);
 
 }
-
-// After generating the map:

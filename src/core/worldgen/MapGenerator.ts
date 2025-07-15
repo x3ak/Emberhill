@@ -3,7 +3,6 @@ import {createSeededRNG} from './utils/rng'; // Assuming you have this utility
 import type {TerrainType, Tile, WorldMap} from '@/shared/types/world.types.ts'
 
 import Grid from "@/core/worldgen/Grid.ts";
-import RiverPlacer from "@/core/worldgen/features/RiverPlacer.ts";
 
 const TEMP_CONFIG = {
     NOISE_SCALE: 0.01, // Low frequency for large, smooth climate bands
@@ -89,10 +88,6 @@ export class MapGenerator {
 
         this.assignElevationBiomes(gridObj);
 
-        const riverPlacer = new RiverPlacer(gridObj, this.seed);
-        riverPlacer.placeRivers();
-        // applyRiversFeature(this.seed, gridObj);
-
         this.modifyTemperatureByElevation(gridObj);
         this.modifyMoistureByProximityToWater(gridObj);
         this.applyRainShadows(grid);
@@ -108,6 +103,7 @@ export class MapGenerator {
             width: MAP_CONFIG.WIDTH,
             height: MAP_CONFIG.HEIGHT,
             grid: gridObj,
+            settlements: [],
         };
     }
 

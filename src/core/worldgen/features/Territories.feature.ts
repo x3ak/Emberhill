@@ -1,5 +1,6 @@
 import type {Settlement, Tile, WorldMap} from "@/shared/types/world.types.ts";
 import TinyQueue from "tinyqueue";
+import {WorldGenerationFeature} from "@/core/worldgen/WorldGenerationFeature.ts";
 
 type QueueItem = {
     tile: Tile;
@@ -7,24 +8,16 @@ type QueueItem = {
     settlement: Settlement; // Which settlement is expanding
 };
 
-export class TerritoryExpander {
-    private map: WorldMap;
-    private readonly foundingSettlements: Settlement[];
-
+export class Territories extends WorldGenerationFeature {
     private costSoFar: Map<Tile, number> = new Map();
 
-    constructor(map: WorldMap, foundingSettlements: Settlement[]) {
-        this.map = map;
-        this.foundingSettlements = foundingSettlements;
+    constructor(worldMap: WorldMap, seed: string) {
+        super(worldMap, seed);
     }
 
-    /**
-     * The main public method that runs the expansion simulation.
-     * It MUTATES the tiles in the provided WorldMap.
-     */
-    public expandTerritories(): void {
+    public execute(): void {
         const frontier = new TinyQueue<QueueItem>([], (a, b) => a.cost - b.cost);
-        for (const settlement of this.foundingSettlements) {
+        for (const settlement of this.worldMap.settlements) {
             const startTile = settlement.tile;
             if (startTile) {
                 startTile.territoryOf = settlement;
@@ -39,9 +32,9 @@ export class TerritoryExpander {
             if (!current) break; // Should not happen if length > 0
 
             // --- Step 3: Check Neighbors ---
-            for (const neighbor of this.map.grid.getTilesInRadius(current.tile , 1)) {
+            for (const neighbor of this.worldMap.grid.getTilesInRadius(current.tile , 1)) {
                 // Calculate the new cost to reach this neighbor.
-                const movementCost = this.map.grid.getTileMovementCost(neighbor); // Your existing cost function
+                const movementCost = this.worldMap.grid.getTileMovementCost(neighbor); // Your existing cost function
                 const newCost = current.cost + movementCost;
 
                 // We only process the neighbor if:

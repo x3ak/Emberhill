@@ -40,4 +40,5 @@ export interface WorldMap {
     width: number;
     height: number;
     grid: Grid;
+    settlements: Settlement[];
 }

@@ -1,10 +1,11 @@
-// import { Grid as PFGrid, AStarFinder }
-import type {WorldMap, Settlement, Tile, SettlementConnection} from '@/shared/types/world.types.ts'
+import type {Settlement, SettlementConnection, Tile, WorldMap} from '@/shared/types/world.types.ts'
 import Pathfinding from "pathfinding";
 import {CanvasRenderingContext2D, createCanvas} from "canvas";
 import {MAP_CONFIG} from "@/core/worldgen/MapGenerator.ts";
 import fs from "fs";
 import {TILE_SIZE} from "@/core/worldgen/map_renderer.ts";
+import {WorldGenerationFeature} from "@/core/worldgen/WorldGenerationFeature.ts";
+
 // This assumes you have a getTileMovementCost method on your grid or a utility function for it.
 // import { getTileMovementCost } from './utils/grid';
 
@@ -19,21 +20,17 @@ const ROAD_CONFIG = {
     SLOPE_PENALTY_MULTIPLIER: 250,
 };
 
-export class RoadBuilder {
-    private map: WorldMap;
-    private capitals: Settlement[];
-
-    constructor(map: WorldMap, capitals: Settlement[]) {
-        this.map = map;
-        this.capitals = capitals;
+export class Roads extends WorldGenerationFeature {
+    constructor(worldMap: WorldMap, seed: string) {
+        super(worldMap, seed);
     }
 
     /**
      * The main public method. Builds a complete, interconnected highway network
      * between all provided capital cities.
      */
-    public buildHighwayNetwork(): void {
-        if (this.capitals.length < 2) {
+    public execute(): void {
+        if (this.worldMap.settlements.length < 2) {
             console.log("Not enough capitals to build a road network.");
             return;
         }
@@ -50,15 +47,15 @@ export class RoadBuilder {
 
     private determineHighwayConnections(): { from: Settlement; to: Settlement }[] {
 
-        const numCapitals = this.capitals.length;
+        const numCapitals = this.worldMap.settlements.length;
         if (numCapitals < 2) return [];
 
         const allEdges: {from: number, to: number, weight: number}[] = [];
 
         for (let i = 0; i < numCapitals; i++) {
             for (let j = i + 1; j < numCapitals; j++) {
-                const settlementA = this.capitals[i];
-                const settlementB = this.capitals[j];
+                const settlementA = this.worldMap.settlements[i];
+                const settlementB = this.worldMap.settlements[j];
                 const dx = settlementA.tile.x - settlementB.tile.x;
                 const dy = settlementA.tile.y - settlementB.tile.y;
                 allEdges.push({ from: i, to: j, weight: Math.sqrt(dx * dx + dy * dy) });
@@ -75,8 +72,8 @@ export class RoadBuilder {
             if (disjointSet.find(edge.from) !== disjointSet.find(edge.to)) {
                 // ...add this edge to our result...
                 mstConnections.push({
-                    from: this.capitals[edge.from],
-                    to: this.capitals[edge.to],
+                    from: this.worldMap.settlements[edge.from],
+                    to: this.worldMap.settlements[edge.to],
                 });
                 // ...and merge their sets.
                 disjointSet.union(edge.from, edge.to);
@@ -87,32 +84,6 @@ export class RoadBuilder {
         }
 
         return mstConnections;
-
-        // const connections = new Set<string>();
-        // const establishedConnections: { from: Settlement; to: Settlement }[] = [];
-        //
-        // for (const settlementA of this.capitals) {
-        //     const distances = this.capitals
-        //         .filter(s => s.id !== settlementA.id)
-        //         .map(settlementB => {
-        //             const dx = settlementA.tile.x - settlementB.tile.x;
-        //             const dy = settlementA.tile.y - settlementB.tile.y;
-        //             return { settlement: settlementB, distance: Math.sqrt(dx * dx + dy * dy) };
-        //         })
-        //         .sort((a, b) => a.distance - b.distance);
-        //
-        //     for (let i = 0; i < ROAD_CONFIG.CONNECTIONS_PER_CAPITAL && i < distances.length; i++) {
-        //         const settlementB = distances[i].settlement;
-        //         // Create a sorted ID to prevent duplicates (e.g., A-B is the same as B-A)
-        //         const connectionId = [settlementA.id, settlementB.id].sort().join('-');
-        //
-        //         if (!connections.has(connectionId)) {
-        //             connections.add(connectionId);
-        //             establishedConnections.push({ from: settlementA, to: settlementB });
-        //         }
-        //     }
-        // }
-        // return establishedConnections;
     }
 
     /**
@@ -132,7 +103,7 @@ export class RoadBuilder {
             // return;
 
             const pfGrid = new Pathfinding.Grid(weightMatrix);
-            for (let tile of this.map.grid.allTiles()) {
+            for (let tile of this.worldMap.grid.allTiles()) {
                 pfGrid.setWalkableAt(tile.x, tile.y, this.isWalkable(tile));
             }
 
@@ -179,17 +150,17 @@ export class RoadBuilder {
 
     private createWeightMatrix(): number[][] {
         const matrix: number[][] = [];
-        for (let y = 0; y < this.map.height; y++) {
+        for (let y = 0; y < this.worldMap.height; y++) {
             matrix[y] = [];
-            for (let x = 0; x < this.map.width; x++) {
-                const tile = this.map.grid.getTile(y, x);
+            for (let x = 0; x < this.worldMap.width; x++) {
+                const tile = this.worldMap.grid.getTile(y, x);
 
                 // If the tile is already a road, its cost is very low.
                 if (tile.isRoad) {
                     matrix[y][x] = ROAD_CONFIG.ROAD_MOVEMENT_COST;
                 } else {
                     // Otherwise, get the cost from the terrain.
-                    const tileMovementCost = this.map.grid.getTileMovementCost(tile);
+                    const tileMovementCost = this.worldMap.grid.getTileMovementCost(tile);
                     matrix[y][x] = tileMovementCost + (tile.slope) * ROAD_CONFIG.SLOPE_PENALTY_MULTIPLIER;
                     // console.log(tile.slope)
                 }
@@ -226,7 +197,7 @@ export class RoadBuilder {
      */
     private paveRoadOnMap(path: number[][]): void {
         path.forEach(([x, y]) => {
-            const tile = this.map.grid.getTile(y, x);
+            const tile = this.worldMap.grid.getTile(y, x);
             if (tile) {
                 tile.isRoad = true;
                 // Optional: You could also slightly lower the elevation to "flatten" the road

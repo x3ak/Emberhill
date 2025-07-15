@@ -1,6 +1,5 @@
-
-// Configuration
 import type {Settlement, Tile, WorldMap} from "@/shared/types/world.types.ts";
+import {WorldGenerationFeature} from "@/core/worldgen/WorldGenerationFeature.ts";
 
 const PLACEMENT_CONFIG = {
     NUM_FOUNDING_SETTLEMENTS: 7,
@@ -13,23 +12,15 @@ type ScoredTile = {
     score: number;
 };
 
-export class SettlementPlacer {
-    private map: WorldMap;
-    private settlements: Settlement[] = [];
-
-    constructor(map: WorldMap) {
-        this.map = map;
+export class Settlements extends WorldGenerationFeature {
+    constructor(worldMap: WorldMap, seed: string) {
+        super(worldMap, seed);
     }
 
-    /**
-     * The main public method to place all founding settlements.
-     */
-    public placeFoundingSettlements(): Settlement[] {
+    public execute() {
         const scoredTiles = this.scoreAllLandTiles();
         this.sortTilesByScore(scoredTiles);
         this.selectAndPlaceSettlements(scoredTiles);
-
-        return this.settlements;
     }
 
     // --- Private Helper Methods ---
@@ -37,9 +28,9 @@ export class SettlementPlacer {
     private scoreAllLandTiles(): ScoredTile[] {
         const landTiles: ScoredTile[] = [];
 
-        for (let tile of this.map.grid.allTiles()) {
+        for (let tile of this.worldMap.grid.allTiles()) {
             if (tile.terrain === 'PLAINS' || tile.terrain === 'FOREST') {
-                landTiles.push({ tile, score: this.map.grid.calculateTileScore(tile) });
+                landTiles.push({ tile, score: this.worldMap.grid.calculateTileScore(tile) });
             }
         }
 
@@ -54,14 +45,14 @@ export class SettlementPlacer {
     private selectAndPlaceSettlements(sortedTiles: ScoredTile[]): void {
         for (const scoredTile of sortedTiles) {
             // Stop once we've placed enough settlements.
-            if (this.settlements.length >= PLACEMENT_CONFIG.NUM_FOUNDING_SETTLEMENTS) {
+            if (this.worldMap.settlements.length >= PLACEMENT_CONFIG.NUM_FOUNDING_SETTLEMENTS) {
                 break;
             }
 
             const candidateTile = scoredTile.tile;
 
             // --- Enforce Spacing ---
-            const isTooClose = this.settlements.some(existingSettlement => {
+            const isTooClose = this.worldMap.settlements.some(existingSettlement => {
                 const dx = Math.abs(existingSettlement.tile.x - candidateTile.x);
                 const dy = Math.abs(existingSettlement.tile.y - candidateTile.y);
                 const distance = Math.sqrt(dx*dx + dy*dy); // Euclidean distance
@@ -71,13 +62,13 @@ export class SettlementPlacer {
             if (!isTooClose) {
                 // This spot is good. Place the settlement.
                 const newSettlement: Settlement = {
-                    id: `settlement_${this.settlements.length}`,
+                    id: `settlement_${this.worldMap.settlements.length}`,
                     name: "Unnamed Settlement", // Naming comes later
                     tile: candidateTile,
                     connections: [],
                 };
 
-                this.settlements.push(newSettlement);
+                this.worldMap.settlements.push(newSettlement);
                 // Mark the tile so we know a settlement is here
                 candidateTile.settlement = newSettlement;
             }
