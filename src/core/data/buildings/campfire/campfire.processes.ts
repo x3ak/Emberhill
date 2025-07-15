@@ -13,9 +13,6 @@ export const campfireProcesses: {[key in ProcessId]?: ProcessData} = {
             {type: "resource", id: "LOG_OAK", amount: 1}
         ],
         outputs: [],
-        effects: [
-            {warmstone_vitality_restoration: 10}
-        ]
     },
     burn_log_birch: {
         id: "burn_log_birch",
@@ -28,8 +25,5 @@ export const campfireProcesses: {[key in ProcessId]?: ProcessData} = {
             {type: "resource", id: "LOG_BIRCH", amount: 1}
         ],
         outputs: [],
-        effects: [
-            {warmstone_vitality_restoration: 10}
-        ]
     }
 };

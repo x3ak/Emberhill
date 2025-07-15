@@ -20,7 +20,6 @@ export const woodcutterProcesses: {[key in ProcessId]?: ProcessData} = {
             { type: "resource", id: "LOG_OAK", amount: 1 },
             { type: "resource", id: "LOG_OAK", amount: 1, chance: 0.05 }
         ],
-        effects: []
     },
     cut_tree_birch: {
         id: "cut_tree_birch",
@@ -34,7 +33,6 @@ export const woodcutterProcesses: {[key in ProcessId]?: ProcessData} = {
         outputs: [
             { type: "resource", id: "LOG_BIRCH", amount: 1 }
         ],
-        effects: []
     },
     cut_tree_pine: {
         id: "cut_tree_pine",
@@ -49,7 +47,6 @@ export const woodcutterProcesses: {[key in ProcessId]?: ProcessData} = {
             { type: "resource", id: "LOG_PINE", amount: 1 },
             { type: "resource", id: "RESIN", amount: 1, chance: 0.25 }
         ],
-        effects: []
     },
     cut_tree_maple: {
         id: "cut_tree_maple",
@@ -63,6 +60,5 @@ export const woodcutterProcesses: {[key in ProcessId]?: ProcessData} = {
         outputs: [
             { type: "resource", id: "LOG_MAPLE", amount: 1 }
         ],
-        effects: []
     },
 } ;

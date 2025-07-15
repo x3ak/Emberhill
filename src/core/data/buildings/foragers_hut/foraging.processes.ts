@@ -20,7 +20,6 @@ export const foragingProcesses: {[key in ProcessId]?: ProcessData} = {
             { type: "resource", id: "BLACKBERRY_SEED", amount: 2, chance: 0.05 },
            // { type: "resource", id: "STRAWBERRY_SEED", amount: 2, chance: 0.08},
         ],
-        effects: [],
     },
     gather_kindling: {
         id: "gather_kindling",
@@ -34,7 +33,6 @@ export const foragingProcesses: {[key in ProcessId]?: ProcessData} = {
         outputs: [
             { type: "resource", id: "TWIGS", amount: 3 }
         ],
-        effects: [],
     },
     collect_fibers: {
         //forage for materials (fibers, twigs ... etc)
@@ -51,6 +49,5 @@ export const foragingProcesses: {[key in ProcessId]?: ProcessData} = {
             { type: "resource", id: "WEED_SEED", amount: 2, chance: 0.3},
 
         ],
-        effects: [],
     }
 }

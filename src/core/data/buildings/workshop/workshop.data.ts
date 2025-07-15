@@ -1,6 +1,6 @@
-import type {BuildingData} from "@/shared/types/building.types.ts";
 import {workshopProcesses} from "./workshop.processes.ts";
 import {workshopProgression} from "./workshop.progression.ts";
+import type {BuildingData} from "@/shared/types/game.types.ts";
 
 export const workshopData: BuildingData = {
     id: "workshop",

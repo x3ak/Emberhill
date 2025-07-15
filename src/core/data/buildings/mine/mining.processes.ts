@@ -13,7 +13,6 @@ export const miningProcesses: {[key in ProcessId]?: ProcessData} = {
         outputs: [
             { type: "resource", id: "STONE", amount: 2 }
         ],
-        effects: []
     },
     mine_copper_ore: {
         id: "mine_copper_ore",
@@ -26,6 +25,5 @@ export const miningProcesses: {[key in ProcessId]?: ProcessData} = {
         outputs: [
             { type: "resource", id: "ORE_COPPER", amount: 1 }
         ],
-        effects: []
     },
 }

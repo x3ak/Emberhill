@@ -20,7 +20,6 @@ export const farmingProcesses: {[key in ProcessId]?: ProcessData} = {
             { type: "resource", id: "BERRIES", amount: 20 },
 
         ],
-        effects: [],
     },
     till_soil: {
         id: "till_soil",
@@ -38,6 +37,5 @@ export const farmingProcesses: {[key in ProcessId]?: ProcessData} = {
             { type: "resource", id: "TILLED_EARTH", amount: 20 },
 
         ],
-        effects: [],
     },
 }

@@ -1,5 +1,5 @@
-import type {BuildingData} from "@/shared/types/building.types.ts";
 import {campfireProcesses} from "./campfire.processes.ts";
+import type {BuildingData} from "@/shared/types/game.types.ts";
 
 export const campfireData: BuildingData = {
     id: "campfire",

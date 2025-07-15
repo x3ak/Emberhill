@@ -20,6 +20,5 @@ export const workshopProcesses: {[key in ProcessId]?: ProcessData} = {
 
 
         ],
-        effects: []
     },
 }

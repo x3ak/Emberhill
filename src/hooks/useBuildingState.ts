@@ -1,6 +1,7 @@
-import type {BuildingId, BuildingState} from "@/shared/types/building.types.ts";
+import type {BuildingId} from "@/shared/types/building.types.ts";
 import {uiStateManager} from "../ui/UIStateManager.ts";
 import {useSyncExternalStore} from "react";
+import type {BuildingState} from "@/shared/types/game.types.ts";
 
 export function useBuildingState(buildingId: BuildingId): BuildingState {
     const topic = `building-${buildingId}` as const;

@@ -1,6 +1,6 @@
-import type {BuildingState} from "@/shared/types/building.types.ts";
 import {coreAPI} from "@/core/core.api.ts";
 import {ProgressionList} from "@/components/ProgressionList/ProgressionList.tsx";
+import type {BuildingState} from "@/shared/types/game.types.ts";
 
 export default function BuildingProgression ({buildingState}:
 {buildingState: BuildingState}) {

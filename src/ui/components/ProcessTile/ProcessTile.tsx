@@ -3,7 +3,8 @@ import styles from "./ProcessTile.module.css";
 import {coreAPI} from "@/core/core.api.ts";
 import DynamicProgressBar from "@/components/DynamicProgressBar/DynamicProgressBar.tsx";
 import {useProcessState} from "@/hooks/useProcessState.ts";
-import type {BuildingState} from "@/shared/types/building.types.ts";
+
+import type {BuildingState} from "@/shared/types/game.types.ts";
 
 
 export default function ProcessTile({processId, isActive, setSelectedProcess}: {

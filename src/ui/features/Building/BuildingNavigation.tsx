@@ -1,4 +1,4 @@
-import type {BuildingState} from "@/shared/types/building.types.ts";
+import type {BuildingState} from "@/shared/types/game.types.ts";
 
 export type BuildingSubSection =
     | 'processes'

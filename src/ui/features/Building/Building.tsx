@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import type {ProcessId} from "@/shared/types/processes.types.ts";
-import type {BuildingId, BuildingState} from "@/shared/types/building.types.ts";
+import type {BuildingId} from "@/shared/types/building.types.ts";
 import {coreAPI} from "@/core/core.api.ts";
 import BuildingDetails from "../../components/BuildingDetails/BuildingDetails.tsx";
 import styles from './Building.module.css';
@@ -9,7 +9,7 @@ import ProcessDetails from "@/components/ProcessDetails/ProcessDetails.tsx";
 import {useBuildingState} from "@/hooks/useBuildingState.ts";
 import BuildingProgression from "@/features/Building/BuildingProgression.tsx";
 import BuildingNavigation, {type BuildingSubSection} from "@/features/Building/BuildingNavigation.tsx";
-import type {ProcessData} from "@/shared/types/game.types.ts";
+import type {BuildingState, ProcessData} from "@/shared/types/game.types.ts";
 
 export function Building({buildingId}: { buildingId: BuildingId }) {
 

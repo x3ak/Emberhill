@@ -1,8 +1,9 @@
 import type {WarmstoneState} from "@/shared/types/warmstone.types.ts";
-import type {BuildingId, BuildingState} from "@/shared/types/building.types.ts";
 
 import type {ResourceId} from "@/shared/types/resources.types.ts";
 import type {ProcessId} from "@/shared/types/processes.types.ts";
+import type {ProgressionData} from "@/shared/types/progression.types.ts";
+import type {BuildingId} from "@/shared/types/building.types.ts";
 
 export type GameState = {
     wisps: {
@@ -22,11 +23,7 @@ export type ResourcesState = {
 }
 export type ResourceAmount =
     | { type: "resource"; id: ResourceId; amount: number; chance?: number }
-export type ProcessRequirement =
-    | { type: "min_building_level"; id: BuildingId; amount: number; }
-export type ProcessEffect = {
-    warmstone_vitality_restoration: number; // amount of vitality restored per second
-}
+
 export type ProcessData = {
     id: ProcessId;
     name: string;
@@ -37,7 +34,6 @@ export type ProcessData = {
     xp: number;
     inputs: ResourceAmount[];
     outputs: ResourceAmount[];
-    effects: ProcessEffect[];  // effects are applied while the process is active
 }
 export type ProcessStatus = 'STOPPED' | 'IDLE' | 'PAUSED' | 'RUNNING';
 export type ProcessState = {
@@ -51,6 +47,21 @@ export type ProcessState = {
     isActive: boolean;
     isUnlocked: boolean;
     status: ProcessStatus;
+}
+export type BuildingData = {
+    id: BuildingId;
+    name: string;
+    processes: { [key in ProcessId]?: ProcessData },
+    progression: ProgressionData,
+}
+export type BuildingState = {
+    id: BuildingId;
+    level: number;
+    xp: number;
+    isUnlocked: boolean;
+    wispAssigned: boolean;
+    canLevelUp: boolean;
+    currentProcessId: ProcessId | null;
 }
 export type FullGameState = {
     resources: ResourcesState;
