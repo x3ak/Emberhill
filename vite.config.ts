@@ -15,6 +15,7 @@ export default defineConfig(({mode}) => {
         ],
         resolve: {
             alias: {
+                "@/core": path.resolve(__dirname, "src/core"),
                 "@/shared": path.resolve(__dirname, "src/shared"),
                 "@/hooks": path.resolve(__dirname, "src/hooks"),
                 "@/components": path.resolve(__dirname, "src/ui/components"),
