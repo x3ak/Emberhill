@@ -3,9 +3,8 @@ import { EventBus } from './EventBus';
 import {workerAPI} from "../core/worker.api.ts";
 import type {WorkerEvent} from "@/shared/types/worker.events.ts";
 import type {BuildingState} from "@/shared/types/building.types.ts";
-import type {ProcessState} from "@/shared/types/process.types.ts";
 import type {WarmstoneState} from "@/shared/types/warmstone.types.ts";
-import type {ResourcesState} from "@/shared/types/game.types.ts";
+import type {ProcessState, ResourcesState} from "@/shared/types/game.types.ts";
 
 // Define the "map" of all possible events and their data types
 type GameEventMap = {

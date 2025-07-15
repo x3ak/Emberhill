@@ -1,9 +1,10 @@
-import type {ProcessData, ProcessId} from "@/shared/types/process.types.ts";
+import type {ProcessId} from "@/shared/types/process.types.ts";
 
 import treeOak from '@/process-icon/tree_oak.png';
 import treeBirch from '@/process-icon/tree_birch.png';
 import treePine from '@/process-icon/tree_pine.png';
 import treeMaple from '@/process-icon/tree_maple.png';
+import type {ProcessData} from "@/shared/types/game.types.ts";
 
 export const woodcutterProcesses: {[key in ProcessId]?: ProcessData} = {
     cut_tree_oak: {

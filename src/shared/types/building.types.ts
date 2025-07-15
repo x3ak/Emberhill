@@ -1,5 +1,6 @@
-import type {ProcessData, ProcessId} from "@/shared/types/process.types.ts";
+import type {ProcessId} from "@/shared/types/process.types.ts";
 import type {ProgressionData} from "@/shared/types/progression.types.ts";
+import type {ProcessData} from "@/shared/types/game.types.ts";
 
 export const AllBuildingIds = [
     'woodcutter',

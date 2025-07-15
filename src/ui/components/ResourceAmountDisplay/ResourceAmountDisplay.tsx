@@ -1,4 +1,3 @@
-import type {ResourceAmount} from "@/shared/types/process.types.ts";
 import {coreAPI} from "@/core/core.api.ts";
 
 import styles from './ResourceAmountDisplay.module.css'
@@ -6,6 +5,7 @@ import {useRef, useState} from "react";
 import Popup from "@/components/Popup/Popup.tsx";
 import {createPortal} from "react-dom";
 import {useResourcesState} from "@/hooks/useResourcesState.ts";
+import type {ResourceAmount} from "@/shared/types/game.types.ts";
 
 type ResourceAmountDisplayProps = {
     resourceAmount: ResourceAmount,

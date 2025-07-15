@@ -4,11 +4,11 @@ import {BUILDINGS} from "./data/buildings-data.ts";
 import {Warmstone, warmstone} from "./warmstone.ts";
 import {GameResources} from "./resources.ts";
 import type { BuildingId} from "@/shared/types/building.types.ts";
-import type {ProcessData, ProcessId} from "@/shared/types/process.types.ts";
+import type {ProcessId} from "@/shared/types/process.types.ts";
 import type {GameCommand} from "./commands.ts";
 import {GameObject, Subscribable} from "./mixins/Subscribable.mixin.ts";
 import type {PlayerCommand} from "@/shared/types/player.commands.ts";
-import type {FullGameState, GameState} from "@/shared/types/game.types.ts";
+import type {FullGameState, GameState, ProcessData} from "@/shared/types/game.types.ts";
 
 import {Process} from "./Process.ts";
 import {SIMULATION_SPEED} from "@/shared/Globals.ts";

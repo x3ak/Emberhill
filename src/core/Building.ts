@@ -1,5 +1,5 @@
 import type {Wisp} from "./wisps.ts";
-import type {ProcessData, ProcessId} from "@/shared/types/process.types.ts";
+import type {ProcessId} from "@/shared/types/process.types.ts";
 import type {BuildingData, BuildingState} from "@/shared/types/building.types.ts";
 import type {GameCommand} from "./commands.ts";
 import {GameObject, Subscribable} from "./mixins/Subscribable.mixin.ts";
@@ -7,6 +7,7 @@ import {Process} from "./Process.ts";
 import {gameInstance} from "./engine.ts";
 import {type BuildingLevelUp} from "@/shared/types/progression.types.ts";
 import {allToGameCommands} from "./helpers/UnlockRewardTransformer.ts";
+import type {ProcessData} from "@/shared/types/game.types.ts";
 
 export class Building extends Subscribable<BuildingState, typeof GameObject>(GameObject)  {
 

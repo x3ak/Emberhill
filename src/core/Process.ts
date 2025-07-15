@@ -2,13 +2,10 @@ import {GameObject, Subscribable} from "./mixins/Subscribable.mixin.ts";
 import type {GameCommand} from "./commands.ts";
 import type {Building} from "./Building.ts";
 import type {
-    ProcessData,
-    ProcessId,
-    ProcessState,
-    ProcessStatus,
-    ResourceAmount
+    ProcessId
 } from "@/shared/types/process.types.ts";
 import {gameInstance} from "./engine.ts";
+import type {ProcessData, ProcessState, ProcessStatus, ResourceAmount} from "@/shared/types/game.types.ts";
 
 export class Process extends Subscribable<ProcessState, typeof GameObject>(GameObject)  {
     private building: Building;

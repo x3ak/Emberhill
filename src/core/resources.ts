@@ -1,7 +1,6 @@
-import type {ResourceAmount} from "@/shared/types/process.types.ts";
 import type {GameCommand} from "./commands.ts";
 import {GameObject, Subscribable} from "./mixins/Subscribable.mixin.ts";
-import type {ResourcesState} from "@/shared/types/game.types.ts";
+import type {ResourceAmount, ResourcesState} from "@/shared/types/game.types.ts";
 import {AllResourceIds, type ResourceId} from "@/shared/types/resources.types.ts";
 
 
