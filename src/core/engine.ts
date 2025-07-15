@@ -13,7 +13,6 @@ import type {FullGameState, GameState} from "@/shared/types/game.types.ts";
 import {Process} from "./Process.ts";
 import {SIMULATION_SPEED} from "@/shared/Globals.ts";
 import {Progression} from "./Progression.ts";
-import {generateWorld} from "@/core/worldgen";
 
 
 class GameEngine extends Subscribable<GameState, typeof GameObject>(GameObject) {
