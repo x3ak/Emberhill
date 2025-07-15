@@ -1,4 +1,4 @@
-import type {ProcessId} from "@/shared/types/process.types.ts";
+import type {ProcessId} from "@/shared/types/processes.types.ts";
 
 import treeOak from '@/process-icon/tree_oak.png';
 import treeBirch from '@/process-icon/tree_birch.png';

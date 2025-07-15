@@ -1,5 +1,5 @@
 import type {BuildingId} from "@/shared/types/building.types.ts";
-import type {ProcessId} from "@/shared/types/process.types.ts";
+import type {ProcessId} from "@/shared/types/processes.types.ts";
 import type {ResourceAmount} from "@/shared/types/game.types.ts";
 
 export type GameCommand =

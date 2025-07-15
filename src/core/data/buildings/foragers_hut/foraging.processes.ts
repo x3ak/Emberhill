@@ -1,4 +1,4 @@
-import type {ProcessId} from "@/shared/types/process.types.ts";
+import type {ProcessId} from "@/shared/types/processes.types.ts";
 import collect_berries from '@/process-icon/pick_berries.png';
 import kindling from '@/process-icon/kingling.png';
 import fibers from '@/process-icon/vine.png';

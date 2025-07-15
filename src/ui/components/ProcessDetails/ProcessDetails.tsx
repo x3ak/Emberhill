@@ -1,4 +1,4 @@
-import type {ProcessId} from "@/shared/types/process.types.ts";
+import type {ProcessId} from "@/shared/types/processes.types.ts";
 import {coreAPI} from "@/core/core.api.ts";
 import {ResourceAmountDisplay} from "@/components/ResourceAmountDisplay/ResourceAmountDisplay.tsx";
 

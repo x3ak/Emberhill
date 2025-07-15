@@ -1,6 +1,6 @@
 import {uiStateManager} from "../ui/UIStateManager.ts";
 import {useSyncExternalStore} from "react";
-import type {ProcessId} from "@/shared/types/process.types.ts";
+import type {ProcessId} from "@/shared/types/processes.types.ts";
 import type {ProcessState} from "@/shared/types/game.types.ts";
 
 export function useProcessState(processId: ProcessId): ProcessState {

@@ -2,7 +2,7 @@ import type {WarmstoneState} from "@/shared/types/warmstone.types.ts";
 import type {BuildingId, BuildingState} from "@/shared/types/building.types.ts";
 
 import type {ResourceId} from "@/shared/types/resources.types.ts";
-import type {ProcessId} from "@/shared/types/process.types.ts";
+import type {ProcessId} from "@/shared/types/processes.types.ts";
 
 export type GameState = {
     wisps: {

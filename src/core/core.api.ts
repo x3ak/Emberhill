@@ -1,4 +1,4 @@
-import type {ProcessId} from "@/shared/types/process.types.ts";
+import type {ProcessId} from "@/shared/types/processes.types.ts";
 import {BUILDINGS} from "./data/buildings-data.ts";
 import type {BuildingData, BuildingId} from "@/shared/types/building.types.ts";
 import {workerAPI} from "./worker.api.ts";

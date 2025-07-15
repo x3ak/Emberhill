@@ -1,4 +1,4 @@
-import type {ProcessId} from "@/shared/types/process.types.ts";
+import type {ProcessId} from "@/shared/types/processes.types.ts";
 import grow_blackberries from '@/process-icon/grow_blackberries.png';
 import till_soil from '@/process-icon/till_soil.png';
 import type {ProcessData} from "@/shared/types/game.types.ts";

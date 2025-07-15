@@ -3,7 +3,7 @@ import type {GameCommand} from "./commands.ts";
 import type {Building} from "./Building.ts";
 import type {
     ProcessId
-} from "@/shared/types/process.types.ts";
+} from "@/shared/types/processes.types.ts";
 import {gameInstance} from "./engine.ts";
 import type {ProcessData, ProcessState, ProcessStatus, ResourceAmount} from "@/shared/types/game.types.ts";
 

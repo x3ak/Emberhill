@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import type {ProcessId} from "@/shared/types/process.types.ts";
+import type {ProcessId} from "@/shared/types/processes.types.ts";
 import type {BuildingId, BuildingState} from "@/shared/types/building.types.ts";
 import {coreAPI} from "@/core/core.api.ts";
 import BuildingDetails from "../../components/BuildingDetails/BuildingDetails.tsx";

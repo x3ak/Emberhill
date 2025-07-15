@@ -1,4 +1,4 @@
-import type {ProcessId} from "@/shared/types/process.types.ts";
+import type {ProcessId} from "@/shared/types/processes.types.ts";
 import type {ProcessData} from "@/shared/types/game.types.ts";
 
 export const miningProcesses: {[key in ProcessId]?: ProcessData} = {
