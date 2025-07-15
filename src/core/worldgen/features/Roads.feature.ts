@@ -1,10 +1,10 @@
 import type {Settlement, SettlementConnection, Tile, WorldMap} from '@/shared/types/world.types.ts'
 import Pathfinding from "pathfinding";
 import {CanvasRenderingContext2D, createCanvas} from "canvas";
-import {MAP_CONFIG} from "@/core/worldgen/MapGenerator.ts";
 import fs from "fs";
 import {TILE_SIZE} from "@/core/worldgen/map_renderer.ts";
 import {WorldGenerationFeature} from "@/core/worldgen/WorldGenerationFeature.ts";
+import {MAP_CONFIG} from "@/core/worldgen/config.ts";
 
 // This assumes you have a getTileMovementCost method on your grid or a utility function for it.
 // import { getTileMovementCost } from './utils/grid';

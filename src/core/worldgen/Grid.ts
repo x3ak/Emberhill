@@ -1,5 +1,5 @@
 import type {Tile} from "@/shared/types/world.types.ts";
-import {MAP_CONFIG} from "@/core/worldgen/MapGenerator.ts";
+import {MAP_CONFIG} from "@/core/worldgen/config.ts";
 
 export default class Grid {
     private readonly tiles: Tile[][] = [];

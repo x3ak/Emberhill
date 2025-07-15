@@ -3,54 +3,7 @@ import {createSeededRNG} from './utils/rng'; // Assuming you have this utility
 import type {TerrainType, Tile, WorldMap} from '@/shared/types/world.types.ts'
 
 import Grid from "@/core/worldgen/Grid.ts";
-
-const TEMP_CONFIG = {
-    NOISE_SCALE: 0.01, // Low frequency for large, smooth climate bands
-    MIN_TEMP: 0.25,    // The coldest a lowland area can be (prevents Tundra)
-    MAX_TEMP: 0.75,    // The hottest a lowland area can be (prevents Desert)
-    GRADIENT_STRENGTH: 0.25, // How much the north-south gradient affects temp (e.g., 20%)
-};
-
-const ELEVATION_EFFECTS = {
-    TEMP_DROP_FACTOR: 0.20, // How much colder high elevations get
-    // We can add a power to make the effect non-linear
-    TEMP_DROP_POWER: 1.8,
-};
-
-// --- CONFIGURATION ---
-export const MAP_CONFIG = {
-    WIDTH: 400,
-    HEIGHT: 400,
-};
-
-const NOISE_CONFIG = {
-    ELEVATION_SCALE: 0.014,
-    DETAIL_SCALE: 0.03,
-    DETAIL_AMPLITUDE: 0.2, // How much impact the detail noise has. Should be less than 1.0
-    TEMPERATURE_SCALE: 0.02,
-    MOISTURE_SCALE: 0.05,
-    SEA_NOISE_SCALE: 0.01, // VERY low frequency for large, smooth shapes
-};
-
-// --- THRESHOLDS ---
-// const TERRAIN_THRESHOLDS = {
-//     DEEP_OCEAN: 0.2,
-//     COASTAL_WATER: 0.3,
-//     BEACH: 0.35,
-//     MOUNTAIN: 0.8,
-//     SNOWY_MOUNTAIN: 0.9,
-// };
-
-const TERRAIN_THRESHOLDS = {
-    // Water is now only in the bottom 25% of the elevation range
-    DEEP_OCEAN: 0.08,
-    COASTAL_WATER: 0.11,
-    // Beach is a very narrowband
-    BEACH: 0.14,
-    // Mountains are pushed to the very top
-    MOUNTAIN: 0.785,
-    SNOWY_MOUNTAIN: 0.90,
-};
+import {ELEVATION_EFFECTS, MAP_CONFIG, NOISE_CONFIG, TEMP_CONFIG, TERRAIN_THRESHOLDS} from "@/core/worldgen/config.ts";
 
 export class MapGenerator {
     private readonly seed: string

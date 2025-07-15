@@ -1,8 +1,8 @@
 import type {RandomFn} from "simplex-noise";
 import {createSeededRNG} from "@/core/worldgen/utils/rng";
-import {MAP_CONFIG} from "@/core/worldgen/MapGenerator";
 import type {Tile, WorldMap} from "@/shared/types/world.types";
 import {WorldGenerationFeature} from "@/core/worldgen/WorldGenerationFeature";
+import {MAP_CONFIG} from "@/core/worldgen/config.ts";
 
 export class Rivers extends WorldGenerationFeature {
     private readonly rng: RandomFn;

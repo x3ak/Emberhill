@@ -1,6 +1,7 @@
 import type {Settlement, Tile, WorldMap} from "@/shared/types/world.types.ts";
 import TinyQueue from "tinyqueue";
 import {WorldGenerationFeature} from "@/core/worldgen/WorldGenerationFeature.ts";
+import {MAP_CONFIG} from "@/core/worldgen/config.ts";
 
 type QueueItem = {
     tile: Tile;
