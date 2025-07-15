@@ -20,12 +20,11 @@ export function Building({buildingId}: { buildingId: BuildingId }) {
     const buildingData = coreAPI.building.getData(buildingId);
 
     const buildingProcesses: ProcessData[] = [];
-    for (const processId in buildingData.processes) {
-        let process = buildingData.processes[processId as ProcessId];
-        if (process) {
-            buildingProcesses.push(process);
-        }
-    }
+
+    buildingData.processes.forEach((processData: ProcessData) => {
+        buildingProcesses.push(processData);
+    });
+
 
     const [selectedProcess, setSelectedProcess] = useState<ProcessId | null>(null);
 
@@ -36,6 +35,7 @@ export function Building({buildingId}: { buildingId: BuildingId }) {
             setSelectedProcess(buildingProcesses[0].id)
         }
     }, [buildingId]);
+
 
     useEffect(() => {
         coreAPI.building.setProcess(buildingId, selectedProcess as ProcessId);

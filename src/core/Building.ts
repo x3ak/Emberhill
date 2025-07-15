@@ -41,13 +41,11 @@ export class Building extends Subscribable<BuildingState, typeof GameObject>(Gam
     }
 
     private initialiseProcessObjects(): void {
-        for (const processId in this.buildingData.processes) {
-            const processData = this.buildingData.processes[processId as ProcessId];
-            if (processData) {
-                const process = new Process(this, processData);
-                this.processes.set(processId as ProcessId, process);
-            }
-        }
+
+        this.buildingData.processes.forEach((processData: ProcessData) => {
+            const process = new Process(this, processData);
+            this.processes.set(processData.id, process);
+        })
     }
 
     public getCurrentProcess(): Process | null {

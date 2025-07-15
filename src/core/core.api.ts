@@ -6,9 +6,7 @@ import {warmstoneProgression} from "./data/warmstone/warmstone.progression.ts";
 import {RESOURCES} from "@/core/data/resources.data.ts";
 import type {BuildingData, ProcessData, ResourceData} from "@/shared/types/game.types.ts";
 import type {ResourceId} from "@/shared/types/resources.types.ts";
-
-const cachedProcesses: Map<ProcessId, ProcessData> = new Map<ProcessId, ProcessData>();
-
+import {PROCESSES} from "@/core/data/processes.data.ts";
 
 function getResourceData(id: ResourceId): ResourceData {
     if (!RESOURCES[id]) {
@@ -19,25 +17,7 @@ function getResourceData(id: ResourceId): ResourceData {
 }
 
 function getProcessData(processId: ProcessId): ProcessData | null {
-    if (cachedProcesses.size === 0) {
-        Object.keys(BUILDINGS).forEach(buildingId => {
-            const buildingData = BUILDINGS[buildingId as BuildingId];
-            if (!buildingData) {
-                return;
-            }
-
-            Object.keys(buildingData.processes).forEach(processId => {
-                const processData = buildingData.processes[processId as ProcessId];
-                if (!processData) {
-                    return;
-                }
-
-                cachedProcesses.set(processId as ProcessId, processData);
-            })
-        })
-    }
-
-    return cachedProcesses.get(processId) || null;
+    return PROCESSES[processId];
 }
 
 function getBuildingData(id: BuildingId): BuildingData {

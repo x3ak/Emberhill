@@ -1,11 +1,20 @@
-import {farmingProcesses} from "./farm.processes.ts";
 import {farmProgression} from "./farm.progression.ts";
-import type {BuildingData} from "@/shared/types/game.types.ts";
+import type {BuildingData, ProcessData} from "@/shared/types/game.types.ts";
+import {PROCESSES} from "@/core/data/processes.data.ts";
+import type {ProcessId} from "@/shared/types/processes.types.ts";
 
+const processes = new Map<ProcessId, ProcessData>();
+
+for (let processId in PROCESSES) {
+    const processData = PROCESSES[processId as ProcessId];
+    if (processData && processData.buildingId == 'farm') {
+        processes.set(processId as ProcessId, processData);
+    }
+}
 
 export const farmData: BuildingData = {
     id: "farm",
     name: "Farm",
-    processes: farmingProcesses,
+    processes: processes,
     progression: farmProgression,
 }

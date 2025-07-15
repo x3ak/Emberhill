@@ -13,6 +13,7 @@ import type {FullGameState, GameState, ProcessData} from "@/shared/types/game.ty
 import {Process} from "./Process.ts";
 import {SIMULATION_SPEED} from "@/shared/Globals.ts";
 import {Progression} from "./Progression.ts";
+import {PROCESSES} from "@/core/data/processes.data.ts";
 
 
 class GameEngine extends Subscribable<GameState, typeof GameObject>(GameObject) {
@@ -118,6 +119,7 @@ class GameEngine extends Subscribable<GameState, typeof GameObject>(GameObject) 
             building.init();
 
             building.getProcesses().forEach(process => {
+
                 this.processes.set(process.getId(), process);
             })
         });
@@ -196,7 +198,7 @@ class GameEngine extends Subscribable<GameState, typeof GameObject>(GameObject) 
 
             case 'SET_PROCESS': {
                 const {buildingId, processId} = command.payload;
-                const processData: ProcessData | null = BUILDINGS[buildingId]?.processes[processId] || null;
+                const processData: ProcessData | null = PROCESSES[processId] || null;
                 if (!processData) {
                     break
                 }

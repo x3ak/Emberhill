@@ -26,6 +26,7 @@ export type ResourceAmount =
 
 export type ProcessData = {
     id: ProcessId;
+    buildingId: BuildingId;
     name: string;
     description: string;
     icon?: string;
@@ -51,7 +52,7 @@ export type ProcessState = {
 export type BuildingData = {
     id: BuildingId;
     name: string;
-    processes: { [key in ProcessId]?: ProcessData },
+    processes: Map<ProcessId, ProcessData>,
     progression: ProgressionData,
 }
 export type BuildingState = {
