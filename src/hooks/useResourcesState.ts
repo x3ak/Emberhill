@@ -1,6 +1,7 @@
 import {uiStateManager} from "../ui/UIStateManager.ts";
 import {useSyncExternalStore} from "react";
-import type {ResourcesState} from "@/shared/types/resource.types.ts";
+
+import type {ResourcesState} from "@/shared/types/game.types.ts";
 
 export function useResourcesState(): ResourcesState {
     const topic = `resources` as const;

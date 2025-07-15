@@ -1,0 +1,16 @@
+resource_id,category,name,description,icon
+LOG_OAK,empty,Oak Log 222,"A sturdy, common log from an oak tree. The reliable heartwood of the forest.",log_oak.png
+LOG_BIRCH,empty,Birch Log,"A light, pale log from a slender birch. Its bark is as useful as its wood.",log_birch.png
+LOG_PINE,empty,Pine Log,"A fragrant softwood log, sticky to the touch with fresh resin.",log_pine.png
+LOG_MAPLE,empty,Maple Log,"A dense, fine-grained hardwood, prized by carpenters for its strength and beauty.",log_maple.png
+RESIN,empty,Tree Resin,"A sticky, amber-colored sap from a pine tree. A natural adhesive and waterproofing agent.",blackberry.png
+STONE,empty,Stone,Stone description,placeholder.png
+ORE_COPPER,empty,Copper Ore,Copper Ore description,placeholder.png
+BERRIES,empty,Berries,"A common fruit found throughout the region. While not particularly nourishing, they provide a quick source of energy to stave off the worst of the Hearthstone's decay in the early days.",berries.png
+TWIGS,empty,Twigs,"A bundle of dry, brittle twigs, bark, and pinecones. Catches fire far more readily than a whole log. An essential component for starting and maintaining a reliable flame.",branch.png
+FIBER,empty,Fiber,Surprisingly strong for a glorified weed,hemp.png
+WEED_SEED,empty,Weed Seed,"An unidentifiable seed, gathered from the untamed parts of the world. Planting it is an act of faith. It could yield anything from tough, edible roots and fibrous stalks to, on rare occasions, the ancestors of true grain.",weed.png
+BLACKBERRY_SEED,empty,Blackberry Seed,"Domesticate the same thorny bushes you find in the wild. Each seed will grow into a familiar plant that yields a predictable and steady supply of blackberries, removing the uncertainty of foraging.",blackberry.png
+GRAIN_SEED,empty,Grain Seed,"A significant agricultural breakthrough. Unlike berries or roots, grain is highly storable and incredibly versatile. Cultivating a steady supply of grain is the first step towards creating a stable food source, brewing valuable ales, and truly domesticating livestock.",malt.png
+TILLED_EARTH,empty,Tilled Earth,A plot of land that has been broken up and aerated with a hoe. The soil is now soft and ready to accept a seed. It will revert to packed dirt if left untended for too long,soil.png
+CRUDE_HOE,empty,Crude Hoe,A plot of land that has been broken up and aerated with a hoe. The soil is now soft and ready to accept a seed. It will revert to packed dirt if left untended for too long,hoe.png

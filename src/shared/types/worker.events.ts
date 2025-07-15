@@ -1,7 +1,6 @@
 import type {BuildingState} from "@/shared/types/building.types.ts";
 import type {ProcessState} from "@/shared/types/process.types.ts";
-import type {ResourcesState} from "@/shared/types/resource.types.ts";
-import type {FullGameState} from "@/shared/types/game.types.ts";
+import type {FullGameState, ResourcesState} from "@/shared/types/game.types.ts";
 import type {WarmstoneState} from "@/shared/types/warmstone.types.ts";
 
 export type WorkerEvent =

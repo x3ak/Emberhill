@@ -1,10 +1,11 @@
-import type {ResourceData, ResourceId} from "@/shared/types/resource.types.ts";
 import type {ProcessData, ProcessId} from "@/shared/types/process.types.ts";
-import {RESOURCES} from "./data/resources-data.ts";
 import {BUILDINGS} from "./data/buildings-data.ts";
 import type {BuildingData, BuildingId} from "@/shared/types/building.types.ts";
 import {workerAPI} from "./worker.api.ts";
 import {warmstoneProgression} from "./data/warmstone/warmstone.progression.ts";
+import {RESOURCES} from "@/core/data/resources.data.ts";
+import type {ResourceData} from "@/shared/types/game.types.ts";
+import type {ResourceId} from "@/shared/types/resources.types.ts";
 
 const cachedProcesses: Map<ProcessId, ProcessData> = new Map<ProcessId, ProcessData>();
 

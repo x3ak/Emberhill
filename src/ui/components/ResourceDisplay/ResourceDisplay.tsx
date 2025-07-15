@@ -1,5 +1,6 @@
 import styles from './ResourceDisplay.module.css'
-import type {ResourceData} from "@/shared/types/resource.types.ts";
+
+import type {ResourceData} from "@/shared/types/game.types.ts";
 
 interface ResourceDisplayProps {
     resourceData: ResourceData;
