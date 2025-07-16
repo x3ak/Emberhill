@@ -1,4 +1,4 @@
-import styles from './ResourceDisplay.module.css'
+import styles from './TownStorage.module.css'
 
 import type {ResourceData} from "@/shared/types/game.types.ts";
 

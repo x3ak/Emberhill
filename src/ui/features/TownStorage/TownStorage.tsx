@@ -1,4 +1,4 @@
-import ResourceDisplay from "@/components/ResourceDisplay/ResourceDisplay.tsx";
+import ResourceDisplay from "@/features/TownStorage/ResourceDisplay.tsx";
 import {coreAPI} from "@/core/core.api.ts";
 import styles from './TownStorage.module.css'
 import {useResourcesState} from "@/hooks/useResourcesState.ts";
