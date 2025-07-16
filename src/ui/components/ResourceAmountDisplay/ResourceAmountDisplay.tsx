@@ -6,6 +6,8 @@ import Popup from "@/components/Popup/Popup.tsx";
 import {createPortal} from "react-dom";
 import {useResourcesState} from "@/hooks/useResourcesState.ts";
 import type {ResourceAmount} from "@/shared/types/game.types.ts";
+import {AnimatePresence} from "framer-motion";
+
 
 type ResourceAmountDisplayProps = {
     resourceAmount: ResourceAmount,
@@ -32,6 +34,7 @@ export function ResourceAmountDisplay({resourceAmount, showTownAmount}: Resource
 
     const closePopup = () => setIsPopupVisible(false)
 
+
     switch (resourceAmount.type) {
         case "resource":
             const resourceData = coreAPI.getResourceData(resourceAmount.id);
@@ -39,8 +42,10 @@ export function ResourceAmountDisplay({resourceAmount, showTownAmount}: Resource
             const inTownAmount: number = resourcesState.resources.get(resourceData.id) || 0;
 
             return (
-                <span>
-                    <span className={`${styles.amountNeededPill} ${isPopupVisible ? styles.active : ''}`} ref={openerRef} onClick={handleClick}>
+                <>
+                    <span className={`${styles.amountNeededPill} ${isPopupVisible ? styles.active : ''}`}
+                          ref={openerRef} onClick={handleClick}>
+
                         {resourceData.icon && (
                             <img
                                 src={resourceData.icon}
@@ -53,25 +58,28 @@ export function ResourceAmountDisplay({resourceAmount, showTownAmount}: Resource
 
                         {showTownAmount && (<span>({inTownAmount})</span>)}
 
-                    </span>
-                    {isPopupVisible && createPortal(
-                        <Popup onClose={closePopup} openerRef={openerRef}>
-                            <div>
-                                <ul>
-                                    <li>Required: {resourceAmount.amount}</li>
-                                    <li>You have: {resourcesState.resources.get(resourceData.id)}</li>
-                                </ul>
-                                <h4>{resourceData.name}</h4>
-                                <p>{resourceData.description}</p>
-                            </div>
-                        </Popup>,
-                        document.body
-                    )}
-                </span>
 
+                        {createPortal(
+                            <AnimatePresence>
+                                {isPopupVisible && (
+                                    <Popup onClose={closePopup} openerRef={openerRef}>
+                                        <div>
+                                            <ul>
+                                                <li>Required: {resourceAmount.amount}</li>
+                                                <li>You have: {resourcesState.resources.get(resourceData.id)}</li>
+                                            </ul>
+                                            <h4>{resourceData.name}</h4>
+                                            <p>{resourceData.description}</p>
+                                        </div>
+                                    </Popup>
+                                )}
+                            </AnimatePresence>,
+                            document.body
+                        )}
+                    </span>
+                </>
             );
         default:
             return (<span>UNSUPPORTED RESOURCE AMOUNT: {resourceAmount.type}</span>);
     }
-
 }

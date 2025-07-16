@@ -3,7 +3,7 @@ import {coreAPI} from "@/core/core.api.ts";
 import styles from './BuildingDetails.module.css'
 import {useBuildingState} from "@/hooks/useBuildingState.ts";
 import StaticProgressBar from "@/components/StaticProgressBar/StaticProgressBar.tsx";
-
+import {motion} from "framer-motion";
 
 export default function BuildingDetails({buildingId}: {
     buildingId: BuildingId,
@@ -39,8 +39,10 @@ export default function BuildingDetails({buildingId}: {
 
             </div>
             <div className={styles.buildingActions}>
-                <div className={styles.toggleContainer}>
+                <motion.div className={styles.toggleContainer}
+                            whileTap={{scale: 1.1}}>
                     <input
+
                         type="checkbox"
                         id={`wisp-toggle-${buildingId}`}
                         className={styles.toggleInput}
@@ -55,7 +57,7 @@ export default function BuildingDetails({buildingId}: {
                     >
                         Wisp
                     </label>
-                </div>
+                </motion.div>
 
             </div>
         </div>

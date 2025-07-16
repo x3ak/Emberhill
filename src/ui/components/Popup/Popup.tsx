@@ -1,6 +1,7 @@
 import styles from './Popup.module.css'
 import {useRef} from "react";
 import {useOnClickOutside} from "@/hooks/useOnClickOutside.ts";
+import {motion} from "framer-motion";
 
 type PopupProps = {
     children: React.ReactNode;
@@ -34,8 +35,14 @@ export default function Popup({ children, onClose, openerRef }: PopupProps) {
     }
 
     return (
-        <div ref={popupRef} className={styles.popup} style={{ top: top, left: left }}>
-            <div className="popup-body">{children}</div>
-        </div>
+        <motion.div
+            initial={{opacity: 0, y: 20}}
+            animate={{opacity: 1, y: 0}}
+            exit={{opacity: 0, y: 20}}
+            transition={{duration: 0.1, ease: 'easeOut'}}
+            ref={popupRef} className={styles.popup} style={{ top: top, left: left }}>
+            <div
+                className="popup-body">{children}</div>
+        </motion.div>
     )
 }
