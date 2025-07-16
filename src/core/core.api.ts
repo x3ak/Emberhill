@@ -1,5 +1,5 @@
 import type {ProcessId} from "@/shared/types/processes.types.ts";
-import {BUILDINGS} from "./data/buildings-data.ts";
+import {BUILDINGS} from "./data/buildings.data.ts";
 import type {BuildingId} from "@/shared/types/building.types.ts";
 import {workerAPI} from "./worker.api.ts";
 import {RESOURCES} from "@/core/data/resources.data.ts";

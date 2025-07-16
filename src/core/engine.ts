@@ -1,6 +1,6 @@
 import {Building} from "./Building.ts";
 import {Wisp} from "./wisps.ts";
-import {BUILDINGS} from "./data/buildings-data.ts";
+import {BUILDINGS} from "./data/buildings.data.ts";
 import {Warmstone, warmstone} from "./warmstone.ts";
 import {GameResources} from "./resources.ts";
 import type { BuildingId} from "@/shared/types/building.types.ts";
