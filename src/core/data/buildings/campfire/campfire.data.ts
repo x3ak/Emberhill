@@ -10,9 +10,10 @@ for (let processId in PROCESSES) {
         processes.set(processId as ProcessId, processData);
     }
 }
+
 export const campfireData: BuildingData = {
     id: "campfire",
     name: "Campfire",
     processes: processes,
-    progression: {}
+    progression: {},
 }

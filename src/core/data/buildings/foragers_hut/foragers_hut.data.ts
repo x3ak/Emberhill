@@ -1,7 +1,7 @@
-import {foragingProgression} from "./foraging.progression.ts";
 import type {BuildingData, ProcessData} from "@/shared/types/game.types.ts";
 import {PROCESSES} from "@/core/data/processes.data.ts";
 import type {ProcessId} from "@/shared/types/processes.types.ts";
+import {PROGRESSION} from "@/core/data/progression.data.ts";
 
 const processes = new Map<ProcessId, ProcessData>();
 
@@ -15,5 +15,5 @@ export const foragers_hutData: BuildingData = {
     id: "foragers_hut",
     name: "Forager's Hut",
     processes: processes,
-    progression: foragingProgression,
+    progression: PROGRESSION['foragers_hut'],
 }

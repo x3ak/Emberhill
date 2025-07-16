@@ -2,11 +2,11 @@ import type {ProcessId} from "@/shared/types/processes.types.ts";
 import {BUILDINGS} from "./data/buildings-data.ts";
 import type {BuildingId} from "@/shared/types/building.types.ts";
 import {workerAPI} from "./worker.api.ts";
-import {warmstoneProgression} from "./data/warmstone/warmstone.progression.ts";
 import {RESOURCES} from "@/core/data/resources.data.ts";
 import type {BuildingData, ProcessData, ResourceData} from "@/shared/types/game.types.ts";
 import type {ResourceId} from "@/shared/types/resources.types.ts";
 import {PROCESSES} from "@/core/data/processes.data.ts";
+import {PROGRESSION} from "@/core/data/progression.data.ts";
 
 function getResourceData(id: ResourceId): ResourceData {
     if (!RESOURCES[id]) {
@@ -26,7 +26,7 @@ function getBuildingData(id: BuildingId): BuildingData {
 }
 
 const getWarmstoneProgression = () => {
-    return warmstoneProgression
+    return PROGRESSION['warmstone'];
 }
 
 

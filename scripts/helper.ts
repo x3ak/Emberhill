@@ -49,3 +49,38 @@ export function resourceStringToObjectString(inputString: string | null | undefi
     // 4. Join the object strings with commas and wrap in array brackets.
     return `[${objectStrings.join(', ')}]`;
 }
+
+export function rewardStringToObjectString(inputString: string | null | undefined): string {
+    if (!inputString || inputString.trim() === "") {
+        return "[]";
+    }
+
+    const rewardStrings = inputString.split(';');
+    const objectStrings = rewardStrings.map(rewardStr => {
+        const [type, value] = rewardStr.split(':');
+
+        if (!type || !value) {
+            console.warn(`Skipping malformed reward string: "${rewardStr}"`);
+            return null;
+        }
+
+        const objectProperties: string[] = [];
+        switch (type.trim()) {
+            case 'unlock_building':
+                objectProperties.push(`type: "unlock_building"`);
+                objectProperties.push(`buildingId: "${value.trim()}"`);
+                break;
+            case 'unlock_process':
+                objectProperties.push(`type: "unlock_process"`);
+                objectProperties.push(`processId: "${value.trim()}"`);
+                break;
+            default:
+                console.warn(`Unknown reward type: "${type}"`);
+                return null;
+        }
+
+        return `{ ${objectProperties.join(', ')} }`;
+    }).filter(Boolean);
+
+    return `[${objectStrings.join(', ')}]`;
+}

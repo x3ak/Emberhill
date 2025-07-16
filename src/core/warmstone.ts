@@ -1,8 +1,8 @@
 import {GameObject, Subscribable} from "./mixins/Subscribable.mixin.ts";
 import type {GameCommand} from "./commands.ts";
-import {warmstoneProgression} from "./data/warmstone/warmstone.progression.ts";
 import {allToGameCommands} from "./helpers/UnlockRewardTransformer.ts";
 import type {WarmstoneState} from "@/shared/types/game.types.ts";
+import {PROGRESSION} from "@/core/data/progression.data.ts";
 
 export class Warmstone extends Subscribable<WarmstoneState, typeof GameObject>(GameObject) {
 
@@ -46,7 +46,7 @@ export class Warmstone extends Subscribable<WarmstoneState, typeof GameObject>(G
 
     ready(gameCommands: GameCommand[]): void {
         for (let i = 1; i <= this.currentLevel; i++) {
-            const levelProgressData = warmstoneProgression[i] || null;
+            const levelProgressData = PROGRESSION['warmstone'][i] || null;
             if (!levelProgressData) {
                 continue;
             }
@@ -66,7 +66,7 @@ export class Warmstone extends Subscribable<WarmstoneState, typeof GameObject>(G
 
         this.setDirty();
 
-        const levelProgressData = warmstoneProgression[this.currentLevel] || null;
+        const levelProgressData = PROGRESSION['warmstone'][this.currentLevel] || null;
         if (!levelProgressData) {
             return;
         }

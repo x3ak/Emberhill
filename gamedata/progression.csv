@@ -1,0 +1,15 @@
+building_id,level,xp,resources,rewards
+warmstone,1,0,"",unlock_building:woodcutter;unlock_building:campfire;unlock_building:foragers_hut
+warmstone,2,100,"",unlock_building:mine
+warmstone,3,150,res:LOG_OAK:10|res:FIBER:5,unlock_building:workshop
+farm,1,0,"",unlock_process:grow_blackberries
+foragers_hut,1,0,"",unlock_process:collect_berries
+foragers_hut,2,100,"res:BERRIES:30",unlock_process:gather_kindling
+foragers_hut,3,250,"res:BERRIES:100|res:TWIGS:70",unlock_process:collect_fibers
+foragers_hut,4,450,"res:BLACKBERRY_SEED:5",unlock_building:farm
+mine,1,0,"",unlock_process:mine_stone
+mine,2,100,"res:STONE:40",unlock_process:mine_copper_ore
+woodcutter,1,0,"",unlock_process:cut_tree_oak
+woodcutter,2,100,"res:LOG_OAK:20",unlock_process:cut_tree_birch
+woodcutter,3,500,"res:LOG_OAK:100|res:LOG_BIRCH:100",unlock_process:cut_tree_pine
+workshop,1,0,"",unlock_process:create_crude_hoe
