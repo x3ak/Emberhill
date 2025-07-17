@@ -56,8 +56,10 @@ export class MapRenderer {
         this.renderAndSave(`${basePath}_biome.png`, [
             this.drawBiomeMap,
             this.drawContourLines,
+            this.drawPoliticalMap,
             this.drawRoads,
             this.drawSettlements,
+            this.drawVillages,
         ]);
 
         
@@ -113,30 +115,55 @@ export class MapRenderer {
     }
 
     private drawSettlements(context: CanvasRenderingContext2D): void {
-        let id = 0;
-        const settlementColors = new Map<string, string>();
-        for (let tile of this.mapData.grid.allTiles()) {
-            if (tile.settlement) {
-                settlementColors.set(tile.settlement.id, this.getColorForId(id++, 100, 0.4));
-            }
-        }
+        this.mapData.settlements.forEach((settlement, index) => {
+
+            const tile = this.mapData.grid.getTile(settlement.y, settlement.x);
+
+            context.beginPath();
+            context.arc(tile.x * TILE_SIZE, tile.y * TILE_SIZE, 14, 0, 2 * Math.PI);
+            context.fillStyle = this.getColorForId(index, this.mapData.settlements.length);
+            context.fill();
+
+            context.lineWidth = 2;
+            context.strokeStyle = '#000000';
+            context.stroke();
+        })
+    }
+
+    private drawVillages(context: CanvasRenderingContext2D): void {
+        const settlementColorId = new Map<string, number>();
+
+        this.mapData.settlements.forEach((settlement, index) => {
+            settlementColorId.set(settlement.id, index);
+        })
+
+        this.mapData.villages.forEach(village => {
+
+            const tile = this.mapData.grid.getTile(village.y, village.x);
+
+            context.beginPath();
+            context.arc(tile.x * TILE_SIZE, tile.y * TILE_SIZE, 4, 0, 2 * Math.PI);
+            context.fillStyle = this.getColorForId(settlementColorId.get(tile.village?.capital || "") || 0, this.mapData.settlements.length, 0.2);
+            context.fill();
+
+            context.lineWidth = 2;
+            context.strokeStyle = '#000000';
+            context.stroke();
+        })
+    }
+
+    private drawPoliticalMap(context: CanvasRenderingContext2D): void {
+        const settlementColorId = new Map<string, number>();
+
+        this.mapData.settlements.forEach((settlement, index) => {
+            settlementColorId.set(settlement.id, index);
+        })
 
         for (let tile of this.mapData.grid.allTiles()) {
-            if (tile.settlement) {
-                context.beginPath();
-                context.arc(tile.x * TILE_SIZE, tile.y * TILE_SIZE, 10, 0, 2 * Math.PI);
-                context.fillStyle = "red";
-                context.fill();
+            if (!tile.territoryOf) continue;
 
-                context.lineWidth = 4;
-                context.strokeStyle = '#ff0000';
-                context.stroke();
-            }
-            // else if (tile.territoryOf) {
-            //
-            //     context.fillStyle = settlementColors.get(tile.territoryOf.id) || 'pink';
-            //     context.fillRect(tile.x * TILE_SIZE, tile.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-            // }
+            context.fillStyle = this.getColorForId(settlementColorId.get(tile.territoryOf.id) || 0, this.mapData.settlements.length, 0.2);
+            context.fillRect(tile.x * TILE_SIZE, tile.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
         }
     }
 

@@ -53,20 +53,14 @@ export class Rivers extends WorldGenerationFeature {
         // Carve path downhill
         for (let j = 0; j < maxRiverLength; j++) {
             if (currentTile.isRiver && currentTile.riverId != riverId) {
-                console.log('River', riverId, 'tile', j, 'stop carving due to river condition');
-                // we've hit another river, flow into it and stop
                 break;
             }
 
             if (currentTile.terrain === 'DEEP_OCEAN') {
-                console.log('River', riverId, 'tile', j, 'stop carving at DEEP_OCEAN');
                 break;
             }
 
             if (currentTile.terrain === 'COASTAL_WATER') {
-                console.log('River', riverId, 'tile', j, 'stop carving at COASTAL_WATER');
-
-
                 break;
             }
 

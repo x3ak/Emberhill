@@ -18,7 +18,7 @@ export class Territories extends WorldGenerationFeature {
     public execute(): void {
         const frontier = new TinyQueue<QueueItem>([], (a, b) => a.cost - b.cost);
         for (const settlement of this.worldMap.settlements) {
-            const startTile = settlement.tile;
+            const startTile = this.worldMap.grid.getTile(settlement.y, settlement.x);
             if (startTile) {
                 startTile.territoryOf = settlement;
                 this.costSoFar.set(startTile, 0);

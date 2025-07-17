@@ -1,24 +1,6 @@
-import type {Settlement, SettlementConnection, Tile, WorldMap} from '@/shared/types/world.types.ts'
-import Pathfinding from "pathfinding";
-import {CanvasRenderingContext2D, createCanvas} from "canvas";
-import fs from "fs";
-import {TILE_SIZE} from "@/core/worldgen/map_renderer.ts";
+import type {Settlement, Tile, WorldMap} from '@/shared/types/world.types.ts'
+import PF from "pathfinding";
 import {WorldGenerationFeature} from "@/core/worldgen/WorldGenerationFeature.ts";
-import {MAP_CONFIG} from "@/core/worldgen/config.ts";
-
-// This assumes you have a getTileMovementCost method on your grid or a utility function for it.
-// import { getTileMovementCost } from './utils/grid';
-
-// --- Configuration ---
-const ROAD_CONFIG = {
-    // How "cheap" it is to travel on an existing road. Must be > 0.
-    // A very low value encourages pathfinder to use existing roads heavily.
-    ROAD_MOVEMENT_COST: 0.1,
-    // For the simple connection algorithm, how many neighbors should each capital connect to?
-    // 2 is a good value to ensure connectivity without too much redundancy.
-    CONNECTIONS_PER_CAPITAL: 2,
-    SLOPE_PENALTY_MULTIPLIER: 250,
-};
 
 export class Roads extends WorldGenerationFeature {
     constructor(worldMap: WorldMap, seed: string) {
@@ -56,8 +38,8 @@ export class Roads extends WorldGenerationFeature {
             for (let j = i + 1; j < numCapitals; j++) {
                 const settlementA = this.worldMap.settlements[i];
                 const settlementB = this.worldMap.settlements[j];
-                const dx = settlementA.tile.x - settlementB.tile.x;
-                const dy = settlementA.tile.y - settlementB.tile.y;
+                const dx = settlementA.x - settlementB.x;
+                const dy = settlementA.y - settlementB.y;
                 allEdges.push({ from: i, to: j, weight: Math.sqrt(dx * dx + dy * dy) });
             }
         }
@@ -91,37 +73,29 @@ export class Roads extends WorldGenerationFeature {
      * grid after each road is built to encourage merging.
      */
     private buildRoadsForConnections(connections: { from: Settlement; to: Settlement }[]): void {
-        const pathfinder = new Pathfinding.AStarFinder({
-            allowDiagonal: true,
-            dontCrossCorners: true,
+        const pathfinder = new PF.BiAStarFinder({
+            diagonalMovement: PF.DiagonalMovement.Always,
+            // heuristic: PF.Heuristic.euclidean
         });
 
         for (const { from, to } of connections) {
             const weightMatrix = this.createWeightMatrix();
 
-            this.drawWeightMap(weightMatrix);
-            // return;
+            const pfGrid = new PF.Grid(weightMatrix);
 
-            const pfGrid = new Pathfinding.Grid(weightMatrix);
-            for (let tile of this.worldMap.grid.allTiles()) {
-                pfGrid.setWalkableAt(tile.x, tile.y, this.isWalkable(tile));
-            }
-
-            const path = pathfinder.findPath(from.tile.x, from.tile.y, to.tile.x, to.tile.y, pfGrid);
+            const path = pathfinder.findPath(from.x, from.y, to.x, to.y, pfGrid);
 
 
             // 4. Pave the road on our main map data. This MUTATES the map for the next iteration.
             if (path.length > 0) {
-                const connection: SettlementConnection = {
-                    from: from,
-                    to: to,
+                from.connections.push({
+                    id: to.id,
                     travelCost: path.length,
-                }
-
-                console.log(path.length)
-
-                from.connections.push(connection);
-                to.connections.push(connection);
+                });
+                to.connections.push({
+                    id: from.id,
+                    travelCost: path.length,
+                });
 
                 this.paveRoadOnMap(path);
             } else {
@@ -154,41 +128,11 @@ export class Roads extends WorldGenerationFeature {
             matrix[y] = [];
             for (let x = 0; x < this.worldMap.width; x++) {
                 const tile = this.worldMap.grid.getTile(y, x);
+                matrix[y][x] = this.isWalkable(tile) ? 0 : 1;
 
-                // If the tile is already a road, its cost is very low.
-                if (tile.isRoad) {
-                    matrix[y][x] = ROAD_CONFIG.ROAD_MOVEMENT_COST;
-                } else {
-                    // Otherwise, get the cost from the terrain.
-                    const tileMovementCost = this.worldMap.grid.getTileMovementCost(tile);
-                    matrix[y][x] = tileMovementCost + (tile.slope) * ROAD_CONFIG.SLOPE_PENALTY_MULTIPLIER;
-                    // console.log(tile.slope)
-                }
             }
         }
         return matrix;
-    }
-
-    public drawWeightMap = (matrix: number[][]): void => {
-        const canvasWidth = MAP_CONFIG.WIDTH * TILE_SIZE;
-        const canvasHeight = MAP_CONFIG.HEIGHT * TILE_SIZE;
-        const canvas = createCanvas(canvasWidth, canvasHeight);
-        const context: CanvasRenderingContext2D = canvas.getContext('2d');
-
-        let maxWeight = 1; // Find the max weight for normalization
-        for (const row of matrix) for (const val of row) if (val > maxWeight) maxWeight = val;
-
-        for (let y = 0; y < matrix.length; y++) {
-            for (let x = 0; x < matrix[y].length; x++) {
-                const weight = matrix[y][x];
-                const intensity = 255 * (weight / maxWeight);
-                context.fillStyle = `rgb(${intensity}, ${intensity}, ${intensity})`;
-                context.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-            }
-        }
-
-        const buffer = canvas.toBuffer('image/png');
-        fs.writeFileSync('./weighted_matrix.png', buffer);
     }
 
 

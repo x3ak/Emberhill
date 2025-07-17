@@ -49,7 +49,6 @@ export default class Grid {
 
     // 1 to 10 where 1 is easy 10 is impossible
     public getTileMovementCost(tile: Tile): number {
-
         switch (tile.terrain) {
 
             case "SNOWY_MOUNTAIN":
@@ -85,7 +84,7 @@ export default class Grid {
         }
     }
 
-    public calculateTileScore(tile: Tile): number {
+    public calculateTileDesirability(tile: Tile): number {
         let score = 0;
 
         // Bonus for being near fresh water (river/lake)
@@ -125,6 +124,27 @@ export default class Grid {
 
     public getTile(y: number, x: number): Tile {
         return this.tiles[y]?.[x];
+    }
+
+    public toStorableForm() : any {
+        const result = [];
+        for (const tile of this.allTiles()) {
+            result.push(this.tileToStorableForm(tile));
+        }
+
+        return result;
+    }
+
+    private tileToStorableForm(tile: Tile): any {
+        const copy = {...tile} as any;
+
+        if (copy.settlement) {
+            copy.settlement = copy.settlement.id;
+        }
+        if (copy.territoryOf) {
+            copy.territoryOf = copy.territoryOf.id;
+        }
+        return copy
     }
 
 }
