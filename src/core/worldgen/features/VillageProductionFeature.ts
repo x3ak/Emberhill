@@ -36,7 +36,7 @@ export default class VillageProductionFeature extends WorldGenerationFeature {
 
             if (!village.capital) return;
 
-            const nationSpecializations = this.getNationSpecializations(village.capital)
+            const nationSpecializations = new Set(this.getNationSpecializations(village.capital))
 
             const specializationVariants = this.getVillageSpecializationVariants(village);
 
@@ -57,14 +57,12 @@ export default class VillageProductionFeature extends WorldGenerationFeature {
         });
     }
 
-    private getNationSpecializations(capital: Settlement): Set<VillageSpecialization> {
-        return new Set(
-            this.worldMap.villages
-                .filter(village => village.capital && village.capital?.id == capital.id)
-                .map(village => {
-                    return village.specialization
-                })
-        )
+    private getNationSpecializations(capital: Settlement): VillageSpecialization[] {
+        return this.worldMap.villages
+            .filter(village => village.capital && village.capital?.id == capital.id)
+            .map(village => {
+                return village.specialization
+            })
     }
 
     private getVillageSpecializationVariants(village: Village): Set<VillageSpecialization> {

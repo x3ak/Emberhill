@@ -1,6 +1,4 @@
 import type Grid from "@/core/worldgen/Grid.ts";
-import type {ResourceAmount} from "@/shared/types/game.types.ts";
-
 export type TerrainType =
     | 'DEEP_OCEAN' | 'COASTAL_WATER' | 'BEACH'
     | 'PLAINS' | 'FOREST' | 'JUNGLE' | 'SAVANNA' | 'DESERT'
@@ -45,7 +43,6 @@ export interface Village {
     name: string;
     capital: Settlement | null;
     specialization: VillageSpecialization;
-    production: ResourceAmount[],
 }
 
 // Represents the entire generated map
