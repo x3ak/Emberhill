@@ -92,3 +92,14 @@ export type FullGameState = {
     buildings: BuildingState[],
     processes: ProcessState[],
 }
+
+export type EconomyState = {
+
+}
+
+export type NationState = {
+    id: string;
+    population: number;
+    name: string;
+    villagesCount: number;
+}

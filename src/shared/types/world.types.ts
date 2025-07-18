@@ -1,4 +1,5 @@
 import type Grid from "@/core/worldgen/Grid.ts";
+
 export type TerrainType =
     | 'DEEP_OCEAN' | 'COASTAL_WATER' | 'BEACH'
     | 'PLAINS' | 'FOREST' | 'JUNGLE' | 'SAVANNA' | 'DESERT'
