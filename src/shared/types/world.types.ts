@@ -36,13 +36,15 @@ export interface Settlement {
     connections: SettlementConnection[];
 }
 
+export type VillageSpecialization = "FARMING" | "MINING" | "WOODCUTTING" | "NOTHING";
+
 export interface Village {
     x: number;
     y: number;
     id: string;
     name: string;
-    capital: string;
-    specialization: string;
+    capital: Settlement | null;
+    specialization: VillageSpecialization;
     production: ResourceAmount[],
 }
 

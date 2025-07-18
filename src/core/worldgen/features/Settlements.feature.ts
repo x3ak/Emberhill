@@ -121,9 +121,9 @@ export class Settlements extends WorldGenerationFeature {
                 y: candidateTile.y,
                 id: `village_${this.worldMap.villages.length}`,
                 name: `Unnamed Village [${this.worldMap.villages.length}]`, // Naming comes later
-                capital: candidateTile.territoryOf?.id,
+                capital: candidateTile.territoryOf,
                 production: [],
-                specialization: "nothing",
+                specialization: "NOTHING",
             };
 
             this.worldMap.villages.push(village);

@@ -143,7 +143,7 @@ export class MapRenderer {
 
             context.beginPath();
             context.arc(tile.x * TILE_SIZE, tile.y * TILE_SIZE, 4, 0, 2 * Math.PI);
-            context.fillStyle = this.getColorForId(settlementColorId.get(tile.village?.capital || "") || 0, this.mapData.settlements.length, 0.2);
+            context.fillStyle = this.getColorForId(settlementColorId.get(tile.village?.capital?.id || "") || 0, this.mapData.settlements.length, 0.2);
             context.fill();
 
             context.lineWidth = 2;
