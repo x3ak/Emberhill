@@ -1,7 +1,7 @@
 import {Building} from "./Building.ts";
 import {Wisp} from "./wisps.ts";
 import {BUILDINGS} from "./data/buildings.data.ts";
-import {Warmstone, warmstone} from "./warmstone.ts";
+import {Warmstone} from "./warmstone.ts";
 import {GameResources} from "./resources.ts";
 import type { BuildingId} from "@/shared/types/building.types.ts";
 import type {ProcessId} from "@/shared/types/processes.types.ts";
@@ -17,7 +17,7 @@ import {PROCESSES} from "@/core/data/processes.data.ts";
 import Nation from "@/core/Nation.ts";
 import {SETTLEMENTS} from "@/core/data/settlements.data.ts";
 import {VILLAGES} from "@/core/data/villages.data.ts";
-import type {Settlement, Village} from "@/shared/types/world.types.ts";
+import type {Village} from "@/shared/types/world.types.ts";
 
 
 class GameEngine extends Subscribable<GameState, typeof GameObject>(GameObject) {
@@ -34,6 +34,8 @@ class GameEngine extends Subscribable<GameState, typeof GameObject>(GameObject) 
     private wisps: Wisp[] = []
 
     private nations: Nation[] = [];
+
+    private gameObjects: GameObject[] = [];
 
     public readonly warmstone: Warmstone = new Warmstone(1000);
     public readonly progression: Progression = new Progression();
@@ -77,7 +79,15 @@ class GameEngine extends Subscribable<GameState, typeof GameObject>(GameObject) 
     init() {
 
         for (let buildingId in BUILDINGS) {
-            this.buildings.set(buildingId as  BuildingId, this.initBuilding(buildingId as  BuildingId));
+            const building = this.initBuilding(buildingId as  BuildingId);
+            building.init();
+            this.gameObjects.push(building);
+            building.getProcesses().forEach(process => {
+                process.init()
+                this.gameObjects.push(process);
+                this.processes.set(process.getId(), process);
+            })
+            this.buildings.set(buildingId as  BuildingId, building);
         }
 
         this.wisps.push(new Wisp());
@@ -97,12 +107,28 @@ class GameEngine extends Subscribable<GameState, typeof GameObject>(GameObject) 
                 }
             }
 
-            this.nations.push(new Nation(
+            const nation = new Nation(
                 settlement,
                 villages,
                 100
-            ));
+            );
+
+            nation.init();
+            this.gameObjects.push(nation);
+            this.nations.push(nation);
         }
+
+        this.warmstone.init();
+        this.gameObjects.push(this.warmstone);
+
+        this.resources.init();
+        this.gameObjects.push(this.resources);
+    }
+
+    ready(gameCommands: GameCommand[]): void {
+        this.gameObjects.forEach((gameObject: GameObject) => {
+            gameObject.ready(gameCommands);
+        })
     }
 
     private initBuilding(buildingId:BuildingId): Building {
@@ -126,32 +152,11 @@ class GameEngine extends Subscribable<GameState, typeof GameObject>(GameObject) 
 
         console.info("Starting game...");
 
-        // generateWorld('14121987')
-
-
         this.init();
 
         const gameCommands: GameCommand[] = [];
 
-        this.warmstone.init();
-        this.buildings.forEach((building) => {
-            building.init();
-
-            building.getProcesses().forEach(process => {
-
-                this.processes.set(process.getId(), process);
-            })
-        });
-
-        this.processes.forEach((process) => process.init());
-        this.nations.forEach((nation) => nation.init());
-
-
-
-        this.warmstone.ready(gameCommands);
-        this.buildings.forEach((building) => building.ready(gameCommands))
-        this.processes.forEach((process) => process.ready(gameCommands));
-        this.nations.forEach((nation) => nation.ready(gameCommands));
+        this.ready(gameCommands);
 
         this._dispatch({type: "TICK"}, gameCommands);
 
@@ -180,29 +185,19 @@ class GameEngine extends Subscribable<GameState, typeof GameObject>(GameObject) 
         this.lastTickTime = now;
 
         // update all game objects
-        warmstone.update(deltaTime * SIMULATION_SPEED)
-
-        this.nations.forEach((nation) => nation.update(deltaTime * SIMULATION_SPEED, gameCommands));
-
-        this.buildings.forEach((building) => building.update(deltaTime * SIMULATION_SPEED, gameCommands))
-        this.processes.forEach((process) => process.update(deltaTime * SIMULATION_SPEED, gameCommands))
+        this.gameObjects.forEach((gameObject) => {
+            gameObject.update(deltaTime * SIMULATION_SPEED, gameCommands);
+        })
 
         // run inputs
         this.reducePlayerCommands(playerCommand, gameCommands);
-
         this.reduceGameCommands(gameCommands);
 
         // run post updates
         // here changes are pushed to UI for example
-        this.buildings.forEach((building) => building.postUpdate())
-        this.processes.forEach((process) => process.postUpdate())
-
-        this.nations.forEach((nation) => nation.postUpdate());
-
-        this.warmstone.postUpdate();
-        this.resources.postUpdate();
-
-
+        this.gameObjects.forEach((gameObject: GameObject) => {
+            gameObject.postUpdate();
+        });
         this.postUpdate();
     }
 

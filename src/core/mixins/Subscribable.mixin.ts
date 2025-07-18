@@ -14,8 +14,6 @@ export function Subscribable<TState, TBase extends Constructor>(Base: TBase) {
         }
 
         public postUpdate() {
-
-
             if (this.hasChanged) {
 
                 // if (this.processData !== undefined) {
@@ -65,6 +63,10 @@ export class GameObject {
     }
 
     update(_deltaTime: number, _gameCommands: GameCommand[]): void {
+
+    }
+
+    postUpdate(): void {
 
     }
 }
