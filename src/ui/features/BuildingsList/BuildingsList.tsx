@@ -5,7 +5,7 @@ import {BuildingListItem} from "@/features/BuildingsList/BuildingListItem.tsx";
 
 type BuildingListProps = {
     onSelect: (buildingId: BuildingId) => void;
-    activeSection : MainContentSection;
+    activeSection: MainContentSection;
 };
 
 export default function BuildingsList({onSelect, activeSection}: BuildingListProps) {
@@ -14,7 +14,7 @@ export default function BuildingsList({onSelect, activeSection}: BuildingListPro
         const isSelected = activeSection.type === 'building' && activeSection.buildingId === buildingId;
 
         return (
-            <BuildingListItem key={buildingId} buildingId={buildingId} isSelected={isSelected} onSelect={onSelect} />
+            <BuildingListItem key={buildingId} buildingId={buildingId} isSelected={isSelected} onSelect={onSelect}/>
 
         )
     })

@@ -23,3 +23,12 @@
 .processDetails {
 
 }
+
+.progression {
+    display: flex;
+    flex-direction: row;
+}
+
+.progressionListDetails {
+
+}

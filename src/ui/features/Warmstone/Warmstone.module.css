@@ -4,16 +4,18 @@
     color: var(--color-text-primary);
     margin-top: var(--size-sm);
 }
+
 button:disabled,
-button[disabled]{
+button[disabled] {
 
     font-size: var(--font-size-md);
     background-color: var(--color-surface-secondary);
     color: #666666;
 }
+
 .body {
     /*width: 20rem;*/
-    margin:  var(--size-sm);
+    margin: var(--size-sm);
 
 
 }

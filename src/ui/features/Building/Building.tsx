@@ -74,7 +74,12 @@ type BuildingProcessListProps = {
     selectedProcess: ProcessId | null
 };
 
-function BuildingProcessList({processes, buildingState, setSelectedProcess, selectedProcess}: BuildingProcessListProps) {
+function BuildingProcessList({
+                                 processes,
+                                 buildingState,
+                                 setSelectedProcess,
+                                 selectedProcess
+                             }: BuildingProcessListProps) {
     return (
         <div>
             <div className={styles.processGrid}>

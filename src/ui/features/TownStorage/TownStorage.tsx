@@ -5,9 +5,10 @@ import {ResourceAmountDisplay} from "@/components/ResourceAmountDisplay/Resource
 export default function TownStorage() {
 
     const resourcesState = useResourcesState();
-    const resourcesList = [... resourcesState.resources].map(([resourceId, amount]) => {
+    const resourcesList = [...resourcesState.resources].map(([resourceId, amount]) => {
         return (
-            <ResourceAmountDisplay key={resourceId} resourceAmount={{type: "resource", id: resourceId, amount: amount}} showOnlyDescription={true} />
+            <ResourceAmountDisplay key={resourceId} resourceAmount={{type: "resource", id: resourceId, amount: amount}}
+                                   showOnlyDescription={true}/>
         )
     })
 

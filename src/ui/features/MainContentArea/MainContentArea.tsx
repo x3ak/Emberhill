@@ -5,7 +5,7 @@ import type {BuildingId} from "@/shared/types/building.types.ts";
 
 
 export type MainContentSection =
-    | { type: 'building'; buildingId: BuildingId;}
+    | { type: 'building'; buildingId: BuildingId; }
     | { type: 'page'; pageId: 'home' }
     | { type: 'town_feature'; feature: 'storage' | 'warmstone' }
 
@@ -14,15 +14,15 @@ const townFeatureMap = {
     warmstone: Warmstone,
 }
 
-export default function MainContentArea({activeSection} : {activeSection : MainContentSection}) {
+export default function MainContentArea({activeSection}: { activeSection: MainContentSection }) {
     switch (activeSection.type) {
         case "building":
             return (
-                <Building buildingId={activeSection.buildingId} />
+                <Building buildingId={activeSection.buildingId}/>
             );
         case "town_feature":
             const ComponentToRender = townFeatureMap[activeSection.feature];
-            return (<ComponentToRender />)
+            return (<ComponentToRender/>)
         case "page":
             return (<div>Page id: {activeSection.pageId}</div>)
         default:

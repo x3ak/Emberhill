@@ -1,6 +1,6 @@
 import React from 'react';
-import type { BuildingId } from '@/shared/types/building.types';
-import { useBuildingState } from '@/hooks/useBuildingState';
+import type {BuildingId} from '@/shared/types/building.types';
+import {useBuildingState} from '@/hooks/useBuildingState';
 import {coreAPI} from "@/core/core.api.ts"; // Your granular hook
 
 
@@ -31,7 +31,7 @@ export const BuildingListItem: React.FC<BuildingListItemProps> = React.memo(({
             onClick={() => onSelect(buildingId)}
         >
             {buildingData.name}
-            {buildingState.canLevelUp ? " 🔴 ": ""}
+            {buildingState.canLevelUp ? " 🔴 " : ""}
         </li>
     );
 });

@@ -2,10 +2,15 @@ import {useWarmstoneState} from "@/hooks/useWarmstoneState.ts";
 import {coreAPI} from "@/core/core.api.ts";
 import StaticProgressBar from "@/components/StaticProgressBar/StaticProgressBar.tsx";
 import styles from './Warmstone.module.css'
-import {ProgressionList} from "@/components/ProgressionList/ProgressionList.tsx";
+import {ProgressionList} from "@/features/Building/ProgressionList/ProgressionList.tsx";
+import {useState} from "react";
+import type {BuildingLevelUp} from "@/shared/types/game.types.ts";
+
 export default function Warmstone() {
 
     const state = useWarmstoneState();
+
+    const [levelUpData, setLevelUpData] = useState<BuildingLevelUp>();
 
     const vitality = state.currentVitality;
     const essence = state.essence;
@@ -27,6 +32,7 @@ export default function Warmstone() {
     function handleUpgrade() {
         coreAPI.upgradeWarmstone();
     }
+
     const progressBarValue = state.essenceForNextLevel > 0 ? (state.essence / state.essenceForNextLevel) * 100 : 0;
 
 
@@ -38,7 +44,7 @@ export default function Warmstone() {
             <p>Till next level: {state.essenceForNextLevel} essence</p>
             <p className="text-sm text-yellow-400 mt-2">Keep the stone's heart aglow!</p>
             <p className="text-green-400 italic h-6 my-2">{progressbarText}</p>
-            <StaticProgressBar value={progressBarValue }/>
+            <StaticProgressBar value={progressBarValue}/>
 
             <div id="progress-bar" className="pt-6">
                 <div className="w-full bg-gray-200 rounded-full h-3.5 dark:bg-gray-700">
@@ -53,7 +59,10 @@ export default function Warmstone() {
                 </button>
             </div>
 
-            <ProgressionList levelReached={state.currentLevel} progression={coreAPI.getWarmstoneProgression()} />
+            <ProgressionList levelReached={state.currentLevel} progression={coreAPI.getWarmstoneProgression()}
+                             setLevelUpData={setLevelUpData}/>
+
+            {JSON.stringify(levelUpData, null, 2)}
         </div>
     )
 }
