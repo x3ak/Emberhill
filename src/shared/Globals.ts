@@ -1,1 +1,1 @@
-export const SIMULATION_SPEED: number = 10;
+export const SIMULATION_SPEED: number = 5;

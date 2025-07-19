@@ -270,10 +270,15 @@ class GameEngine extends Subscribable<GameState, typeof GameObject>(GameObject) 
         }
     }
 
+
+
     private reduceGameCommands(gameCommands: GameCommand[]) {
         if (gameCommands.length === 0) {
             return;
         }
+
+        let foodDemanded = 0;
+        let foodSupply = 0;
 
         gameCommands.forEach(command => {
             // console.log("GAME_COMMAND", command);
@@ -294,8 +299,23 @@ class GameEngine extends Subscribable<GameState, typeof GameObject>(GameObject) 
                 case 'UNLOCK_BUILDING':
                     gameInstance.getBuilding(command.payload.buildingId)?.setLocked(false)
                     break;
+                case 'ECONOMY_RESOURCE_SUPPLY':
+                    command.payload.resources.forEach(resource => {
+                        foodSupply += resource.amount || 0;
+                    })
+
+                    break;
+                case 'ECONOMY_RESOURCE_DEMAND':
+                    command.payload.resources.forEach(resource => {
+                        foodDemanded += resource.amount || 0;
+                    })
+                    break;
             }
+
+
         })
+
+        console.log("supply", foodSupply, "demand", foodDemanded)
 
         this.setDirty()
     }
