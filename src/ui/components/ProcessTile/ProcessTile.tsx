@@ -16,23 +16,26 @@ export default function ProcessTile({processId, isActive, setSelectedProcess}: {
     const processState = useProcessState(processId);
     const processData = coreAPI.getProcessData(processId);
 
-    if (processState.isUnlocked) {
+    if (processData && processState.isUnlocked) {
 
         return (
             <div
                 className={`${styles.tile} ${isActive ? styles.active : ''}`}
                 onClick={() => setSelectedProcess(processId)}
-                style={{backgroundImage: `url(${processData?.icon})`}}
             >
-                <div className={styles.details}>
-                    {processData?.name}<br />
-                    {processState.status}<br />
-                    {processState?.secondsSpent.toFixed(2)}
-                </div>
-                <div>
-                    <DynamicProgressBar playing={processState.isProcessing && processState.isActive}
-                                        totalDuration={processState?.duration}
-                                        elapsedTime={processState?.secondsSpent}/>
+                <div
+                    className={styles.processIcon}
+                    style={{backgroundImage: `url(${processData.icon})`}}
+                >
+
+                    <div className={styles.details}>
+                        <span>{processData.name}</span>
+                    </div>
+                    <div className={styles.progressBarContainer}>
+                        <DynamicProgressBar playing={processState.isProcessing && processState.isActive}
+                                            totalDuration={processState.duration}
+                                            elapsedTime={processState.secondsSpent}/>
+                    </div>
                 </div>
             </div>
         )

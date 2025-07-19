@@ -1,24 +1,45 @@
 .tile {
     cursor: pointer;
-    background-size: cover;
+    padding: var(--size-sm);
+    border-radius: var(--border-radius-sm);
     background-color: var(--color-surface-secondary);
 
-    display: flex;
-    flex-direction: column;
 
     &:hover {
         background-color: var(--color-interactive-secondary-bg-hover);
     }
 
     &.active {
-        background-color: var(--color-interactive-primary-bg-active);
+        background-color: var(--raw-color-primary-900);
     }
 }
 
+.processIcon {
+    display: flex;
+    flex-direction: column;
+
+    height: 100%;
+    background-size: cover;
+
+}
+
+.progressBarContainer{
+    border-radius: var(--border-radius-sm);
+    overflow: hidden;
+    opacity: 0.75;
+}
+
 .details {
-    padding:  var(--size-sm);
     flex-grow: 1;
 
+    span {
+        display: block;
+        text-align: center;
+        background-color: rgba(58, 60, 78, 0.71);
+        border-radius: var(--border-radius-sm);
+        padding: 0 var(--size-sm);
+        width: 100%;
+    }
 }
 
 .name {

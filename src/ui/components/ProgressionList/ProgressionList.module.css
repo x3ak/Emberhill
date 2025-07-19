@@ -1,13 +1,20 @@
-
 .progression {
-
+    display: flex;
+    flex-direction: column;
+    gap: var(--size-sm);
 }
 
 .progressionLine {
-    display: flex;
-    flex-direction: row;
+    background-color: var(--color-surface-secondary);
+    border-radius: var(--size-sm);
+    padding: var(--size-sm);
 }
 
 .progressionLineItem {
     padding:  var(--size-sm);
+}
+
+.progressionRequirements {
+    display: flex;
+    flex-direction: row;
 }

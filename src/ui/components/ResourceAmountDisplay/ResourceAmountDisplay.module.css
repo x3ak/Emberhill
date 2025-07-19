@@ -24,8 +24,8 @@
 
 .icon {
     /* Control the icon size explicitly */
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
 
     /* This ensures the image doesn't distort if it's not a perfect square */
     object-fit: contain;

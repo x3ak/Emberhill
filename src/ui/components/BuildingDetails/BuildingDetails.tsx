@@ -29,18 +29,20 @@ export default function BuildingDetails({buildingId}: {
                 <h3 className={styles.name}>{buildingData.name} - Level {buildingState?.level}</h3>
 
                 <div>
-                    <StaticProgressBar value={progressToNextLevel} height='8px' />
+                    <StaticProgressBar value={progressToNextLevel} height='8px'/>
                 </div>
                 {levelUpData && (<ul className={styles.properties}>
-                    <li className={styles.propertyLine}><label>XP:</label>
-                        <b>{buildingState?.xp} / {buildingData.progression[buildingState.level + 1]?.xp}</b></li>
+                    <li className={styles.propertyLine}>
+                        <label>XP: </label>
+                        <b>{buildingState?.xp} / {buildingData.progression[buildingState.level + 1]?.xp}</b>
+                    </li>
                 </ul>)}
 
 
             </div>
             <div className={styles.buildingActions}>
                 <motion.div className={styles.toggleContainer}
-                            whileTap={{scale: 1.1}}>
+                            whileTap={{scale: 1.05}}>
                     <input
 
                         type="checkbox"

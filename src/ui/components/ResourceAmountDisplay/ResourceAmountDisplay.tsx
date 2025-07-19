@@ -7,14 +7,15 @@ import {createPortal} from "react-dom";
 import {useResourcesState} from "@/hooks/useResourcesState.ts";
 import type {ResourceAmount} from "@/shared/types/game.types.ts";
 import {AnimatePresence} from "framer-motion";
-
+import IconWithAmount from "@/components/Pieces/IconWithAmount.tsx";
 
 type ResourceAmountDisplayProps = {
     resourceAmount: ResourceAmount,
     showTownAmount?: boolean,
+    showOnlyDescription?: boolean,
 }
 
-export function ResourceAmountDisplay({resourceAmount, showTownAmount}: ResourceAmountDisplayProps) {
+export function ResourceAmountDisplay({resourceAmount, showTownAmount, showOnlyDescription}: ResourceAmountDisplayProps) {
     const [isPopupVisible, setIsPopupVisible] = useState<boolean>(false);
     const openerRef = useRef<HTMLElement>(null);
 
@@ -43,31 +44,21 @@ export function ResourceAmountDisplay({resourceAmount, showTownAmount}: Resource
 
             return (
                 <>
-                    <span className={`${styles.amountNeededPill} ${isPopupVisible ? styles.active : ''}`}
+                    <span className={`${isPopupVisible ? styles.active : ''}`}
                           ref={openerRef} onClick={handleClick}>
 
-                        {resourceData.icon && (
-                            <img
-                                src={resourceData.icon}
-                                alt={resourceData.name}
-                                title={resourceData.name}
-                                className={styles.icon}
-                            />
-                        )}
-                        <span>x {resourceAmount.amount}</span>
-
-                        {showTownAmount && (<span>({inTownAmount})</span>)}
-
+                        <IconWithAmount icon={resourceData.icon || ''} iconAlt={resourceData.name} amount={showTownAmount ? {actual: inTownAmount, total: resourceAmount.amount} : resourceAmount.amount} />
 
                         {createPortal(
                             <AnimatePresence>
                                 {isPopupVisible && (
                                     <Popup onClose={closePopup} openerRef={openerRef}>
                                         <div>
+                                            {!showOnlyDescription && (
                                             <ul>
                                                 <li>Required: {resourceAmount.amount}</li>
                                                 <li>You have: {resourcesState.resources.get(resourceData.id)}</li>
-                                            </ul>
+                                            </ul>)}
                                             <h4>{resourceData.name}</h4>
                                             <p>{resourceData.description}</p>
                                         </div>

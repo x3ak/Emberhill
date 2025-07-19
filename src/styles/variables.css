@@ -25,10 +25,10 @@
     --raw-color-primary-300: #ffe5c4;
     --raw-color-primary-400: #ffcf99;
     --raw-color-primary-500: #ffb86c;
-    --raw-color-primary-600: #e99e4f;
-    --raw-color-primary-700: #d08534;
-    --raw-color-primary-800: #b56c1a;
-    --raw-color-primary-900: #824e11;
+    --raw-color-primary-600: rgba(233, 158, 79, 1);
+    --raw-color-primary-700: rgba(208, 133, 52, 1);
+    --raw-color-primary-800: rgba(181, 108, 26, 1);
+    --raw-color-primary-900: rgba(181, 108, 26, 0.53);
     --raw-color-primary-text: #282a36;
 
     /* Feedback Colors */
@@ -85,6 +85,7 @@
     --size-sm: 8px;    /* Small */
     --size-md: 16px;   /* Medium (base for many paddings/margins) */
     --size-lg: 32px;   /* Large */
+    --size-ll: 48px;   /* Large */
     --size-xl: 64px;   /* Extra Large */
 
 
