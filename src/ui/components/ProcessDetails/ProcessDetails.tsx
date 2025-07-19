@@ -1,6 +1,7 @@
 import type {ProcessId} from "@/shared/types/processes.types.ts";
 import {coreAPI} from "@/core/core.api.ts";
 import {ResourceAmountDisplay} from "@/components/ResourceAmountDisplay/ResourceAmountDisplay.tsx";
+import processingIcon from "@/icons/processing.png"
 
 type ProcessDetailsProps = {
     processId: ProcessId;
@@ -29,7 +30,7 @@ export default function ProcessDetails({processId}: ProcessDetailsProps) {
             <h4>{processData.name}</h4>
             <p>{processData.description}</p>
             <p><span></span> {processData.text} </p>
-
+            <img src={processingIcon} alt="Processing..." width="24" height="24" />
             <div className="flex-grow">
                 {outputs}
             </div>
