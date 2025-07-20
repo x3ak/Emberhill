@@ -13,17 +13,14 @@ export class Warmstone extends Subscribable<WarmstoneState, typeof GameObject>(G
     private vitalityDrainAmount: number = 10; // drain this amount of vitality
     private timeSinceLastDrain: number = 0;
     private essence: number = 0;
-    private currentLevel: number = 1;
+    private currentLevel: number = 10;
     private canLevelUp: boolean = false;
 
-    private maxEssenceMap: Map<number, number> = new Map<number, number>();
 
     constructor(vitality: number) {
         super()
         this.currentVitality = vitality;
         this.maxVitality = vitality;
-        this.maxEssenceMap.set(2, 100);
-        this.maxEssenceMap.set(3, 180);
 
     }
 
@@ -51,13 +48,13 @@ export class Warmstone extends Subscribable<WarmstoneState, typeof GameObject>(G
                 continue;
             }
 
-            gameCommands.push(... allToGameCommands(levelProgressData.rewards));
+            gameCommands.push(...allToGameCommands(levelProgressData.rewards));
 
         }
     }
 
     public upgrade(gameCommands: GameCommand[]): void {
-        if(!this.canLevelUp) {
+        if (!this.canLevelUp) {
             return;
         }
         this.essence = 0;
@@ -71,27 +68,23 @@ export class Warmstone extends Subscribable<WarmstoneState, typeof GameObject>(G
             return;
         }
 
-        gameCommands.push(... allToGameCommands(levelProgressData.rewards));
+        gameCommands.push(...allToGameCommands(levelProgressData.rewards));
     }
 
     public onExperienceAdded(amountXP: number): void {
         const nextLevelEssenceValue = this.getEssenceForNextLevel();
-        if(nextLevelEssenceValue === 0) {
+        if (nextLevelEssenceValue === 0) {
             return;
         }
 
         this.essence += amountXP * 0.2;
-        if(this.essence >= nextLevelEssenceValue) {
+        if (this.essence >= nextLevelEssenceValue) {
             this.essence = nextLevelEssenceValue;
             this.canLevelUp = true;
 
         }
 
         this.setDirty();
-    }
-
-    private getEssenceForNextLevel(): number {
-        return this.maxEssenceMap.get(this.currentLevel + 1) || 0;
     }
 
     protected computeSnapshot(): WarmstoneState {
@@ -103,6 +96,16 @@ export class Warmstone extends Subscribable<WarmstoneState, typeof GameObject>(G
             essenceForNextLevel: this.getEssenceForNextLevel(),
             canLevelUp: this.canLevelUp,
         }
+    }
+
+    private getEssenceForNextLevel(): number {
+        const levelProgressData = PROGRESSION['warmstone'][this.currentLevel + 1] || null;
+
+        if (!levelProgressData) {
+            return 0;
+        }
+
+        return levelProgressData.xp;
     }
 
 }

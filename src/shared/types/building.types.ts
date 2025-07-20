@@ -5,6 +5,11 @@ export const AllBuildingIds = [
     'foragers_hut',
     'farm',
     'workshop',
+    'sawmill',
+    'smelter',
+    'stonemason',
+    'windmill',
+    'bakery',
 ] as const;
 
 export type BuildingId = typeof AllBuildingIds[number];

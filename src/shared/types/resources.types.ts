@@ -6,16 +6,26 @@ export const AllResourceIds = [
     'LOG_BIRCH',
     'LOG_PINE',
     'LOG_MAPLE',
+    'PLANK_OAK',
+    'PLANK_BIRCH',
     'RESIN',
     'STONE',
+    'STONE_BLOCK',
     'ORE_COPPER',
+    'COAL',
+    'INGOT_COPPER',
     'BERRIES',
     'TWIGS',
     'FIBER',
     'WEED_SEED',
     'BLACKBERRY_SEED',
     'GRAIN_SEED',
+    'GRAIN',
+    'FLOUR',
+    'BREAD',
     'TILLED_EARTH',
-    'CRUDE_HOE'
+    'CRUDE_HOE',
+    'TOOL_COPPER_AXE',
+    'TOOL_COPPER_PICKAXE'
 ] as const;
 export type ResourceId = typeof AllResourceIds[number];

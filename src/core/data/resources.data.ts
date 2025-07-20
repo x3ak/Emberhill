@@ -9,32 +9,52 @@ import icon_LOG_OAK from '@/resource-icon/log_oak.png';
 import icon_LOG_BIRCH from '@/resource-icon/log_birch.png';
 import icon_LOG_PINE from '@/resource-icon/log_pine.png';
 import icon_LOG_MAPLE from '@/resource-icon/log_maple.png';
-import icon_RESIN from '@/resource-icon/blackberry.png';
-import icon_STONE from '@/resource-icon/placeholder.png';
-import icon_ORE_COPPER from '@/resource-icon/placeholder.png';
+import icon_PLANK_OAK from '@/resource-icon/plank_oak.png';
+import icon_PLANK_BIRCH from '@/resource-icon/plank_birch.png';
+import icon_RESIN from '@/resource-icon/resin.png';
+import icon_STONE from '@/resource-icon/stone.png';
+import icon_STONE_BLOCK from '@/resource-icon/stone_block.png';
+import icon_ORE_COPPER from '@/resource-icon/ore_copper.png';
+import icon_COAL from '@/resource-icon/coal.png';
+import icon_INGOT_COPPER from '@/resource-icon/ingot_copper.png';
 import icon_BERRIES from '@/resource-icon/berries.png';
 import icon_TWIGS from '@/resource-icon/branch.png';
 import icon_FIBER from '@/resource-icon/hemp.png';
 import icon_WEED_SEED from '@/resource-icon/weed.png';
 import icon_BLACKBERRY_SEED from '@/resource-icon/blackberry.png';
 import icon_GRAIN_SEED from '@/resource-icon/malt.png';
+import icon_GRAIN from '@/resource-icon/grain.png';
+import icon_FLOUR from '@/resource-icon/flour.png';
+import icon_BREAD from '@/resource-icon/bread.png';
 import icon_TILLED_EARTH from '@/resource-icon/soil.png';
 import icon_CRUDE_HOE from '@/resource-icon/hoe.png';
+import icon_TOOL_COPPER_AXE from '@/resource-icon/axe_copper.png';
+import icon_TOOL_COPPER_PICKAXE from '@/resource-icon/pickaxe_copper.png';
 
 export const RESOURCES: Record<ResourceId, ResourceData> = {
-    LOG_OAK: {id: 'LOG_OAK',name: 'Oak Log 222',description: `A sturdy, common log from an oak tree. The reliable heartwood of the forest.`, icon: icon_LOG_OAK},
+    LOG_OAK: {id: 'LOG_OAK',name: 'Oak Log',description: `A sturdy, common log from an oak tree. The reliable heartwood of the forest.`, icon: icon_LOG_OAK},
     LOG_BIRCH: {id: 'LOG_BIRCH',name: 'Birch Log',description: `A light, pale log from a slender birch. Its bark is as useful as its wood.`, icon: icon_LOG_BIRCH},
     LOG_PINE: {id: 'LOG_PINE',name: 'Pine Log',description: `A fragrant softwood log, sticky to the touch with fresh resin.`, icon: icon_LOG_PINE},
     LOG_MAPLE: {id: 'LOG_MAPLE',name: 'Maple Log',description: `A dense, fine-grained hardwood, prized by carpenters for its strength and beauty.`, icon: icon_LOG_MAPLE},
+    PLANK_OAK: {id: 'PLANK_OAK',name: 'Oak Plank',description: `A solid, straight plank of oak, ready for building.`, icon: icon_PLANK_OAK},
+    PLANK_BIRCH: {id: 'PLANK_BIRCH',name: 'Birch Plank',description: `A pale, lightweight plank of birch, good for furniture and finishing work.`, icon: icon_PLANK_BIRCH},
     RESIN: {id: 'RESIN',name: 'Tree Resin',description: `A sticky, amber-colored sap from a pine tree. A natural adhesive and waterproofing agent.`, icon: icon_RESIN},
-    STONE: {id: 'STONE',name: 'Stone',description: `Stone description`, icon: icon_STONE},
-    ORE_COPPER: {id: 'ORE_COPPER',name: 'Copper Ore',description: `Copper Ore description`, icon: icon_ORE_COPPER},
-    BERRIES: {id: 'BERRIES',name: 'Berries',description: `A common fruit found throughout the region. While not particularly nourishing, they provide a quick source of energy to stave off the worst of the Hearthstone's decay in the early days.`, icon: icon_BERRIES},
-    TWIGS: {id: 'TWIGS',name: 'Twigs',description: `A bundle of dry, brittle twigs, bark, and pinecones. Catches fire far more readily than a whole log. An essential component for starting and maintaining a reliable flame.`, icon: icon_TWIGS},
-    FIBER: {id: 'FIBER',name: 'Fiber',description: `Surprisingly strong for a glorified weed`, icon: icon_FIBER},
-    WEED_SEED: {id: 'WEED_SEED',name: 'Weed Seed',description: `An unidentifiable seed, gathered from the untamed parts of the world. Planting it is an act of faith. It could yield anything from tough, edible roots and fibrous stalks to, on rare occasions, the ancestors of true grain.`, icon: icon_WEED_SEED},
-    BLACKBERRY_SEED: {id: 'BLACKBERRY_SEED',name: 'Blackberry Seed',description: `Domesticate the same thorny bushes you find in the wild. Each seed will grow into a familiar plant that yields a predictable and steady supply of blackberries, removing the uncertainty of foraging.`, icon: icon_BLACKBERRY_SEED},
-    GRAIN_SEED: {id: 'GRAIN_SEED',name: 'Grain Seed',description: `A significant agricultural breakthrough. Unlike berries or roots, grain is highly storable and incredibly versatile. Cultivating a steady supply of grain is the first step towards creating a stable food source, brewing valuable ales, and truly domesticating livestock.`, icon: icon_GRAIN_SEED},
-    TILLED_EARTH: {id: 'TILLED_EARTH',name: 'Tilled Earth',description: `A plot of land that has been broken up and aerated with a hoe. The soil is now soft and ready to accept a seed. It will revert to packed dirt if left untended for too long`, icon: icon_TILLED_EARTH},
-    CRUDE_HOE: {id: 'CRUDE_HOE',name: 'Crude Hoe',description: `A plot of land that has been broken up and aerated with a hoe. The soil is now soft and ready to accept a seed. It will revert to packed dirt if left untended for too long`, icon: icon_CRUDE_HOE}
+    STONE: {id: 'STONE',name: 'Stone',description: `Rough, usable stone quarried from the earth. The foundation of any lasting structure.`, icon: icon_STONE},
+    STONE_BLOCK: {id: 'STONE_BLOCK',name: 'Stone Block',description: `A heavy, dressed block of stone, cut to a uniform size for construction.`, icon: icon_STONE_BLOCK},
+    ORE_COPPER: {id: 'ORE_COPPER',name: 'Copper Ore',description: `A soft, reddish ore. Simple to work with and a vital first step for any smith.`, icon: icon_ORE_COPPER},
+    COAL: {id: 'COAL',name: 'Coal',description: `A dusty but potent black rock. Essential fuel for the intense heat of a smelter.`, icon: icon_COAL},
+    INGOT_COPPER: {id: 'INGOT_COPPER',name: 'Copper Ingot',description: `A bar of pure, smelted copper. Malleable and ready to be worked at the forge.`, icon: icon_INGOT_COPPER},
+    BERRIES: {id: 'BERRIES',name: 'Berries',description: `A common fruit found throughout the region. Provides a quick source of energy.`, icon: icon_BERRIES},
+    TWIGS: {id: 'TWIGS',name: 'Twigs',description: `A bundle of dry, brittle twigs. Catches fire far more readily than a whole log.`, icon: icon_TWIGS},
+    FIBER: {id: 'FIBER',name: 'Plant Fiber',description: `Tough, stringy fibers from wild plants. Can be woven into twine and cordage.`, icon: icon_FIBER},
+    WEED_SEED: {id: 'WEED_SEED',name: 'Weed Seed',description: `An unidentifiable seed. Planting it is an act of faith, yielding anything from roots to fibers.`, icon: icon_WEED_SEED},
+    BLACKBERRY_SEED: {id: 'BLACKBERRY_SEED',name: 'Blackberry Seed',description: `A seed from a wild blackberry bush. Can be cultivated for a reliable source of berries.`, icon: icon_BLACKBERRY_SEED},
+    GRAIN_SEED: {id: 'GRAIN_SEED',name: 'Grain Seed',description: `A precious seed from a wild grass. Cultivating grain is the first step towards a stable food supply.`, icon: icon_GRAIN_SEED},
+    GRAIN: {id: 'GRAIN',name: 'Grain',description: `Harvested kernels of wheat. Hard and inedible raw, but full of potential.`, icon: icon_GRAIN},
+    FLOUR: {id: 'FLOUR',name: 'Flour',description: `Fine, soft powder milled from grain. The primary ingredient for baking.`, icon: icon_FLOUR},
+    BREAD: {id: 'BREAD',name: 'Bread',description: `A warm, hearty loaf of bread. A truly reliable and satisfying food source.`, icon: icon_BREAD},
+    TILLED_EARTH: {id: 'TILLED_EARTH',name: 'Tilled Earth',description: `A plot of land, broken up and aerated with a hoe, ready to accept a seed.`, icon: icon_TILLED_EARTH},
+    CRUDE_HOE: {id: 'CRUDE_HOE',name: 'Crude Hoe',description: `A simple tool made of wood and stone, used to till the soil for farming.`, icon: icon_CRUDE_HOE},
+    TOOL_COPPER_AXE: {id: 'TOOL_COPPER_AXE',name: 'Copper Axe',description: `A significant upgrade. The copper head stays sharp longer, felling trees with greater ease.`, icon: icon_TOOL_COPPER_AXE},
+    TOOL_COPPER_PICKAXE: {id: 'TOOL_COPPER_PICKAXE',name: 'Copper Pickaxe',description: `A sturdy pickaxe with a copper head, capable of breaking tougher rock and finding rarer ores.`, icon: icon_TOOL_COPPER_PICKAXE}
 } as const;

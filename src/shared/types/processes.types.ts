@@ -4,17 +4,29 @@
 export const AllProcessIds = [
     'burn_log_oak',
     'burn_log_birch',
-    'grow_blackberries',
+    'sow_blackberry_seed',
+    'harvest_blackberries',
+    'sow_grain_seed',
+    'harvest_grain',
     'till_soil',
     'collect_berries',
     'gather_kindling',
     'collect_fibers',
     'mine_stone',
+    'mine_coal',
     'mine_copper_ore',
+    'make_planks_oak',
+    'make_planks_birch',
+    'cut_stone_blocks',
+    'smelt_copper_ingot',
+    'mill_flour',
+    'bake_bread',
     'cut_tree_oak',
     'cut_tree_birch',
     'cut_tree_pine',
     'cut_tree_maple',
-    'create_crude_hoe'
+    'create_crude_hoe',
+    'craft_copper_axe',
+    'craft_copper_pickaxe'
 ] as const;
 export type ProcessId = typeof AllProcessIds[number];

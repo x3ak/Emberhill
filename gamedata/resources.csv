@@ -1,16 +1,26 @@
 resource_id,category,name,description,icon
-LOG_OAK,empty,Oak Log 222,"A sturdy, common log from an oak tree. The reliable heartwood of the forest.",log_oak.png
-LOG_BIRCH,empty,Birch Log,"A light, pale log from a slender birch. Its bark is as useful as its wood.",log_birch.png
-LOG_PINE,empty,Pine Log,"A fragrant softwood log, sticky to the touch with fresh resin.",log_pine.png
-LOG_MAPLE,empty,Maple Log,"A dense, fine-grained hardwood, prized by carpenters for its strength and beauty.",log_maple.png
-RESIN,empty,Tree Resin,"A sticky, amber-colored sap from a pine tree. A natural adhesive and waterproofing agent.",blackberry.png
-STONE,empty,Stone,Stone description,placeholder.png
-ORE_COPPER,empty,Copper Ore,Copper Ore description,placeholder.png
-BERRIES,empty,Berries,"A common fruit found throughout the region. While not particularly nourishing, they provide a quick source of energy to stave off the worst of the Hearthstone's decay in the early days.",berries.png
-TWIGS,empty,Twigs,"A bundle of dry, brittle twigs, bark, and pinecones. Catches fire far more readily than a whole log. An essential component for starting and maintaining a reliable flame.",branch.png
-FIBER,empty,Fiber,Surprisingly strong for a glorified weed,hemp.png
-WEED_SEED,empty,Weed Seed,"An unidentifiable seed, gathered from the untamed parts of the world. Planting it is an act of faith. It could yield anything from tough, edible roots and fibrous stalks to, on rare occasions, the ancestors of true grain.",weed.png
-BLACKBERRY_SEED,empty,Blackberry Seed,"Domesticate the same thorny bushes you find in the wild. Each seed will grow into a familiar plant that yields a predictable and steady supply of blackberries, removing the uncertainty of foraging.",blackberry.png
-GRAIN_SEED,empty,Grain Seed,"A significant agricultural breakthrough. Unlike berries or roots, grain is highly storable and incredibly versatile. Cultivating a steady supply of grain is the first step towards creating a stable food source, brewing valuable ales, and truly domesticating livestock.",malt.png
-TILLED_EARTH,empty,Tilled Earth,A plot of land that has been broken up and aerated with a hoe. The soil is now soft and ready to accept a seed. It will revert to packed dirt if left untended for too long,soil.png
-CRUDE_HOE,empty,Crude Hoe,A plot of land that has been broken up and aerated with a hoe. The soil is now soft and ready to accept a seed. It will revert to packed dirt if left untended for too long,hoe.png
+LOG_OAK,wood,Oak Log,"A sturdy, common log from an oak tree. The reliable heartwood of the forest.",log_oak.png
+LOG_BIRCH,wood,Birch Log,"A light, pale log from a slender birch. Its bark is as useful as its wood.",log_birch.png
+LOG_PINE,wood,Pine Log,"A fragrant softwood log, sticky to the touch with fresh resin.",log_pine.png
+LOG_MAPLE,wood,Maple Log,"A dense, fine-grained hardwood, prized by carpenters for its strength and beauty.",log_maple.png
+PLANK_OAK,construction,Oak Plank,"A solid, straight plank of oak, ready for building.",plank_oak.png
+PLANK_BIRCH,construction,Birch Plank,"A pale, lightweight plank of birch, good for furniture and finishing work.",plank_birch.png
+RESIN,material,Tree Resin,"A sticky, amber-colored sap from a pine tree. A natural adhesive and waterproofing agent.",resin.png
+STONE,material,Stone,"Rough, usable stone quarried from the earth. The foundation of any lasting structure.",stone.png
+STONE_BLOCK,construction,Stone Block,"A heavy, dressed block of stone, cut to a uniform size for construction.",stone_block.png
+ORE_COPPER,material,Copper Ore,"A soft, reddish ore. Simple to work with and a vital first step for any smith.",ore_copper.png
+COAL,material,Coal,"A dusty but potent black rock. Essential fuel for the intense heat of a smelter.",coal.png
+INGOT_COPPER,material,Copper Ingot,"A bar of pure, smelted copper. Malleable and ready to be worked at the forge.",ingot_copper.png
+BERRIES,food,Berries,"A common fruit found throughout the region. Provides a quick source of energy.",berries.png
+TWIGS,material,Twigs,"A bundle of dry, brittle twigs. Catches fire far more readily than a whole log.",branch.png
+FIBER,material,Plant Fiber,"Tough, stringy fibers from wild plants. Can be woven into twine and cordage.",hemp.png
+WEED_SEED,seed,Weed Seed,"An unidentifiable seed. Planting it is an act of faith, yielding anything from roots to fibers.",weed.png
+BLACKBERRY_SEED,seed,Blackberry Seed,"A seed from a wild blackberry bush. Can be cultivated for a reliable source of berries.",blackberry.png
+GRAIN_SEED,seed,Grain Seed,"A precious seed from a wild grass. Cultivating grain is the first step towards a stable food supply.",malt.png
+GRAIN,food,Grain,"Harvested kernels of wheat. Hard and inedible raw, but full of potential.",grain.png
+FLOUR,food,Flour,"Fine, soft powder milled from grain. The primary ingredient for baking.",flour.png
+BREAD,food,Bread,"A warm, hearty loaf of bread. A truly reliable and satisfying food source.",bread.png
+TILLED_EARTH,material,Tilled Earth,"A plot of land, broken up and aerated with a hoe, ready to accept a seed.",soil.png
+CRUDE_HOE,tool,Crude Hoe,"A simple tool made of wood and stone, used to till the soil for farming.",hoe.png
+TOOL_COPPER_AXE,tool,Copper Axe,"A significant upgrade. The copper head stays sharp longer, felling trees with greater ease.",axe_copper.png
+TOOL_COPPER_PICKAXE,tool,Copper Pickaxe,"A sturdy pickaxe with a copper head, capable of breaking tougher rock and finding rarer ores.",pickaxe_copper.png

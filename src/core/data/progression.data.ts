@@ -6,28 +6,54 @@ import type {ProgressionData} from "@/shared/types/game.types.ts";
 export const PROGRESSION: Record<string, ProgressionData> = {
     warmstone: {
         1: { xp: 0, resources: [], rewards: [{ type: "unlock_building", buildingId: "woodcutter" }, { type: "unlock_building", buildingId: "campfire" }, { type: "unlock_building", buildingId: "foragers_hut" }] },
-        2: { xp: 100, resources: [], rewards: [{ type: "unlock_building", buildingId: "mine" }] },
-        3: { xp: 150, resources: [{ type: "resource", id: "LOG_OAK", amount: 10 }, { type: "resource", id: "FIBER", amount: 5 }], rewards: [{ type: "unlock_building", buildingId: "workshop" }] }
+        2: { xp: 100, resources: [{ type: "resource", id: "LOG_OAK", amount: 20 }], rewards: [{ type: "unlock_building", buildingId: "sawmill" }] },
+        3: { xp: 250, resources: [{ type: "resource", id: "PLANK_OAK", amount: 50 }], rewards: [{ type: "unlock_building", buildingId: "mine" }] },
+        4: { xp: 500, resources: [{ type: "resource", id: "STONE", amount: 100 }, { type: "resource", id: "PLANK_OAK", amount: 100 }], rewards: [{ type: "unlock_building", buildingId: "smelter" }, { type: "unlock_building", buildingId: "stonemason" }] },
+        5: { xp: 1000, resources: [{ type: "resource", id: "INGOT_COPPER", amount: 10 }, { type: "resource", id: "STONE_BLOCK", amount: 50 }], rewards: [{ type: "unlock_building", buildingId: "workshop" }] },
+        6: { xp: 2000, resources: [{ type: "resource", id: "INGOT_COPPER", amount: 50 }], rewards: [{ type: "unlock_building", buildingId: "farm" }] },
+        7: { xp: 3500, resources: [{ type: "resource", id: "GRAIN", amount: 100 }], rewards: [{ type: "unlock_building", buildingId: "windmill" }] },
+        8: { xp: 5000, resources: [{ type: "resource", id: "FLOUR", amount: 100 }], rewards: [{ type: "unlock_building", buildingId: "bakery" }] }
+    },
+    bakery: {
+        1: { xp: 0, resources: [], rewards: [{ type: "unlock_process", processId: "bake_bread" }] }
     },
     farm: {
-        1: { xp: 0, resources: [], rewards: [{ type: "unlock_process", processId: "grow_blackberries" }] }
+        1: { xp: 0, resources: [], rewards: [{ type: "unlock_process", processId: "till_soil" }] },
+        2: { xp: 200, resources: [{ type: "resource", id: "BERRIES", amount: 50 }], rewards: [{ type: "unlock_process", processId: "sow_blackberry_seed" }, { type: "unlock_process", processId: "harvest_blackberries" }] },
+        3: { xp: 500, resources: [{ type: "resource", id: "TILLED_EARTH", amount: 20 }], rewards: [{ type: "unlock_process", processId: "sow_grain_seed" }, { type: "unlock_process", processId: "harvest_grain" }] }
     },
     foragers_hut: {
         1: { xp: 0, resources: [], rewards: [{ type: "unlock_process", processId: "collect_berries" }] },
         2: { xp: 100, resources: [{ type: "resource", id: "BERRIES", amount: 30 }], rewards: [{ type: "unlock_process", processId: "gather_kindling" }] },
-        3: { xp: 250, resources: [{ type: "resource", id: "BERRIES", amount: 100 }, { type: "resource", id: "TWIGS", amount: 70 }], rewards: [{ type: "unlock_process", processId: "collect_fibers" }] },
-        4: { xp: 450, resources: [{ type: "resource", id: "BLACKBERRY_SEED", amount: 5 }], rewards: [{ type: "unlock_building", buildingId: "farm" }] }
+        3: { xp: 250, resources: [{ type: "resource", id: "BERRIES", amount: 100 }, { type: "resource", id: "TWIGS", amount: 70 }], rewards: [{ type: "unlock_process", processId: "collect_fibers" }] }
     },
     mine: {
         1: { xp: 0, resources: [], rewards: [{ type: "unlock_process", processId: "mine_stone" }] },
-        2: { xp: 100, resources: [{ type: "resource", id: "STONE", amount: 40 }], rewards: [{ type: "unlock_process", processId: "mine_copper_ore" }] }
+        2: { xp: 100, resources: [{ type: "resource", id: "PLANK_OAK", amount: 40 }], rewards: [{ type: "unlock_process", processId: "mine_coal" }] },
+        3: { xp: 300, resources: [{ type: "resource", id: "STONE_BLOCK", amount: 50 }], rewards: [{ type: "unlock_process", processId: "mine_copper_ore" }] }
+    },
+    sawmill: {
+        1: { xp: 0, resources: [], rewards: [{ type: "unlock_process", processId: "make_planks_oak" }] },
+        2: { xp: 150, resources: [{ type: "resource", id: "PLANK_OAK", amount: 100 }], rewards: [{ type: "unlock_process", processId: "make_planks_birch" }] }
+    },
+    smelter: {
+        1: { xp: 0, resources: [], rewards: [{ type: "unlock_process", processId: "smelt_copper_ingot" }] }
+    },
+    stonemason: {
+        1: { xp: 0, resources: [], rewards: [{ type: "unlock_process", processId: "cut_stone_blocks" }] }
     },
     woodcutter: {
         1: { xp: 0, resources: [], rewards: [{ type: "unlock_process", processId: "cut_tree_oak" }] },
         2: { xp: 100, resources: [{ type: "resource", id: "LOG_OAK", amount: 20 }], rewards: [{ type: "unlock_process", processId: "cut_tree_birch" }] },
-        3: { xp: 500, resources: [{ type: "resource", id: "LOG_OAK", amount: 100 }, { type: "resource", id: "LOG_BIRCH", amount: 100 }], rewards: [{ type: "unlock_process", processId: "cut_tree_pine" }] }
+        3: { xp: 250, resources: [{ type: "resource", id: "LOG_OAK", amount: 100 }, { type: "resource", id: "LOG_BIRCH", amount: 50 }], rewards: [{ type: "unlock_process", processId: "cut_tree_pine" }] },
+        4: { xp: 600, resources: [{ type: "resource", id: "INGOT_COPPER", amount: 5 }], rewards: [{ type: "unlock_process", processId: "cut_tree_maple" }] }
     },
     workshop: {
-        1: { xp: 0, resources: [], rewards: [{ type: "unlock_process", processId: "create_crude_hoe" }] }
+        1: { xp: 0, resources: [], rewards: [{ type: "unlock_process", processId: "create_crude_hoe" }] },
+        2: { xp: 300, resources: [{ type: "resource", id: "PLANK_BIRCH", amount: 50 }, { type: "resource", id: "STONE_BLOCK", amount: 50 }], rewards: [{ type: "unlock_process", processId: "craft_copper_axe" }] },
+        3: { xp: 700, resources: [{ type: "resource", id: "INGOT_COPPER", amount: 20 }], rewards: [{ type: "unlock_process", processId: "craft_copper_pickaxe" }] }
+    },
+    windmill: {
+        1: { xp: 0, resources: [], rewards: [{ type: "unlock_process", processId: "mill_flour" }] }
     }
 };

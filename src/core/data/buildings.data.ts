@@ -41,6 +41,36 @@ export const BUILDINGS: {[ key in BuildingId]?: BuildingData} = {
         processes: new Map<ProcessId, ProcessData>(),
         progression: {},
     },
+    sawmill: {
+        id: "sawmill",
+        name: "Sawmill",
+        processes: new Map<ProcessId, ProcessData>(),
+        progression: {},
+    },
+    smelter: {
+        id: "smelter",
+        name: "smelter",
+        processes: new Map<ProcessId, ProcessData>(),
+        progression: {},
+    },
+    stonemason: {
+        id: "stonemason",
+        name: "stonemason",
+        processes: new Map<ProcessId, ProcessData>(),
+        progression: {},
+    },
+    windmill: {
+        id: "windmill",
+        name: "windmill",
+        processes: new Map<ProcessId, ProcessData>(),
+        progression: {},
+    },
+    bakery: {
+        id: "bakery",
+        name: "bakery",
+        processes: new Map<ProcessId, ProcessData>(),
+        progression: {},
+    },
 }
 
 for (let buildingId in BUILDINGS) {
