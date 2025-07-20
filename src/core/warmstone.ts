@@ -13,7 +13,7 @@ export class Warmstone extends Subscribable<WarmstoneState, typeof GameObject>(G
     private vitalityDrainAmount: number = 10; // drain this amount of vitality
     private timeSinceLastDrain: number = 0;
     private essence: number = 0;
-    private currentLevel: number = 10;
+    private currentLevel: number = 1;
     private canLevelUp: boolean = false;
 
 
