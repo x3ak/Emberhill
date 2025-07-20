@@ -19,6 +19,16 @@ export default function ProcessDetails({processId}: ProcessDetailsProps) {
         return (<b>no process data found</b>)
     }
 
+    const renderInputs = () => {
+        return processData.inputs.map((input, index) => {
+            return (
+                <div key={index}>
+                    <ResourceAmountDisplay resourceAmount={input} showTownAmount={true}  />
+                </div>
+            )
+        })
+    }
+
     const outputs = processData.outputs.map((output, idx) => {
         return (
             <div key={idx}>
@@ -27,14 +37,18 @@ export default function ProcessDetails({processId}: ProcessDetailsProps) {
 
             </div>
         )
-    })
+    });
 
     return (
         <div>
             <h4>{processData.name}</h4>
             <p>{processData.description}</p>
             <p><span></span> {processData.text} </p>
-
+            <h1>Inputs</h1>
+            <div className={styles.inputs}>
+                {renderInputs()}
+            </div>
+            <h1>Outputs</h1>
             <div className={styles.output}>
                 <IconWithAmount icon={processingIcon} iconAlt={"Processing..."} amount={processData.duration} />
                 <IconWithAmount icon={xpIcon} iconAlt={"Experience"} amount={processData.xp} />

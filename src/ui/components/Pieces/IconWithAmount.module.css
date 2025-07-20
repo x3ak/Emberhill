@@ -26,12 +26,19 @@
 
     }
 
-    span {
+    .warn {
+        color: var(--color-status-danger);
+    }
+    .amountText {
         background-color: var(--color-interactive-secondary-bg);
         padding: 0 var(--size-sm);
         border-radius: var(--border-radius-md);
         border: 1px solid rgba(0, 0, 0, 0.5);
         font-size: var(--font-size-sm);
 
+
+
     }
+
 }
+

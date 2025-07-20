@@ -42,12 +42,18 @@ export function ResourceAmountDisplay({resourceAmount, showTownAmount, showOnlyD
 
             const inTownAmount: number = resourcesState.resources.get(resourceData.id) || 0;
 
+            const iconAmount = showTownAmount ? {actual: inTownAmount, total: resourceAmount.amount} : resourceAmount.amount;
+
             return (
                 <>
                     <span className={`${isPopupVisible ? styles.active : ''}`}
                           ref={openerRef} onClick={handleClick}>
 
-                        <IconWithAmount icon={resourceData.icon || ''} iconAlt={resourceData.name} amount={showTownAmount ? {actual: inTownAmount, total: resourceAmount.amount} : resourceAmount.amount} />
+                        <IconWithAmount
+                            icon={resourceData.icon || ''}
+                            iconAlt={resourceData.name}
+                            amount={iconAmount}
+                        />
 
                         {createPortal(
                             <AnimatePresence>

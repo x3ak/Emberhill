@@ -33,7 +33,7 @@
 
     /* Feedback Colors */
     --raw-color-success-400: #50fa7b;
-    --raw-color-danger-400:  #ff5555;
+    --raw-color-danger-400: rgba(255, 85, 85, 0.48);
     --raw-color-info-400:    #8be9fd;
 
 

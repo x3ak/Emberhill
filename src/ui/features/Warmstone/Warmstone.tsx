@@ -47,11 +47,7 @@ export default function Warmstone() {
             <StaticProgressBar value={progressBarValue}/>
 
             <div id="progress-bar" className="pt-6">
-                <div className="w-full bg-gray-200 rounded-full h-3.5 dark:bg-gray-700">
-                    <div
-                        className="bg-purple-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full"
-                        style={{width: vitality.toString().concat("%")}}>Vitality: {vitality}%
-                    </div>
+                <div >
                     <div>Essence: {essence}</div>
                 </div>
                 <button className={styles.button} onClick={handleUpgrade} disabled={!state.canLevelUp}>
